@@ -7,6 +7,8 @@ class JapanCreditBureau
 		$msg = "Stubbed out JapanCreditBureau class.";
 		return true;
 		
+		// test
+		
 		// fixme2: Implement this according to JCB interface
 		
 		require_once 'classes/Organization.php';

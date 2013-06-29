@@ -20,7 +20,7 @@ fieldset {
 }
 #paymentInfo {
 	float: right;
-	width: 380px;
+	width: 384px;
 }
 legend {
 	font-weight: bold;
@@ -50,18 +50,19 @@ label {
 	margin-left: 2px;
 }
 #JCB {
-	margin-left: 168px;
+	margin-left: 164px;
 }
 #unionPay {
-	margin: 19px 9px 0 7px;
+	margin: 13px 9px 0 7px;
 }
 #donate {
 	float: right;
+	width: 150px;
 	margin: 0;
 	padding: 6px 22px;
 	border-width: 2px;
 	font-weight: bold;
-	font-size: 28px;
+	font-size: 23px;
 }
 #spinner {
 	float: right;
@@ -69,7 +70,7 @@ label {
     background-repeat: no-repeat;
     display: none;
     height: 16px;
-    margin: 9px 0 0 11px;
+    margin: 4px 0 0 3px;
     width: 16px;
 }
 .error {

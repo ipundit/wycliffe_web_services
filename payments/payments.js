@@ -58,7 +58,7 @@ function addDonateClickHandler() {
 			month: $('#month').val(),
 			year: $('#year').val(),
 			test: test,
-			po: g_org
+			org: g_org
 		};
 		
 		$.ajax({

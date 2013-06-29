@@ -32,11 +32,10 @@ class User extends Record
 		  "address2"=>FILTER_SANITIZE_STRING,
 		  "postalCode"=>FILTER_SANITIZE_STRING,
 		  "phone"=>FILTER_SANITIZE_STRING,
-		  "po"=>FILTER_SANITIZE_STRING,
 		);
 		$row = filter_var_array($data, $filters);
 
-		if (!$this->containsColumns($row, "email,name,country,state,city,address,address2,postalCode,phone,po")) {
+		if (!$this->containsColumns($row, "email,name,country,state,city,address,address2,postalCode,phone")) {
 			$msg = "Invalid input";
 			return false;
 		}
@@ -48,14 +47,19 @@ class User extends Record
 			return false;
 		}
 
-		if (!$this->makePurchaseImpl($purchase, $msg)) { return false; }
-		$this->emailPurchaseReceipt($row["po"], $purchase->amount(), $msg);
-			
+		$org = new Organization();
+		if (!$org->readFromData($data)) {
+			$msg = "Invalid organization input";
+			return false;
+		}
+		
+		if (!$this->makePurchaseImpl($org, $purchase, $msg)) { return false; }
+		$this->emailPurchaseReceipt($org, $purchase->amount(), $msg);
 		return true;
 	}
 
-	private function makePurchaseImpl($purchase, &$msg) {
-		if (!$purchase->makePurchase($this, $msg)) { 
+	private function makePurchaseImpl($org, $purchase, &$msg) {
+		if (!$purchase->makePurchase($org, $this, $msg)) { 
 			if (substr($msg, 0, 23) == 'Could not resolve host:') {
 				$msg = "Could not connect";
 			}
@@ -64,15 +68,13 @@ class User extends Record
 		return true;
 	}
 
-	private function emailPurchaseReceipt($key, $amount, $orderNumber) {
-		$PO = new Organization($key);
-
+	private function emailPurchaseReceipt($org, $amount, $orderNumber) {
 		// fixme: localize this
-		$body = "Thank you for donating to " . $PO->name() . ".<h1>Your donation information</h1>
+		$body = "Thank you for donating to " . $org->name() . ".<h1>Your donation information</h1>
 		Name: " . $this->name() .
 		"<br />Email: " . $this->emailAddress() .
 		"<br />Donation tracking number: " . $orderNumber .
-		"<br />Amount: $" . $amount . " " . $PO->currency() .
+		"<br />Amount: $" . $amount . " " . $org->currency() .
 		"<br />Date: " . date('F j, Y g:i a');
 
 		$body = $body . "<h1>Your contact information</h1>
@@ -83,8 +85,11 @@ class User extends Record
 		"<br />City: " . $this->city() .
 		"<br />State: " . $this->state() .
 		"<br />Country: " . $this->country();
-				
-		$this->email($this->name(), $this->emailAddress(), $PO->notify_emails(), $PO->name() . " donation receipt", $body);
+		
+		$subject = $org->test() ? "TESTING: " : "";
+		$subject = $subject . $org->name() . " donation receipt";
+
+		$this->email($this->name(), $this->emailAddress(), $org->notify_emails(), $subject, $body);
 	}
 	
 	private function email($name, $email, $bcc, $subject, $body) {

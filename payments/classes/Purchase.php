@@ -42,7 +42,7 @@ class Purchase extends Record
 		return true;
 	}
 
-	public function makePurchase($user, &$msg) {
+	public function makePurchase($org, $user, &$msg) {
 		if ($this->isPayPal()) {
 			$paymentProcessor = new PayPal();
 		} else {
@@ -63,7 +63,7 @@ class Purchase extends Record
 			}
 		}
 
-		if (!$paymentProcessor->makePurchase($user, $this, $msg)) { return false; }
+		if (!$paymentProcessor->makePurchase($org, $user, $this, $msg)) { return false; }
 		$this->row['purchaseId'] = $msg;
 		return true;
 	}

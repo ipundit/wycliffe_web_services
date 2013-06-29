@@ -48,10 +48,10 @@ class JapanCreditBureau
 		$fields = $this->shred($responseString);
 
 		if ($fields["FIELD=39"] == "00") {
-			$msg = "All well!";
+			$msg = $fields["FIELD=998"];
 			return true;					
 		} else {
-			$msg = "Error : " . $fields["FIELD=39"];
+			$msg = "Your credit card was declined :(" . $fields["FIELD=39"] . ")";
 			return false;
 		}
 	}

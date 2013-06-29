@@ -3,9 +3,22 @@ require_once 'classes/Record.php';
 
 class Organization extends Record
 {
-	public function __construct($key) {
+	private $test;
+	
+	public function __construct() {}
+	
+	public function readFromData($data, $useDefaultOrg = false) {
+		$filters = array(
+		  "org"=>FILTER_SANITIZE_STRING,
+		  "test"=>FILTER_VALIDATE_INT,
+		);
+		$row = filter_var_array($data, $filters);
+
+		if (!$useDefaultOrg && !$this->containsColumns($row, "org")) { return false; }
+		if (!isset($row["org"])) { $row["org"] = "wycliffe_singapore"; };
+
 		$columns = array(
-		    "key"=>"text",
+		    "org"=>"text",
 		    "name"=>"text",
 			"country"=>"text",
 			"currency"=>"text",
@@ -20,15 +33,21 @@ class Organization extends Record
 			"production_pass_phrase"=>"text",
 			"testing_pass_phrase"=>"text",			
 		);
-
-		Record::__construct("organization", $columns, "key");
-		$res = Record::select(array_keys($columns), "`key`=?", $key);
-		if ($res->numRows() != 1) { throw new Exception($key . " is not an Organization."); }
+		Record::__construct("organization", $columns, "org");
+		
+		$res = Record::select(array_keys($columns), "`org`=?", $row["org"]);
+		if ($res->numRows() != 1) { throw new Exception($row["org"] . " is not an Organization."); }
 		Record::initialize($res->fetchRow(), true);
+
+		$this->test = isset($row['test']) ? $row['test'] == 1 : 0;
+		return true;
 	}
 
-	public function key() {
-		return $this->row['key'];
+	public function test() {
+		return $this->test;
+	}
+	public function org() {
+		return $this->row['org'];
 	}
 	public function name() {
 		return $this->row['name'];
@@ -45,17 +64,17 @@ class Organization extends Record
 	public function notify_emails() {
 		return $this->row['notify_emails'];
 	}
-	public function merchant_id($isTest) {
-		return $isTest ? $this->row['merchant_id_test'] : $this->row['merchant_id'];
+	public function merchant_id() {
+		return $this->test() ? $this->row['merchant_id_test'] : $this->row['merchant_id'];
 	}
-	public function terminal_id($isTest) {
-		return $isTest ? $this->row['terminal_id_test'] : $this->row['terminal_id'];
+	public function terminal_id() {
+		return $this->test() ? $this->row['terminal_id_test'] : $this->row['terminal_id'];
 	}
-	public function store_id($isTest) {
-		return $isTest ? $this->row['testing_store_id'] : $this->row['production_store_id'];
+	public function store_id() {
+		return $this->test() ? $this->row['testing_store_id'] : $this->row['production_store_id'];
 	}
-	public function pass_phrase($isTest) {
-		return $isTest ? $this->row['testing_pass_phrase'] : $this->row['production_pass_phrase'];
-	}	
+	public function pass_phrase() {
+		return $this->test() ? $this->row['testing_pass_phrase'] : $this->row['production_pass_phrase'];
+	}
 }
 ?>

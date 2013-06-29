@@ -3,13 +3,10 @@ require_once 'classes/User.php';
 
 class JapanCreditBureau
 {
-	public function makePurchase($user, $purchase, $msg) {
+	public function makePurchase($org, $user, $purchase, $msg) {
 		require_once 'classes/Organization.php';
-		$po = new Organization($purchase->po());
-
-		$isTesting = 1;
-
-		if (isTesting) {
+		
+		if ($org->test()) {
 			$url = "https://beta-jcbacqapi.pvbcard.com/WSJCBAcqAPI.asmx";
 		} else {
 			$url = "https://jcbacqapi.pvbcard.com/WSJCBAcqAPI.asmx";
@@ -19,7 +16,7 @@ class JapanCreditBureau
 			<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
 			<soap:Body>
 			<SaleTransaction xmlns=\"http://WSJCBAcq.pvbcard.com/\">
-			<pCommandString>" . this->makeCommandString($user, $purchase, $po, $isTesting) . "</pCommandString>
+			<pCommandString>" . $this->makeCommandString($org, $user, $purchase) . "</pCommandString>
 			</SaleTransaction>
 			</soap:Body>
 			</soap:Envelope>";
@@ -47,9 +44,8 @@ class JapanCreditBureau
 		xml_parse_into_struct($xml_parser, $result, $vals, $index);
 		xml_parser_free($xml_parser);
 
-		$responseString = $vals[$index['SaleTransactionResult'][0]]['value']
-
-		$fields = this->shred($responseString);
+		$responseString = $vals[$index['SaleTransactionResult'][0]]['value'];
+		$fields = $this->shred($responseString);
 
 		if ($fields["FIELD=39"] == "00") {
 			$msg = "All well!";
@@ -60,18 +56,18 @@ class JapanCreditBureau
 		}
 	}
 
-	private function makeCommandString($user, $purchase, $po, $isTest) {
-		return "FIELD=2&VALUE="  . $purchase->creditCard() . ";" .
-		"FIELD=4&VALUE="  . this->formatAmount($purchase->amount()) . ";" .
-		"FIELD=14&VALUE=" . this->formatExpiry($purchase->month(), $purchase->year()) . ";" .
-		"FIELD=41&VALUE=" . $po->terminal_id($isTest) . ";" .     
-		"FIELD=42&VALUE=" . $po->merchant_id($isTest);          	              	   
+	private function makeCommandString($org, $user, $purchase) {
+		return "FIELD=2&VALUE=" . $purchase->creditCard() . ";" .
+		"FIELD=4&VALUE="  . $this->formatAmount($purchase->amount()) . ";" .
+		"FIELD=14&VALUE=" . $this->formatExpiry($purchase->month(), $purchase->year()) . ";" .
+		"FIELD=41&VALUE=" . $org->terminal_id() . ";" .     
+		"FIELD=42&VALUE=" . $org->merchant_id();          	              	   
 	}
 
 	private function formatAmount($amount) {
-		$pos = strpos($amount, ".");
+		$decimalPlace = strpos($amount, ".");
 
-		if ($pos === FALSE) {
+		if ($decimalPlace === FALSE) {
 			return $amount . "00";
 		} else {
 			return str_replace(".", "", $amount);

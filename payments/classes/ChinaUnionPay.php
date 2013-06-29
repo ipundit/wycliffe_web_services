@@ -3,22 +3,18 @@ require_once 'classes/User.php';
 
 class ChinaUnionPay
 {
-	public function makePurchase($user, $purchase, &$msg) {
+	public function makePurchase($org, $user, $purchase, $msg) {
 		// fixme2: Implement this according to CUP interface
-		
 		require_once 'classes/Organization.php';
 		
-		$po = new Organization($purchase->po());
-		
-$isTesting = 1;
-		if ($isTesting) {
+		if ($org->test()) {
 			$url = "https://dev.psigate.com:7989/Messenger/XMLMessenger";
 		} else {
 			$url = "https://secure.psigate.com:7934/Messenger/XMLMessenger";
 		}
 
 		$XPost = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			<Order><StoreID>$po->store_id($isTesting)</StoreID><Passphrase>$po->pass_phrase($isTesting)</Passphrase>
+			<Order><StoreID>$org->store_id()</StoreID><Passphrase>$org->pass_phrase()</Passphrase>
 			<Subtotal>".$purchase->amount()."</Subtotal><PaymentType>CC</PaymentType>
 			<CardAction>0</CardAction>
 			<CardNumber>".$purchase->creditCard()."</CardNumber>

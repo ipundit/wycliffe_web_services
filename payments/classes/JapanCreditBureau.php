@@ -3,55 +3,27 @@ require_once 'classes/User.php';
 
 class JapanCreditBureau
 {
-	public function makePurchase($org, $user, $purchase, $msg) {
+	public function makePurchase($org, $user, $purchase, &$msg) {
 		require_once 'classes/Organization.php';
 		
 		if ($org->test()) {
-			$url = "https://beta-jcbacqapi.pvbcard.com/WSJCBAcqAPI.asmx";
+			$url = "https://beta-jcbacqapi.pvbcard.com/WSJCBAcqAPI.asmx?wsdl";
 		} else {
-			$url = "https://jcbacqapi.pvbcard.com/WSJCBAcqAPI.asmx";
+			$url = "https://jcbacqapi.pvbcard.com/WSJCBAcqAPI.asmx?wsdl";
 		}
 
-		$XPost = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">
-			<soap:Body>
-			<SaleTransaction xmlns=\"http://WSJCBAcq.pvbcard.com/\">
-			<pCommandString>" . $this->makeCommandString($org, $user, $purchase) . "</pCommandString>
-			</SaleTransaction>
-			</soap:Body>
-			</soap:Envelope>";
+		$client = new SoapClient($url,
+			array("trace" => 1, // enable trace to view what is happening
+			"exceptions" => 0,  // disable exceptions
+			"cache_wsdl" => 0));
+		$response = $client->SaleTransaction(array ("pCommandString" => $this->makeCommandString($org, $user, $purchase)));
+		$fields = $this->shred($response->SaleTransactionResult);
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, 0); // Don't return the header, just the html
-		curl_setopt($ch, CURLOPT_URL, $url); // set url to post to
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
-		curl_setopt($ch, CURLOPT_TIMEOUT, 40); // times out after 40s
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $XPost); // add POST fields
-		curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . "/cacert.crt");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('SOAPAction: http://WSJCBAcq.pvbcard.com/SaleTransaction'));
-
-		$result = curl_exec($ch); // run the whole process
-		if (curl_errno($ch)) {
-			$msg = curl_error($ch);
-			return false;
-		} else {
-			curl_close($ch);
-		}
-
-		$xml_parser = xml_parser_create();
-		xml_parser_set_option($xml_parser,XML_OPTION_CASE_FOLDING,0);
-		xml_parser_set_option($xml_parser,XML_OPTION_SKIP_WHITE,1);
-		xml_parse_into_struct($xml_parser, $result, $vals, $index);
-		xml_parser_free($xml_parser);
-
-		$responseString = $vals[$index['SaleTransactionResult'][0]]['value'];
-		$fields = $this->shred($responseString);
-
-		if ($fields["FIELD=39"] == "00") {
-			$msg = $fields["FIELD=998"];
+		if ($fields["39"] == "00") {
+			$msg = $fields["998"]; // The order number
 			return true;					
 		} else {
-			$msg = "Your credit card was declined :(" . $fields["FIELD=39"] . ")";
+			$msg = $this->declineMessage($fields["39"]);
 			return false;
 		}
 	}
@@ -86,13 +58,69 @@ class JapanCreditBureau
 	private function shred($responseString) {
 		$shreddings = array();
 
-		$fieldValuePairs = explode($responseString, ";");
+		$fieldValuePairs = explode(";", $responseString);
 
 		foreach ($fieldValuePairs as &$fieldValuePair) {
-			$splitFieldAndValue = explode($fieldValuePair, "&");
-			$shreddings[$splitFieldAndValue[0]] = $splitFieldAndValue[1];
+			$splitFieldAndValue = explode("&", $fieldValuePair);
+			$shreddings[$this->removePrefix('FIELD=', $splitFieldAndValue[0])] = $this->removePrefix('VALUE=', $splitFieldAndValue[1]);
 		}
 		return $shreddings;
-	}          
+	}      
+
+	private function removePrefix($prefix, $str) {
+		return preg_replace('/^' . $prefix . '/', '', $str);    
+	}
+	
+	private function declineMessage($index) {
+		$messages = array(
+			"00" => "Transaction was successful",
+			"01" => "Refer to issuer",
+			"03" => "Invalid merchant",
+			"04" => "Pickup card",
+			"05" => "Transaction was rejected",
+			"06" => "Error",
+			"07" => "Fake card",
+			"09" => "Request in progress",
+			"12" => "Invalid transaction",
+			"13" => "Invalid amount",
+			"14" => "Invalid card number",
+			"15" => "Invalid issuer",
+			"20" => "Invalid response",
+			"30" => "Format error",
+			"31" => "Unsupported bank",
+			"33" => "Expired card",
+			"34" => "Suspended card for fraud",
+			"36" => "Restricted card",
+			"40" => "Function unsupported",
+			"41" => "Lost card",
+			"42" => "No account",
+			"43" => "Card reported as stolen",
+			"44" => "Insufficient funds",
+			"54" => "Expired date error",
+			"55" => "Incorrect PIN",
+			"56" => "No card record",
+			"57" => "Transaction denied to cardholder",
+			"58" => "Transaction denied to terminal",
+			"59" => "Suspected fradulent transaction",
+			"61" => "Exceed withdrawal limits",
+			"62" => "Restricted card",
+			"63" => "Security violation",
+			"65" => "Exceed withdrawal frequency limits",
+			"75" => "PIN tried exceeded",
+			"76" => "Incorrect reversal",
+			"77" => "Lost or stolen card",
+			"78" => "Merchant is in blacklist",
+			"79" => "Account status is false",
+			"87" => "Incorred passport",
+			"88" => "Incorrect date of birth",
+			"89" => "Not approved",
+			"90" => "Cutoff in progress",
+			"91" => "Issuer or JCB switch down",
+			"92" => "Institution unavailable",
+			"94" => "Duplicate transaction",
+			"96" => "System error",
+		);
+		return $messages[$index];
+	}
 }
 ?>

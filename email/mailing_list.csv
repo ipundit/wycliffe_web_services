@@ -1,0 +1,37 @@
+$name	$email	template	columns from here on are ignored	
+Michael	michael_hu@wycliffe.net	1	Michael Hu	1(613)323-2323
+Jane	no-reply@wycliffe-services.net	2	Will use Template #2 to send email to $email, passing in $name parameter to use in Template 2's Greeting	
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+		# if status is not 'ok', then return value will be 'Error on line 28: EXPECTS_status = whatever_was_returned'		
+		# This call is now blocking, and $transactionId will be filled with return value of transactionId.		
+		# $transactionId can now be used by any webservice call in this file		
+				
+				
+				
+				
+		# $transactionId is the result of the previous call		
+		"# Outputs ""This $variable is not defined"" because $variable is not defined in any EXPECTS_* call"		
+		# Return variables can be overwritten, as shown in this example. This call will set $transactionId = ok		

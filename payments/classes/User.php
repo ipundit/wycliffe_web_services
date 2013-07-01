@@ -83,8 +83,8 @@ class User extends Record
 		"<br />Address line 2: " . $this->address2() .
 		"<br />Postal code: " . $this->postalCode();
 		
-		if ($this->city != '--') { $body .= "<br />City: " . $this->city(); }
-		if ($this->state != '--') { $body .= "<br />State: " . $this->state(); }
+		if ($this->city() != '--') { $body .= "<br />City: " . $this->city(); }
+		if ($this->state() != '--') { $body .= "<br />State: " . $this->state(); }
 		
 		$body .= "<br />Country: " . $this->country();
 		

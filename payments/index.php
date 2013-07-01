@@ -125,7 +125,7 @@ label.error {
 	}
 	
 </script>
-<script language='JavaScript' type='text/javascript' src='payments.js'></script>
+<script language='JavaScript' type='text/javascript' src='index.js'></script>
 </head>
 <body>
 <form id="theForm" action="#" method="post">

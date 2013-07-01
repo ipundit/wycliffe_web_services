@@ -228,8 +228,8 @@ function fillTestForm() {
 	$('#address').val('123 Test Street');
 	$('#address2').val('');
 	$('#postalCode').val('11200');
-	$('#email').val('brian_morrow@wycliffe.net');
-	$('#email2').val('brian_morrow@wycliffe.net');
+	$('#email').val('michael_hu@wycliffe.net');
+	$('#email2').val('michael_hu@wycliffe.net');
 	$('#amount').val('10.50');
 	$('#cardName').val('TEST CARD1');
 	$('#creditCard').val('3541 5999 9909 4213');

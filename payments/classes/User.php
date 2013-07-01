@@ -81,10 +81,12 @@ class User extends Record
 		Phone number: " . $this->phone() .
 		"<br />Address: " . $this->address() .
 		"<br />Address line 2: " . $this->address2() .
-		"<br />Postal code: " . $this->postalCode() .
-		"<br />City: " . $this->city() .
-		"<br />State: " . $this->state() .
-		"<br />Country: " . $this->country();
+		"<br />Postal code: " . $this->postalCode();
+		
+		if ($this->city != '--') { $body .= "<br />City: " . $this->city(); }
+		if ($this->state != '--') { $body .= "<br />State: " . $this->state(); }
+		
+		$body .= "<br />Country: " . $this->country();
 		
 		$subject = $org->test() ? "TESTING: " : "";
 		$subject = $subject . $org->name() . " donation receipt";

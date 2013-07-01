@@ -3,7 +3,7 @@ require_once 'classes/User.php';
 
 class ChinaUnionPay
 {
-	public function makePurchase($org, $user, $purchase, $msg) {
+	public function makePurchase($org, $user, $purchase, &$msg) {
 		// fixme2: Implement this according to CUP interface
 		require_once 'classes/Organization.php';
 		
@@ -42,12 +42,13 @@ class ChinaUnionPay
 		$XPost = $XPost . "</Order>";
 
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, 0); // Don’t return the header, just the html
+		curl_setopt($ch, CURLOPT_HEADER, 0); // Don't return the header, just the html
 		curl_setopt($ch, CURLOPT_URL, $url); // set url to post to
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // return into a variable
 		curl_setopt($ch, CURLOPT_TIMEOUT, 40); // times out after 40s
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $XPost); // add POST fields
-		curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . "/cacert.crt");
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_CAINFO, "/etc/ssl/certs/mozilla.pem"); // http://davidwalsh.name/php-ssl-curl-error
 
 		$result = curl_exec($ch); // run the whole process
 		if (curl_errno($ch)) {

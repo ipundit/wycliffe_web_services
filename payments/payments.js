@@ -234,9 +234,8 @@ function fillTestForm() {
 	$('#cardName').val('TEST CARD1');
 	$('#creditCard').val('3541 5999 9909 4213');
 	$('#month').val('12');
-	$('#year').val('2012');
-	
-	$('#footer').after("<h4>CUP Test Card Information</h4>Test Debit Card: 6299991111111111<br />PIN: 111111<br />Dynamic Verification Code: 111111<br /><br />Test Credit Card: 6200002222222222<br />Expiry: 06/2016<br />Dynamic Verification Code: 111111<br />CVV2: 111<h4>JCB Test Card information</h4>Approve: 3541 5999 9909 4213<br />Expiry: 12/12<br />CVV2: 123<br />Cardholder Name: TEST CARD1<br /><br />Reject: 3541 5999 9909 4304<br />Expiry: 12/12<br />CVV2: 123<br />Cardholder Name: TEST CARD2");
+	$('#year').val('2014');
+	$('#footer').after("<h4>CUP Test Card Information</h4>Test Debit Card: 6299991111111111<br />PIN: 111111<br />Dynamic Verification Code: 111111<br /><br />Test Credit Card: 6200002222222222<br />Expiry: 06/2016<br />Dynamic Verification Code: 111111<br />CVV2: 111<h4>JCB Test Card information</h4>Approve: 3541 5999 9909 4213<br />Expiry: 12/2014<br />CVV2: 123<br />Cardholder Name: TEST CARD1<br /><br />Reject: 3541 5999 9909 4304<br />Expiry: 12/2014<br />CVV2: 123<br />Cardholder Name: TEST CARD2");
 }
 
 function urlParam(name) {

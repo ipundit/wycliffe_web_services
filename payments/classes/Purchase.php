@@ -63,7 +63,11 @@ class Purchase extends Record
 			}
 		}
 
-		if (!$paymentProcessor->makePurchase($org, $user, $this, $msg)) { return false; }
+		if (!$paymentProcessor->makePurchase($org, $user, $this, $msg)) {
+			// fixme: localize this
+			$msg = "Your credit card was declined: " . $msg;
+			return false;
+		}
 		$this->row['purchaseId'] = $msg;
 		return true;
 	}

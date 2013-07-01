@@ -196,12 +196,12 @@ label.error {
 <div>
  <label for="month"><?php echo t("Expiration Date"); ?>:</label>
  <select name="month" id="month" class="date-select"><option value="01" selected>1</option><option value="02">2</option><option value="03">3</option><option value="04">4</option><option value="05">5</option><option value="06">6</option><option value="07">7</option><option value="08">8</option><option value="09">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select> / 
- <select name="year" id="year" class="date-select"><option value="2012">2012</option><option value="2013" selected>2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option></select>
+ <select name="year" id="year" class="date-select"><option value="2013" selected>2013</option><option value="2014">2014</option><option value="2015">2015</option><option value="2016">2016</option><option value="2017">2017</option><option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option></select>
 </div>
 </fieldset>
 <img id="JCB" src="JCB.gif" /><img id="unionPay" src="unionpay.png" />
 <button type="button" id="donate"><?php echo t("Donate"); ?><div id="spinner"></div></button>
-<img src="<?php echo $org["img_prefix"]; ?>footer.png" />
+<img id="footer" src="<?php echo $org["img_prefix"]; ?>footer.png" />
 </form>
 </body>
 </html>

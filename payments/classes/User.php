@@ -75,7 +75,7 @@ class User extends Record
 		"<br />Email: " . $this->emailAddress() .
 		"<br />Donation tracking number: " . $orderNumber .
 		"<br />Amount: $" . $amount . " " . $org->currency() .
-		"<br />Date: " . date('F j, Y g:i a');
+		"<br />Date: " . date('F j, Y g:i a') . ' UTC';
 
 		$body = $body . "<h1>Your contact information</h1>
 		Phone number: " . $this->phone() .

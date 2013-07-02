@@ -66,7 +66,7 @@ label {
 }
 #spinner {
 	float: right;
-    background-image: url("spinner.gif");
+    background-image: url("../spinner.gif");
     background-repeat: no-repeat;
     display: none;
     height: 16px;

@@ -32,12 +32,6 @@ function addSubmitHandler() {
 			success: function(retValue, textStatus) {
 				$('#spinner').hide();
 				$('#error').html(retValue);
-
-				if (retValue.status == 'ok') {
-				//	$('#error').html(retValue.status);
-				} else {
-			//		$('#error').html(retValue.status);
-				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				$('#spinner').hide();

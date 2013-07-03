@@ -72,7 +72,7 @@ class Purchase extends Record
 		return true;
 	}
 	
-	private function isValidCreditCard($cc) {
+	private function isValidCreditCard(&$cc) {
 		// Strip any non-digits (useful for credit card numbers with spaces and hyphens)
 		$cc = preg_replace('/\D/', '', $cc);
 		$cc = str_replace(" ", "", $cc);

@@ -123,7 +123,6 @@ label.error {
 	function translate(englishString) {
 		return translationMappings[englishString];
 	}
-	
 </script>
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
 </head>

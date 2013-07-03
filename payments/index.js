@@ -40,46 +40,48 @@ function addDonateClickHandler() {
 		var country = $('#country').val();
 		var state = (country == 'SG') ? '--' : $('#state').val();
 		var city = (country == 'SG') ? '--' : $('#city').val();
-			
-		var data = { 
-			name: $('#name').val(), 
-			email: $('#email').val(),
-			phone: $('#phone').val(),
-			country: country,
-			address: $('#address').val(),
-			address2: $('#address2').val(),
-			state: state,
-			city: city,
-			postalCode: $('#postalCode').val(),
-			amount: $('#amount').val(),
-			project: $('#project').val(),
-			cardName: $('#cardName').val(),
-			creditCard: $('#creditCard').val().replace(/ /g, "").replace(/\-/, ""),
-			month: $('#month').val(),
-			year: $('#year').val(),
-			test: test,
-			org: g_org
-		};
+		
+		var data = new FormData();
+		data.append('name', $('#name').val());
+		data.append('email', $('#email').val());
+		data.append('phone', $('#phone').val());
+		data.append('country', country);
+		data.append('address', $('#address').val());
+		data.append('address2', $('#address2').val());
+		data.append('state', state);
+		data.append('city', city);
+		data.append('postalCode', $('#postalCode').val());
+		data.append('amount', $('#amount').val());
+		data.append('project', $('#project').val());
+		data.append('cardName', $('#cardName').val());
+		data.append('creditCard', $('#creditCard').val().replace(/ /g, "").replace(/\-/, ""));
+		data.append('month', $('#month').val());
+		data.append('year', $('#year').val());
+		data.append('month', $('#month').val());
+		data.append('test', test);
+		data.append('org', g_org);
 		
 		$.ajax({
 			type: 'POST',
 			url: 'webservice.php',
-			data: JSON.stringify(data),
-			dataType: 'json',
-			contentType: 'application/json',
+			data: data,
 			success: function(retValue, textStatus) {
 				$('#spinner').hide();
-				if (retValue.status == 'ok') {
+				if (retValue.indexOf('ok') == 0) {
 					alert(g_thank_you_for_donation);
 					window.location = g_redirect_url;
 				} else {
-					$('#instructions').html('<span style="color:red">' + retValue.status  + '</span>');
+					$('#instructions').html('<span style="color:red">' + retValue  + '</span>');
 				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
 				$('#spinner').hide();
 				$('#instructions').html('<span style="color:red">' + removeBefore(XMLHttpRequest.statusText, '(0)') + '</span>');
-			}
+			},
+			// Required options for file uploading to work
+			cache: false,
+			contentType: false,
+			processData: false
 		});
 	});
 }

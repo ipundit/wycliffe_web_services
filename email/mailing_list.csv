@@ -1,7 +1,7 @@
 $name	$email	template	columns from here on are ignored	
 Michael	michael_hu@wycliffe.net	1	Michael Hu	1(613)323-2323
 Jane	no-reply@wycliffe-services.net	2	Will use Template #2 to send email to $email, passing in $name parameter to use in Template 2's Greeting	
-				
+			If template is blank, then no email will be sent to $email	
 				
 				
 				

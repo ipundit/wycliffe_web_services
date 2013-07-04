@@ -5,7 +5,8 @@ class WebserviceForeman {
 	private $workers;
 	private $variables;
 	private $mh;
-
+	private $lastId;
+	
 	public function __construct() {
 		$this->workers = array();
 		$this->variables = array();
@@ -21,8 +22,9 @@ class WebserviceForeman {
 		}
 
 		$worker = new WebserviceWorker($url, $params, $expects, $result, $lineCount);
-		$this->workers[] = $worker;
-		curl_multi_add_handle($this->mh, $worker->id());
+		$this->lastId = $worker->id();
+		$this->workers[$this->lastId] = $worker;
+		curl_multi_add_handle($this->mh, $this->lastId);
 		
 		$running = 0;
 		curl_multi_exec($this->mh, $running);
@@ -30,27 +32,38 @@ class WebserviceForeman {
 
 	// Can only be called once, then you have to construct a new WebserviceForeman
 	public function run(&$msg) {
-		$running = 0;
-		do {
-			$status = curl_multi_exec($this->mh, $running);
-		} while ($status === CURLM_CALL_MULTI_PERFORM || $running);
-
 		$ok = true;
-		foreach ($this->workers as $worker) {
-			$str = curl_multi_getcontent($worker->id());
-			if ($ok) {
-				if ($worker->result() != IGNORE) { $this->variables[$worker->result()] = $str; }
-				
-				$ok = $worker->processReturn($str, $temp);
-				if (!$ok) { $msg = $temp; }
+
+		$this->full_curl_multi_exec($still_running); // start requests
+		do { // "wait for completion"-loop
+			curl_multi_select($this->mh); // non-busy (!) wait for state change
+			$this->full_curl_multi_exec($still_running); // get new state
+			while ($info = curl_multi_info_read($this->mh)) {
+				$id = $info['handle'];
+				if ($ok) {
+					$str = curl_multi_getcontent($id);
+					$worker = $this->workers[$id];
+					
+					if ($worker->result() != IGNORE) { $this->variables[$worker->result()] = $str; }
+
+					$ok = $worker->processReturn($str, $temp);
+					if (!$ok || $id == $this->lastId) { $msg = $temp; }
+
+					unset($this->workers[$id]);
+				}
+				curl_multi_remove_handle($this->mh, $id);
 			}
-			curl_multi_remove_handle($this->mh, $worker->id());
-		}
-		
-		if ($ok) { $msg = $temp; }
+		} while ($still_running); 
         return $ok;
 	}
 	
+	function full_curl_multi_exec(&$still_running) {
+		do {
+			$rv = curl_multi_exec($this->mh, $still_running);
+		} while ($rv == CURLM_CALL_MULTI_PERFORM);
+		return $rv;
+	} 
+  
 	function __destruct() {
 		curl_multi_close($this->mh);
 	}	

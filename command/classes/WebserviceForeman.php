@@ -30,13 +30,12 @@ class WebserviceForeman {
 		curl_multi_exec($this->mh, $running);
 	}
 
-	// Can only be called once, then you have to construct a new WebserviceForeman
-	public function run(&$msg) {
+	public function run($onlyNeedBlockingTaskToFinish, &$msg) {
 		$ok = true;
 
 		$this->full_curl_multi_exec($still_running); // start requests
 		do { // "wait for completion"-loop
-			curl_multi_select($this->mh); // non-busy (!) wait for state change
+			curl_multi_select($this->mh); // non-busy wait for state change
 			$this->full_curl_multi_exec($still_running); // get new state
 			while ($info = curl_multi_info_read($this->mh)) {
 				$id = $info['handle'];
@@ -44,7 +43,10 @@ class WebserviceForeman {
 					$str = curl_multi_getcontent($id);
 					$worker = $this->workers[$id];
 					
-					if ($worker->result() != IGNORE) { $this->variables[$worker->result()] = $str; }
+					if ($worker->result() != IGNORE) {
+						$this->variables[$worker->result()] = $str;
+						if ($onlyNeedBlockingTaskToFinish) { $still_running = false; }
+					}
 
 					$ok = $worker->processReturn($str, $temp);
 					if (!$ok || $id == $this->lastId) { $msg = $temp; }
@@ -53,7 +55,7 @@ class WebserviceForeman {
 				}
 				curl_multi_remove_handle($this->mh, $id);
 			}
-		} while ($still_running); 
+		} while ($still_running);
         return $ok;
 	}
 	

@@ -123,7 +123,10 @@ function processCommands($str, &$msg) {
 			return false;
 		}
 		if (startsWithURL($line)) {
-			if ($state != START) { $foreman->schedule($url, $params, $expects, $result, $expectsLineCount); }
+			if ($state != START) { 
+				$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
+				if ($result != IGNORE && !$foreman->run(true, $msg)) { return false; }
+			}
 
 			$url = rtrim(substr($line, 4)); // 4 = length of URL\t
 			removeAfter($url, $asciiTab);
@@ -180,7 +183,7 @@ function processCommands($str, &$msg) {
 	}
 
 	$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
-	return $foreman->run($msg);
+	return $foreman->run(false, $msg);
 }
 
 function startsWithURL($str) {

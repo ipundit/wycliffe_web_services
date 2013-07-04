@@ -1,4 +1,6 @@
 <?php
+require_once 'classes/WebserviceForeman.php';
+
 if (!process($msg)) {
 	// {status:<fileName>: line <CSV line number>: Expect_<name>, got <value>}
 	echo '{"status":"' . $msg , '"}';
@@ -100,14 +102,15 @@ function processCommands($str, &$msg) {
 	$state = START;
 
 	$lineCount = 0;
+	$expectsLineCount = 0;
 	$url = '';
 	$params = array();
 
 	define("IGNORE", "__IGNORE__");
 	$expects = IGNORE;
 	$result = IGNORE;
-	$variables = array();
 	$asciiTab = 9;
+	$foreman = new WebserviceForeman();
 	
 	foreach ($lines as $line) {
 		$lineCount++;
@@ -120,12 +123,7 @@ function processCommands($str, &$msg) {
 			return false;
 		}
 		if (startsWithURL($line)) {
-			if ($state != START) {
-				if (!executeCommand($url, $params, $expects, $result, $variables, $msg)) {
-					$msg = 'line ' . $lineCount . ': ' . $msg;
-					return false;
-				}
-			}
+			if ($state != START) { $foreman->schedule($url, $params, $expects, $result, $expectsLineCount); }
 
 			$url = rtrim(substr($line, 4)); // 4 = length of URL\t
 			removeAfter($url, $asciiTab);
@@ -151,6 +149,7 @@ function processCommands($str, &$msg) {
 			}
 			$state = EXPECTS;
 			$expects = $arr[1];
+			$expectsLineCount = $lineCount;
 			continue;
 		}
 		if ($arr[0] == "RESULT") {
@@ -180,44 +179,8 @@ function processCommands($str, &$msg) {
 		$params[$arr[0]] = $arr[1];
 	}
 
-	if (!executeCommand($url, $params, $expects, $result, $variables, $msg)) {
-		$msg = 'line ' . $lineCount . ': ' . $msg;
-		return false;
-	}
-	return true;
-}
-
-function executeCommand($url, $params, $expects, $result, &$variables, &$msg) {
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_HEADER, false); // Don't return the header, just the html
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // return into a variable
-	curl_setopt($ch, CURLOPT_TIMEOUT, 40); // times out after 40s
-	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_CAINFO, "/etc/ssl/certs/mozilla.pem"); // http://davidwalsh.name/php-ssl-curl-error
-
-	curl_setopt($ch, CURLOPT_URL, $url); // set url to post to
-
-	foreach ($params as $key => $value) {
-		foreach ($variables as $key2 => $value2) {
-			$value = str_replace($key2, $value2, $value);
-		}
-		$params[$key] = $value;
-	}
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-
-	$msg = curl_exec($ch); // run the whole process
-	if (curl_errno($ch)) {
-		$msg = curl_error($ch);
-		return false;
-	}
-	curl_close($ch);
-	
-	if ($result != IGNORE) { $variables[$result] = $msg; }
-	if ($expects != IGNORE && $expects != $msg) {
-		$msg = 'failed EXPECTS ' . $msg;
-		return false;
-	}
-	return true;
+	$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
+	return $foreman->run($msg);
 }
 
 function startsWithURL($str) {

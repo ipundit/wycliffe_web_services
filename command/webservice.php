@@ -9,15 +9,11 @@ if (!process($msg)) {
 echo $msg;
 
 function process(&$msg) {
-	switch (count($_FILES)) {
-	case 0:
-		break;
-	case 1:
-		$file = $_FILES['file'];
-		break;
-	default:
-		$msg = 'Only one .csv file is supported';
-		return;
+	if (count($_FILES) > 0) {
+		if (array_key_exists ('commandFile', $_FILES)) { $commandFile = $_FILES['commandFile']; }
+		for ($i = 1; $i <= 4; $i) {
+			if (array_key_exists ('_file' . $i, $_FILES)) { $files['_file' . $i] = $_FILES['_file' . $i]; }
+		}
 	}
 	
 	$filters = array(
@@ -33,13 +29,13 @@ function process(&$msg) {
 	
 	switch (count($row)) {
 	case 0:
-		if (!isset($file)) {
+		if (!isset($commandFile)) {
 			$msg = 'No parameters passed';
 			return;
 		}
-		return processFile($file['name'], $file['tmp_name'], $msg);
+		return processFile($commandFile['name'], $commandFile['tmp_name'], $msg);
 	case 1:
-		if (isset($file)) {
+		if (isset($commandFile)) {
 			$msg = 'Send a file or service | commands';
 			return false;
 		}
@@ -64,9 +60,9 @@ function process(&$msg) {
 
 function processDirectory($path, &$msg) {
 	$dir = new DirectoryIterator($path);
-	foreach ($dir as $fileinfo) {
-		if ($fileinfo->isFile()) {
-			$file = $fileinfo->getFilename();
+	foreach ($dir as $fileInfo) {
+		if ($fileInfo->isFile()) {
+			$file = $fileInfo->getFilename();
 			
 			if (endsWith($file, '.csv')) {
 				if (!processFile($file, $path . $file, $msg)) { return false; }

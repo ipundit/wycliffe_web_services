@@ -1,10 +1,24 @@
 $(document).ready(function() {
-	$('#file').click(function() { $('#choiceFile').prop('checked', true); });
-	$('#dir').click(function() { $('#choiceDir').prop('checked', true); });
+	$('#commandFile').click(function() { $('#choiceFile').prop('checked', true); });
+	$('#service').click(function() { $('#choiceService').prop('checked', true); });
 	$('#text').click(function() { $('#choiceText').prop('checked', true); });
 	addValidators();
 	addSubmitHandler();
+	preselectService();
 });
+
+function preselectService() {
+	var service = urlParam("service");
+	if (service == '') { return; }
+
+	$('#choiceService').prop('checked', true);
+	$("#service > option").each(function() {
+		if (this.value == service) {
+			$(this).prop('selected', true);
+			return;
+		}
+	});
+}
 
 function addSubmitHandler() {
 	$('button').click(function() {
@@ -15,7 +29,7 @@ function addSubmitHandler() {
 		var data = new FormData();
 		switch ($('input[name=src]:checked', '#theForm').attr('id')) {
 		case 'choiceFile':
-			data.append('file', document.getElementById('file').files[0]);
+			data.append('commandFile', document.getElementById('commandFile').files[0]);
 			break;
 		case 'choiceService':
 			data.append('service', $('#service').val());
@@ -57,7 +71,7 @@ function addValidators() {
 		if (value.length == 0) { return false; }
 		return value.endsWith('.csv');
 	}, translate("Please choose a .csv file"));
-	$("#file").rules("add", {
+	$("#commandFile").rules("add", {
 		isCSV: true
 	});
 }
@@ -66,4 +80,17 @@ function removeBefore(haystack, needle) {
 	var index = haystack.indexOf(needle);
 	if (index == -1) { return haystack; }
 	return haystack.substring(index + needle.length).ltrim();
+}
+
+function urlParam(name) {
+	var retValue = getUrlVars()[name];
+	if (retValue === undefined) { return retValue; }
+	return retValue.replace(/%20/g, ' ');
+}
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
 }

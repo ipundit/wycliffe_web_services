@@ -4,34 +4,45 @@
 <head>
 <title>Wycliffe Web Services command processor</title>
 <style type="text/css">
-h1 { margin: 0 0 5px 0; }
+h1 {
+	margin: 0 0 5px 0;
+	font-size: 25px;
+}
+
 label { display: inline-block; }
+.error { color: red; }
+label.error {
+	display: block;
+	text-align: left;
+	font-weight: bold;
+}
+
 #radioButtons { float: left; }
+#uploadFiles { 
+	float: left;
+	margin-left: 10px;
+}
+
+#commandFile { width: 338px; }
+@-moz-document url-prefix() { /* firefox */
+	.form-select { width: 82px; }
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
+	#commandFile { width: 328px; }
+}
+
+.attachment { width: 180px; }
+.rightFileLabel { margin-left: 5px; }
 
 button {
-	float: left;
-	height: 83px;
-	margin: 0 0 0 20px;
+	height: 43px;
+	margin: 6px 0 0 0;
 	padding: 6px 22px;
 	border-width: 2px;
 	font-weight: bold;
 	font-size: 23px;
-	width: 428px;
+	width: 448px;
 }
-
-#url { width: 296px; }
-#file { width: 338px; }
-
-@-moz-document url-prefix() { /* firefox */
-	#url { width: 292px; }
-	.form-select { width: 82px; }
-}
-@media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
-	#url { width: 286px; }
-	#file { width: 328px; }
-	button { width: 438px; }
-}
-
 #spinner {
     background-image: url("../spinner.gif");
     background-repeat: no-repeat;
@@ -44,17 +55,8 @@ button {
 #text {
 	display: block;
 	clear: both;
-	width: 800px;
+	width: 815px;
 	height: 500px;
-}
-
-.error {
-	color: red;
-}
-label.error {
-	display: block;
-	text-align: left;
-	font-weight: bold;
 }
 </style>
 
@@ -76,23 +78,26 @@ label.error {
 </head>
 <body>
 
-<h1><?php echo t("Run web service commands from"); ?>:</h1>
-<div class="error" id="error"></div>
 <form id="theForm" action="#" method="post">
-<div>
-	<div id="radioButtons">
-	<input type="radio" name="src" id="choiceFile" checked /><input type="file" name="file" id="file" size="40" /><br />
+<div id="radioButtons">
+	<h1><?php echo t("Run web service commands from"); ?>:</h1>
+	<input type="radio" name="src" id="choiceFile" checked /><input type="file" name="commandFile" id="commandFile" size="40" /><br />
 	<input type="radio" name="src" id="choiceService" /><label for="choiceService">http://wycliffe-services.net/</label>
-		<select name="service" id="service" class="form-select">
-			<?php
-				foreach (getOptions() as $option) {
-					echo '<option value="' . $option .'">' . $option . '</option>';
-				}
-			?>
-		</select>
-		<label for="choiceService">/tests/*.csv</label><br />
+	<select name="service" id="service" class="form-select">
+		<?php
+			foreach (getOptions() as $option) {
+				echo '<option value="' . $option .'">' . $option . '</option>';
+			}
+		?>
+	</select>
+	<label for="choiceService">/tests/*.csv</label><br />
 	<input type="radio" name="src" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label>
-	</div>
+	<div class="error" id="error"></div>
+</div>
+<div id="uploadFiles">
+	<h1><?php echo t("And upload files"); ?>:</h1>
+	<label>_file1: </label><input type="file" name="_file1" id="_file1" class="attachment" /><label class="rightFileLabel">_file3: </label><input type="file" name="_file3" id="_file3" class="attachment" /><br />
+	<label>_file2: </label><input type="file" name="_file2" id="_file2" class="attachment" /><label class="rightFileLabel">_file4: </label><input type="file" name="_file4" id="_file3" class="attachment" /><br />
 	<button type="button"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </div>
 <textarea id="text"></textarea>

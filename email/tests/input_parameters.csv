@@ -1,0 +1,134 @@
+# to testing
+URL	http://wycliffe-services.net/email/webservice.php
+EXPECTS	Either to parameter must be set or mailingList file must uploaded
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+mailingList	_file1
+EXPECTS	mailingList cannot be set if to is set
+
+URL	http://wycliffe-services.net/email/webservice.php
+mailingList	_file1
+EXPECTS	template file must be uploaded if mailingList uploaded
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com, Tester test@test.com>
+EXPECTS	invalid to
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com, Tester <test@test.com
+EXPECTS	invalid to
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com, <Tester test@test.com>
+EXPECTS	invalid to
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com, Tester <test@test.com>
+simulate	1
+EXPECTS	ok
+
+# fromEmail testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromEmail	test@test.com
+EXPECTS	invalid fromEmail
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromEmail	events@wycliffe-services.net
+simulate	1
+EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromEmail	help@wycliffe-services.net
+simulate	1
+EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromEmail	mailer@wycliffe-services.net
+simulate	1
+EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromEmail	no-reply@wycliffe-services.net
+simulate	1
+EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromEmail	webservice@wycliffe-services.net
+simulate	1
+EXPECTS	ok
+
+# cc testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+cc	test@test.com, Tester test@test.com>
+EXPECTS	invalid cc
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+cc	test@test.com, Tester <test@test.com
+EXPECTS	invalid cc
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+cc	test@test.com, <Tester test@test.com>
+EXPECTS	invalid cc
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+cc	test@test.com, Tester <test@test.com>
+simulate	1
+EXPECTS	ok
+
+# bcc testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+bcc	test@test.com, Tester test@test.com>
+EXPECTS	invalid bcc
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+bcc	test@test.com, Tester <test@test.com
+EXPECTS	invalid bcc
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+bcc	test@test.com, <Tester test@test.com>
+EXPECTS	invalid bcc
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+bcc	test@test.com, Tester <test@test.com>
+simulate	1
+EXPECTS	ok
+
+# attach testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+attach1	_file1
+attach2	_file1
+attach3	_file1
+attach4	_file1
+simulate	1
+EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+attach5	_file1
+attach6	_file1
+attach7	_file1
+attach8	_file1
+simulate	1
+EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+attach9	_file1
+simulate	1
+EXPECTS	ok

@@ -2,7 +2,7 @@
 require_once 'classes/WebserviceForeman.php';
 
 if (!process($msg)) {
-	// {status:<fileName>: line <CSV line number>: Expect_<name>, got <value>}
+	// <fileName>: line <CSV line number>: Expect_<name>, got <value>
 	echo '{"status":"' . $msg , '"}';
 	return;
 }
@@ -11,9 +11,6 @@ echo $msg;
 function process(&$msg) {
 	if (count($_FILES) > 0) {
 		if (array_key_exists ('commandFile', $_FILES)) { $commandFile = $_FILES['commandFile']; }
-		for ($i = 1; $i <= 4; $i) {
-			if (array_key_exists ('_file' . $i, $_FILES)) { $files['_file' . $i] = $_FILES['_file' . $i]; }
-		}
 	}
 	
 	$filters = array(
@@ -45,7 +42,7 @@ function process(&$msg) {
 				$msg = 'Web service "' . $row['service'] . '" does not exist';
 				return false;
 			}
-			return processDirectory($dir, $msg);
+			return processService($dir, $msg);
 		} else if (isset($row['commands'])) {
 			return processCommands($row['commands'], $msg);
 		} else {
@@ -58,7 +55,7 @@ function process(&$msg) {
 	}
 }
 
-function processDirectory($path, &$msg) {
+function processService($path, &$msg) {
 	$dir = new DirectoryIterator($path);
 	foreach ($dir as $fileInfo) {
 		if ($fileInfo->isFile()) {
@@ -88,6 +85,15 @@ function processFile($name, $path, &$msg) {
 }
 
 function processCommands($str, &$msg) {
+	$fileNames = array('_file1','_file2','_file3','_file4');
+	foreach ($_FILES as $key => $value) {
+		if (in_array($key, $fileNames)) {
+			renameTempFile($key);
+		} else {
+			unset($_FILES[$key]);
+		}
+	}
+
 	$str = str_replace("\r\n", "\n", $str);
 	$lines = explode("\n", $str);
 
@@ -175,11 +181,31 @@ function processCommands($str, &$msg) {
 			$msg = "line " . $lineCount . ': ' . $arr[0] . ' already exists';
 			return false;
 		}
+		
+		if (in_array($arr[1], $fileNames)) {
+			if (array_key_exists($arr[1], $_FILES)) {
+				$arr[1] = '@' . $_FILES[$arr[1]]['tmp_name'];
+			} else {
+				$msg = "line " . $lineCount . ': ' . $arr[1] . ' was not uploaded';
+				return false;
+			}
+		}
 		$params[$arr[0]] = $arr[1];
 	}
 
 	$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
 	return $foreman->run(false, $msg);
+}
+
+function renameTempfile($paramName) {
+	$oldPath = $_FILES[$paramName]['tmp_name'];
+
+	$arr = explode(DIRECTORY_SEPARATOR, $oldPath);
+	$arr[sizeof($arr) - 1] = $_FILES[$paramName]['name'];
+	$newPath = implode(DIRECTORY_SEPARATOR, $arr);
+
+	move_uploaded_file($oldPath, $newPath);
+	$_FILES[$paramName]['tmp_name'] = $newPath;
 }
 
 function startsWithURL($str) {

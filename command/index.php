@@ -96,8 +96,8 @@ button {
 </div>
 <div id="uploadFiles">
 	<h1><?php echo t("And upload files"); ?>:</h1>
-	<label>_file1: </label><input type="file" name="_file1" id="_file1" class="attachment" /><label class="rightFileLabel">_file3: </label><input type="file" name="_file3" id="_file3" class="attachment" /><br />
-	<label>_file2: </label><input type="file" name="_file2" id="_file2" class="attachment" /><label class="rightFileLabel">_file4: </label><input type="file" name="_file4" id="_file3" class="attachment" /><br />
+	<label>_file1: </label><input type="file" name="file1" id="file1" class="attachment" /><label class="rightFileLabel">_file3: </label><input type="file" name="file3" id="file3" class="attachment" /><br />
+	<label>_file2: </label><input type="file" name="file2" id="file2" class="attachment" /><label class="rightFileLabel">_file4: </label><input type="file" name="file4" id="file4" class="attachment" /><br />
 	<button type="button"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </div>
 <textarea id="text"></textarea>

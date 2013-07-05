@@ -1,23 +1,29 @@
 $(document).ready(function() {
-	$('#commandFile').click(function() { $('#choiceFile').prop('checked', true); });
-	$('#service').click(function() { $('#choiceService').prop('checked', true); });
-	$('#text').click(function() { $('#choiceText').prop('checked', true); });
+	$('#commandFile').click(function() { selectRadio('choiceFile'); });
+	$('#service').click(function() { selectRadio('choiceService'); });
+	$('#text').click(function() { selectRadio('choiceText'); });
 	addValidators();
 	addSubmitHandler();
-	preselectService();
+	preselectRadio();
 });
 
-function preselectService() {
+function preselectRadio() {
 	var service = urlParam("service");
-	if (service == '') { return; }
+	if (service == '' || $('#text').val() != '') { 
+		selectRadio('choiceText');
+		return;
+	}
 
-	$('#choiceService').prop('checked', true);
+	selectRadio('choiceService');
 	$("#service > option").each(function() {
 		if (this.value == service) {
 			$(this).prop('selected', true);
 			return;
 		}
 	});
+}
+function selectRadio(name) {
+	$('#' + name).prop('checked', true);
 }
 
 function addSubmitHandler() {
@@ -37,6 +43,9 @@ function addSubmitHandler() {
 		case 'choiceText':
 			data.append('commands', $('#text').val());
 			break;
+		}
+		for (i = 1; i <= 4; i++) {
+			if ($('#file' + i).val() != '') { data.append('_file' + i, document.getElementById('file' + i).files[0]); }
 		}
 		
 		$.ajax({

@@ -116,7 +116,7 @@ attach2	_file1
 attach3	_file1
 attach4	_file1
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
+EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => ) Number of attachments: 4
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
@@ -125,10 +125,10 @@ attach6	_file1
 attach7	_file1
 attach8	_file1
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
+EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => ) Number of attachments: 4
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 attach9	_file1
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
+EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => ) Number of attachments: 1

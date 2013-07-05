@@ -83,7 +83,7 @@ class CommandProcessor {
 		$fileNames = array('_file1','_file2','_file3','_file4');
 		foreach ($_FILES as $key => $value) {
 			if (in_array($key, $fileNames)) {
-				CommandProcessor::renameTempFile($key);
+				util::renameTempFile($key);
 			} else {
 				unset($_FILES[$key]);
 			}
@@ -190,17 +190,6 @@ class CommandProcessor {
 
 		$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
 		return $foreman->run(false, $msg);
-	}
-
-	static private function renameTempfile($paramName) {
-		$oldPath = $_FILES[$paramName]['tmp_name'];
-
-		$arr = explode(DIRECTORY_SEPARATOR, $oldPath);
-		$arr[sizeof($arr) - 1] = $_FILES[$paramName]['name'];
-		$newPath = implode(DIRECTORY_SEPARATOR, $arr);
-
-		move_uploaded_file($oldPath, $newPath);
-		$_FILES[$paramName]['tmp_name'] = $newPath;
 	}
 
 	static private function startsWithURL($str) {

@@ -12,6 +12,17 @@ class util {
 		return $ch;
 	}
 	
+	static public function renameTempfile($paramName) {
+		$oldPath = $_FILES[$paramName]['tmp_name'];
+
+		$arr = explode(DIRECTORY_SEPARATOR, $oldPath);
+		$arr[sizeof($arr) - 1] = $_FILES[$paramName]['name'];
+		$newPath = implode(DIRECTORY_SEPARATOR, $arr);
+
+		move_uploaded_file($oldPath, $newPath);
+		$_FILES[$paramName]['tmp_name'] = $newPath;
+	}
+	
 	static public function removeAfter(&$str, $postFix) {
 		$index = strpos($str, $postFix);
 		if ($index === false) { return false; }

@@ -1,7 +1,5 @@
 <?php
 require_once 'classes/CommandProcessor.php';
-
-$processor = new CommandProcessor();
-$processor->process($msg);
+CommandProcessor::process($msg);
 echo $msg;
 ?>

@@ -2,7 +2,7 @@
 require_once 'classes/WebserviceForeman.php';
 
 class CommandProcessor {
-	public function process(&$msg) {
+	static public function process(&$msg) {
 		if (count($_FILES) > 0) {
 			if (array_key_exists ('commandFile', $_FILES)) { $commandFile = $_FILES['commandFile']; }
 		}
@@ -24,7 +24,7 @@ class CommandProcessor {
 				$msg = 'No parameters passed';
 				return false;
 			}
-			return $this->processFile($commandFile['name'], $commandFile['tmp_name'], $msg);
+			return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $msg);
 		case 1:
 			if (isset($commandFile)) {
 				$msg = 'Send a file or service | commands';
@@ -36,9 +36,9 @@ class CommandProcessor {
 					$msg = 'Web service "' . $row['service'] . '" does not exist';
 					return false;
 				}
-				return $this->processService($dir, $msg);
+				return CommandProcessor::processService($dir, $msg);
 			} else if (isset($row['commands'])) {
-				return $this->processCommands($row['commands'], $msg);
+				return CommandProcessor::processCommands($row['commands'], $msg);
 			} else {
 				$msg = 'Unrecognized parameter';
 				return false;
@@ -49,21 +49,21 @@ class CommandProcessor {
 		}
 	}
 
-	private function processService($path, &$msg) {
+	static private function processService($path, &$msg) {
 		$dir = new DirectoryIterator($path);
 		foreach ($dir as $fileInfo) {
 			if ($fileInfo->isFile()) {
 				$file = $fileInfo->getFilename();
 				
-				if ($this->endsWith($file, '.csv')) {
-					if (!$this->processFile($file, $path . $file, $msg)) { return false; }
+				if (CommandProcessor::endsWith($file, '.csv')) {
+					if (!CommandProcessor::processFile($file, $path . $file, $msg)) { return false; }
 				}
 			}
 		}
 		return true;
 	}
 
-	private function processFile($name, $path, &$msg) {
+	static private function processFile($name, $path, &$msg) {
 		if (!filter_var($name, FILTER_SANITIZE_STRING)) {
 			$msg = "Invalid file name";
 			return false;
@@ -73,16 +73,16 @@ class CommandProcessor {
 			return false;
 		}	
 		
-		if ($this->processCommands(file_get_contents($path), $msg)) { return true; }
+		if (CommandProcessor::processCommands(file_get_contents($path), $msg)) { return true; }
 		$msg = $name . ': ' . $msg;
 		return false;
 	}
 
-	private function processCommands($str, &$msg) {
+	static private function processCommands($str, &$msg) {
 		$fileNames = array('_file1','_file2','_file3','_file4');
 		foreach ($_FILES as $key => $value) {
 			if (in_array($key, $fileNames)) {
-				$this->renameTempFile($key);
+				CommandProcessor::renameTempFile($key);
 			} else {
 				unset($_FILES[$key]);
 			}
@@ -110,22 +110,22 @@ class CommandProcessor {
 		
 		foreach ($lines as $line) {
 			$lineCount++;
-			$this->removeAfter($line, '#');
+			CommandProcessor::removeAfter($line, '#');
 			$line = trim($line);
 			
 			if ($line == '') { continue; }
-			if ($state == START && !$this->startsWithURL($line)) {
+			if ($state == START && !CommandProcessor::startsWithURL($line)) {
 				$msg = "line " . $lineCount . ": must start with URL<tab>";
 				return false;
 			}
-			if ($this->startsWithURL($line)) {
+			if (CommandProcessor::startsWithURL($line)) {
 				if ($state != START) { 
 					$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
 					if ($result != IGNORE && !$foreman->run(true, $msg)) { return false; }
 				}
 
 				$url = rtrim(substr($line, 4)); // 4 = length of URL\t
-				$this->removeAfter($url, $asciiTab);
+				CommandProcessor::removeAfter($url, $asciiTab);
 				
 				$params = array();
 				$expects = IGNORE;
@@ -191,7 +191,7 @@ class CommandProcessor {
 		return $foreman->run(false, $msg);
 	}
 
-	private function renameTempfile($paramName) {
+	static private function renameTempfile($paramName) {
 		$oldPath = $_FILES[$paramName]['tmp_name'];
 
 		$arr = explode(DIRECTORY_SEPARATOR, $oldPath);
@@ -202,10 +202,10 @@ class CommandProcessor {
 		$_FILES[$paramName]['tmp_name'] = $newPath;
 	}
 
-	private function startsWithURL($str) {
+	static private function startsWithURL($str) {
 		return preg_match("/^URL\t/", $str);
 	}
-	private function removeAfter(&$str, $postFix) {
+	static private function removeAfter(&$str, $postFix) {
 		$index = strpos($str, $postFix);
 		if ($index === false) { return false; }
 		if ($index == 0) {
@@ -215,7 +215,7 @@ class CommandProcessor {
 		$str = rtrim(substr($str, 0, $index - 1));
 		return true;
 	}
-	private function endsWith($haystack, $needle) {
+	static private function endsWith($haystack, $needle) {
 		$length = strlen($needle);
 		if ($length == 0) { return true; }
 		return (substr($haystack, -$length) === $needle);

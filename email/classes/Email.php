@@ -10,36 +10,46 @@ class Email
 		$row = Email::validateInput($msg);
 		if ($msg != '') { return false;	}
 		
-		if ($row['simulate'] == 1) {
-			$msg = "ok";
-			return true;
+		if ($row["to"] == '') {
+		} else {
+			if (!Email::send($msg, $row["fromName"], $row["sender"], $row["to"], $row['subject'], 
+			$row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $_FILES, $row['simulate'] == 1)) {
+				return false;
+			}
 		}
 
-		if (isset($row["to"])) {
-			
-			return true;
-		}
+		$msg = "ok";
 		return true;
 	}
 	
 	private static function validateInput(&$msg) {
 		$filters = array(
 		  "to"=>FILTER_UNSAFE_RAW,
-		  "fromName"=>FILTER_SANITIZE_STRING,
-		  "fromEmail"=>FILTER_SANITIZE_STRING,
+		  "sender"=>FILTER_SANITIZE_EMAIL,
+		  "fromName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "replyTo"=>FILTER_SANITIZE_EMAIL,
-		  "subject"=>FILTER_SANITIZE_STRING,
+		  "subject"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "cc"=>FILTER_UNSAFE_RAW,
 		  "bcc"=>FILTER_UNSAFE_RAW,
-		  "body"=>FILTER_SANITIZE_STRING,
-		  "attachment"=>FILTER_SANITIZE_STRING,
-		  "template"=>FILTER_SANITIZE_STRING,
-		  "mailingList"=>FILTER_SANITIZE_STRING,
+		  "body"=>FILTER_UNSAFE_RAW,
 		  "simulate"=>FILTER_VALIDATE_INT,
 		);
 		$row = filter_var_array($_POST, $filters);
 
-		if (isset($row["to"])) {
+		foreach ($row as &$value) {
+			$value = trim($value);
+		}
+		
+		if ($row["to"] == '') {
+			if (!isset($_FILES["mailingList"])) {
+				$msg = "Either to parameter must be set or mailingList file must uploaded";
+				return false;
+			}
+			if (!isset($_FILES["template"])) {
+				$msg = "template file must be uploaded if mailingList uploaded";
+				return false;
+			}
+		} else {
 			if (isset($_FILES["mailingList"])) {
 				$msg = "mailingList cannot be set if to is set";
 				return false;
@@ -52,33 +62,26 @@ class Email
 				$msg = "invalid to";
 				return false;
 			}
-		} else {
-			if (!isset($_FILES["mailingList"])) {
-				$msg = "Either to parameter must be set or mailingList file must uploaded";
-				return false;
-			}
-			if (!isset($_FILES["template"])) {
-				$msg = "template file must be uploaded if mailingList uploaded";
-				return false;
-			}
 		}
-		
-		if (isset($row["fromEmail"]) && !in_array($row['fromEmail'], array(
+
+		if ($row["sender"] == '') {
+			$row["sender"] = "no_reply@wycliffe-services.net";
+		} else if (!in_array($row['sender'], array(
 			'events@wycliffe-services.net', 'help@wycliffe-services.net',
 			'mailer@wycliffe-services.net', 'no-reply@wycliffe-services.net',
 			'webservice@wycliffe-services.net'))) {
-				$msg = "invalid fromEmail";
-				return false;
-		} else {
-			$row["fromEmail"] = "no_reply@wycliffe-services.net";
+			$msg = "invalid sender";
+			return false;
 		}
 
-		if (isset($row["cc"]) && !Email::validateEmailList($row["cc"])) {
+		$row['subject'] = urldecode($row['subject']);
+		
+		if (!Email::validateEmailList($row["cc"])) {
 			$msg = "invalid cc";
 			return false;
 		}
 
-		if (isset($row["bcc"]) && !Email::validateEmailList($row["bcc"])) {
+		if (!Email::validateEmailList($row["bcc"])) {
 			$msg = "invalid bcc";
 			return false;
 		}
@@ -86,18 +89,26 @@ class Email
 		return $row;
 	}
 	
-	private static function send($from, $name, $email, $bcc, $subject, $body, $signature = '') {
-		$to = $name . " <" . $email .">";
-
-        $headers = array(
-			'From' => $from,
+	private static function send(&$msg, $fromName, $sender, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attach = '', $simulate) {
+		if ($replyTo != '') {
+			$replyTo = $fromName == '' ? $replyTo : $fromName . ' <' . $replyTo . '>';
+		}
+		
+		$headers = array(
+			'Sender' => $sender,
+			'From' => $fromName == '' ? $sender : $fromName . ' via Wycliffe Web Services <' . $sender . '>',
 			'To'   => $to,
+			'Cc'   => $cc,
 			'Bcc'  => $bcc,
+			'Reply-To' => $replyTo,
+			'Return-Path' => $replyTo,
 			'Subject' => $subject,
 		);
-		if ($signature != '') { $signature = '\n\n' . $signature; }
-		$body = "Dear " . $name . ',\n\n' . $body . $signature;
-
+		if ($simulate) {
+			$msg = trim(preg_replace('/\s+/', ' ', print_r($headers, true)));
+			return false;
+		}
+				
         $mime = new Mail_mime('');
         $mime->setTXTBody($body);
         $mime->setHTMLBody('<html><body>'.str_replace('\n', '<br />', $body).'</body></html>');
@@ -107,10 +118,11 @@ class Email
 		$params['sendmail_path'] = '/usr/lib/sendmail';
 
         $mail =& Mail::factory('sendmail', $params);
-		$mail->send($to, $headers, $body);
+		return $mail->send($to, $headers, $body);
 	}
 
 	private static function validateEmailList($str) {
+		if ($str == '') { return true; }
 		foreach (explode(",", $str) as $email) {
 			if (util::removeBefore($email, "<")) {
 				if (!util::removeAfter($email, ">")) { return false; }

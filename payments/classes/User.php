@@ -24,12 +24,12 @@ class User extends Record
 	public function makePurchase($data, &$msg) {
 		$filters = array(
 		  "email"=>FILTER_VALIDATE_EMAIL,
-		  "name"=>FILTER_SANITIZE_STRING,
+		  "name"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "country"=>FILTER_SANITIZE_STRING,
-		  "state"=>FILTER_SANITIZE_STRING,
-		  "city"=>FILTER_SANITIZE_STRING,
-		  "address"=>FILTER_SANITIZE_STRING,
-		  "address2"=>FILTER_SANITIZE_STRING,
+		  "state"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "city"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "address"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "address2"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "postalCode"=>FILTER_SANITIZE_STRING,
 		  "phone"=>FILTER_SANITIZE_STRING,
 		);

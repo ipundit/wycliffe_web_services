@@ -65,11 +65,11 @@ class CommandProcessor {
 	}
 
 	static private function processFile($name, $path, &$msg) {
-		if (!filter_var($name, FILTER_SANITIZE_STRING)) {
+		if (!filter_var($name, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
 			$msg = "Invalid file name";
 			return false;
 		}	
-		if (!filter_var($path, FILTER_SANITIZE_STRING)) {
+		if (!filter_var($path, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
 			$msg = "Invalid file path";
 			return false;
 		}	

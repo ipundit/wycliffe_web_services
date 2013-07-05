@@ -22,11 +22,11 @@ class Purchase extends Record
 	public function readFromData($data) {
 		$filters = array(
 		  "amount"=>FILTER_VALIDATE_FLOAT,
-		  "cardName"=>FILTER_SANITIZE_STRING,
+		  "cardName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "creditCard"=>FILTER_SANITIZE_STRING,
 		  "month"=>FILTER_VALIDATE_INT,
 		  "year"=>FILTER_VALIDATE_INT,
-		  "project"=>FILTER_SANITIZE_STRING,
+		  "project"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		);
 		$row = filter_var_array($data, $filters);
 

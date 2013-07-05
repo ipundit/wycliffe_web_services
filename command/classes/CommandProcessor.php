@@ -1,4 +1,5 @@
 <?php
+require_once 'util.php';
 require_once 'classes/WebserviceForeman.php';
 
 class CommandProcessor {
@@ -55,7 +56,7 @@ class CommandProcessor {
 			if ($fileInfo->isFile()) {
 				$file = $fileInfo->getFilename();
 				
-				if (CommandProcessor::endsWith($file, '.csv')) {
+				if (util::endsWith($file, '.csv')) {
 					if (!CommandProcessor::processFile($file, $path . $file, $msg)) { return false; }
 				}
 			}
@@ -110,7 +111,7 @@ class CommandProcessor {
 		
 		foreach ($lines as $line) {
 			$lineCount++;
-			CommandProcessor::removeAfter($line, '#');
+			util::removeAfter($line, '#');
 			$line = trim($line);
 			
 			if ($line == '') { continue; }
@@ -125,7 +126,7 @@ class CommandProcessor {
 				}
 
 				$url = rtrim(substr($line, 4)); // 4 = length of URL\t
-				CommandProcessor::removeAfter($url, $asciiTab);
+				util::removeAfter($url, $asciiTab);
 				
 				$params = array();
 				$expects = IGNORE;
@@ -204,21 +205,6 @@ class CommandProcessor {
 
 	static private function startsWithURL($str) {
 		return preg_match("/^URL\t/", $str);
-	}
-	static private function removeAfter(&$str, $postFix) {
-		$index = strpos($str, $postFix);
-		if ($index === false) { return false; }
-		if ($index == 0) {
-			$str = '';
-			return true;
-		}
-		$str = rtrim(substr($str, 0, $index - 1));
-		return true;
-	}
-	static private function endsWith($haystack, $needle) {
-		$length = strlen($needle);
-		if ($length == 0) { return true; }
-		return (substr($haystack, -$length) === $needle);
 	}
 }
 ?>

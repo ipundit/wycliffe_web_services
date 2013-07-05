@@ -1,4 +1,6 @@
-<?php 
+<?php
+require_once 'util.php';
+
 class WebserviceWorker {
 	private $expects;
 	private $mResult;
@@ -9,16 +11,7 @@ class WebserviceWorker {
 		$this->expects = $expects;
 		$this->mResult = $result;
 		$this->lineCount = $lineCount;
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, false);     // Don't return the header, just the html
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // return into a variable
-		curl_setopt($ch, CURLOPT_TIMEOUT, 40);       // times out after 40s
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_CAINFO, "/etc/ssl/certs/mozilla.pem"); // http://davidwalsh.name/php-ssl-curl-error
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-		$this->mId = $ch;
+		$this->mId = util::curl_init($url, $params);
 	}
 	
 	public function result() {

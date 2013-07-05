@@ -1,5 +1,6 @@
 <?php 
 require_once 'MDB2.php';
+require_once 'util.php';
 require_once '../DatabaseConstants.php';
 
 class Record
@@ -58,7 +59,7 @@ class Record
 		for ($i = 0; $i < sizeof($types); $i++) {
 			$types[$i] = rtrim($types[$i]);
 			$types[$i] = trim(substr($types[$i], 0, -1));
-			$types[$i] = ltrim($this->removeBefore($types[$i], 'AND'));
+			util::removeBefore($types[$i], 'AND');
 			$pos = strpos($types[$i], " ");
 			
 			if ($pos !== false) { $types[$i] = ltrim(substr($types[$i], $pos)); }
@@ -90,18 +91,6 @@ class Record
 		return $res;
 	}
 
-	private function removeBefore($str, $prefix) {
-		$pos = strpos($str, $prefix);
-		if ($pos === false) { return $str; }
-		
-		return substr($str, $pos + strlen($prefix));
-	}
-	
-	protected function endsWith($haystack, $needle) {
-		$expectedPosition = strlen($haystack) - strlen($needle);
-		return strrpos($haystack, $needle, 0) === $expectedPosition;
-	}
-		
 	private function inDatabase($key, $value) {
 		return $this->select($key, $key . "=?", $value)->numRows() >= 1;
 	}

@@ -1,16 +1,7 @@
 # to testing
 URL	http://wycliffe-services.net/email/webservice.php
-EXPECTS	Either to parameter must be set or mailingList file must uploaded
+EXPECTS	to parameter must be set
 
-URL	http://wycliffe-services.net/email/webservice.php
-to	test@test.com
-mailingList	_file1
-EXPECTS	mailingList cannot be set if to is set
-
-URL	http://wycliffe-services.net/email/webservice.php
-mailingList	_file1
-EXPECTS	template file must be uploaded if mailingList uploaded
-	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester test@test.com>
 EXPECTS	invalid to

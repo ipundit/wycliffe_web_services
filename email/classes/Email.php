@@ -55,21 +55,13 @@ class Email
 		}
 		
 		if ($row["to"] == '') {
-			if (!isset($_FILES["mailingList"])) {
-				$msg = "Either to parameter must be set or mailingList file must uploaded";
-				return false;
-			}
-			if (!isset($_FILES["template"])) {
-				$msg = "template file must be uploaded if mailingList uploaded";
+			if (!isset($_FILES["to"])) {
+				$msg = "to parameter must be set";
 				return false;
 			}
 		} else {
-			if (isset($_FILES["mailingList"])) {
-				$msg = "mailingList cannot be set if to is set";
-				return false;
-			}
-			if (isset($_FILES["template"])) {
-				$msg = "template cannot be set if to is set";
+			if (isset($_FILES["to"])) {
+				$msg = "Cannot have two sources of to";
 				return false;
 			}
 			if (!Email::validateEmailList($row["to"])) {

@@ -2,6 +2,12 @@
 require_once 'util.php';
 require_once 'classes/WebserviceForeman.php';
 
+define("START", 0);
+define("PARAMS", 1);
+define("EXPECTS", 2);
+define("RESULT", 3);
+define("IGNORE", "__IGNORE__");
+
 class CommandProcessor {
 	static public function process(&$msg) {
 		if (count($_FILES) > 0) {
@@ -56,7 +62,19 @@ class CommandProcessor {
 			if ($fileInfo->isFile()) {
 				$file = $fileInfo->getFilename();
 				
-				if (util::endsWith($file, '.csv')) {
+				if (preg_match('/^_file[1-4]_.+$/', $file)) {
+					$newFile = substr($file, 7); // remove 7 char _file1_ prefix
+					$newPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $newFile;
+					copy($path . $file, $newPath);
+					$_FILES[substr($file, 0, 6)] = array('name' => $newFile, 'tmp_name' => $newPath);
+				}
+			}
+		}
+		foreach ($dir as $fileInfo) {
+			if ($fileInfo->isFile()) {
+				$file = $fileInfo->getFilename();
+				
+				if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
 					if (!CommandProcessor::processFile($file, $path . $file, $msg)) { return false; }
 				}
 			}
@@ -92,10 +110,6 @@ class CommandProcessor {
 		$str = str_replace("\r\n", "\n", $str);
 		$lines = explode("\n", $str);
 
-		define("START", 0);
-		define("PARAMS", 1);
-		define("EXPECTS", 2);
-		define("RESULT", 3);
 		$state = START;
 
 		$lineCount = 0;
@@ -103,7 +117,6 @@ class CommandProcessor {
 		$url = '';
 		$params = array();
 
-		define("IGNORE", "__IGNORE__");
 		$expects = IGNORE;
 		$result = IGNORE;
 		$asciiTab = 9;

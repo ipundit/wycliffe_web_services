@@ -1,0 +1,13 @@
+# Send one email
+URL	http://wycliffe-services.net/email/webservice.php
+to	michael_hu@wycliffe.net
+cc	Michael Hu <michael_hu@wycliffe.net>, michael_hu@wycliffe.net
+bcc	Michael Hu <michael_hu@wycliffe.net>
+sender	webservice@wycliffe-services.net
+fromName	Regression Tester
+subject	Email regression test
+body	Passes if you receive 4 copies of this email with two attachments and Reply-To = help@wycliffe-services.net
+replyTo	help@wycliffe-services.net
+attach1	_file1
+attach2	_file2
+EXPECTS	ok

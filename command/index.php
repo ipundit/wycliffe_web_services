@@ -81,8 +81,8 @@ button {
 <form id="theForm" action="#" method="post">
 <div id="radioButtons">
 	<h1><?php echo t("Run web service commands from"); ?>:</h1>
-	<input type="radio" name="src" id="choiceFile" checked /><input type="file" name="commandFile" id="commandFile" size="40" /><br />
-	<input type="radio" name="src" id="choiceService" /><label for="choiceService">http://wycliffe-services.net/</label>
+	<input type="radio" name="choice" id="choiceFile" checked /><input type="file" name="commandFile" id="commandFile" size="40" /><br />
+	<input type="radio" name="choice" id="choiceService" /><label for="choiceService">http://wycliffe-services.net/</label>
 	<select name="service" id="service" class="form-select">
 		<?php
 			foreach (getOptions() as $option) {
@@ -91,7 +91,7 @@ button {
 		?>
 	</select>
 	<label for="choiceService">/tests/*.csv</label><br />
-	<input type="radio" name="src" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label>
+	<input type="radio" name="choice" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label>
 	<div class="error" id="error"></div>
 </div>
 <div id="uploadFiles">

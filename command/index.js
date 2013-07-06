@@ -9,7 +9,7 @@ $(document).ready(function() {
 
 function preselectRadio() {
 	var service = urlParam("service");
-	if (service == '' || $('#text').val() != '') { 
+	if (service == undefined || $('#text').val() != '') { 
 		selectRadio('choiceText');
 		return;
 	}
@@ -33,15 +33,15 @@ function addSubmitHandler() {
 		$('#spinner').css('display', 'inline-block');
 
 		var data = new FormData();
-		switch ($('input[name=src]:checked', '#theForm').attr('id')) {
+		switch ($('input[name=choice]:checked', '#theForm').attr('id')) {
 		case 'choiceFile':
-			data.append('commandFile', document.getElementById('commandFile').files[0]);
+			data.append('src', document.getElementById('commandFile').files[0]);
 			break;
 		case 'choiceService':
-			data.append('service', $('#service').val());
+			data.append('src', $('#service').val());
 			break;
 		case 'choiceText':
-			data.append('commands', $('#text').val());
+			data.append('src', $('#text').val());
 			break;
 		}
 		for (i = 1; i <= 4; i++) {

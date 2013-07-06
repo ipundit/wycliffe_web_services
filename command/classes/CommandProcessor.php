@@ -10,50 +10,34 @@ define("IGNORE", "__IGNORE__");
 
 class CommandProcessor {
 	static public function process(&$msg) {
+		$src = isset($_POST['src']) ? trim($_POST['src']) : '';
+		
 		if (count($_FILES) > 0) {
-			if (array_key_exists ('commandFile', $_FILES)) { $commandFile = $_FILES['commandFile']; }
-		}
-		
-		$filters = array(
-		  "service"=>FILTER_SANITIZE_STRING,
-		  "commands"=>FILTER_UNSAFE_RAW,
-		);
-		$row = filter_input_array(INPUT_POST, $filters);
-		if (isset($row)) {
-			foreach ($row as $key => $value) {
-				if ($value == '') { unset($row[$key]); }
-			}
-		}
-		
-		switch (count($row)) {
-		case 0:
-			if (!isset($commandFile)) {
-				$msg = 'No parameters passed';
-				return false;
-			}
-			return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $msg);
-		case 1:
-			if (isset($commandFile)) {
-				$msg = 'Send a file or service | commands';
-				return false;
-			}
-			if (isset($row['service'])) {
-				$dir = '/var/www/' . $row['service'] . '/tests/';
-				if (!file_exists($dir)) {
-					$msg = 'Web service "' . $row['service'] . '" does not exist';
+			if (array_key_exists('src', $_FILES)) {
+				if ($src != '') {
+					$msg = 'Cannot have more than one src of commands';
 					return false;
 				}
-				return CommandProcessor::processService($dir, $msg);
-			} else if (isset($row['commands'])) {
-				return CommandProcessor::processCommands($row['commands'], $msg);
-			} else {
-				$msg = 'Unrecognized parameter';
-				return false;
+				$commandFile = $_FILES['src'];
+				return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $msg);
 			}
-		default:
-			$msg = 'Send one of service | commands';
+		}
+
+		if ($src == '') {
+			$msg = 'No src of commands';
 			return false;
 		}
+
+		if (preg_match('/\t/', $src)) {
+			return CommandProcessor::processCommands($src, $msg);
+		}
+
+		$dir = '/var/www/' . $src . '/tests/';
+		if (!file_exists($dir)) {
+			$msg = 'Web service "' . $src . '" does not exist';
+			return false;
+		}
+		return CommandProcessor::processService($dir, $msg);
 	}
 
 	static private function processService($path, &$msg) {

@@ -24,11 +24,16 @@ to	test@test.com, <Tester test@test.com>
 EXPECTS	invalid to
 
 URL	http://wycliffe-services.net/email/webservice.php
+to	Tester <test@test.com>, test@test.com
+simulate	1
+EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => Tester <test@test.com>, test@test.com [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
+
+URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester <test@test.com>
 simulate	1
 EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com, Tester <test@test.com> [Cc] => [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
 
-# fromEmail testing
+# sender testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 sender	test@test.com
@@ -82,6 +87,12 @@ EXPECTS	invalid cc
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
+cc	Tester <test@test.com>, test@test.com
+simulate	1
+EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => Tester <test@test.com>, test@test.com [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
 cc	test@test.com, Tester <test@test.com>
 simulate	1
 EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => test@test.com, Tester <test@test.com> [Bcc] => [Reply-To] => [Return-Path] => [Subject] => )
@@ -101,6 +112,12 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, <Tester test@test.com>
 EXPECTS	invalid bcc
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+bcc	Tester <test@test.com>, test@test.com
+simulate	1
+EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => [Bcc] => Tester <test@test.com>, test@test.com [Reply-To] => [Return-Path] => [Subject] => )
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com

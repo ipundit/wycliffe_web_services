@@ -145,6 +145,7 @@ class Email
 	private static function validateEmailList($str) {
 		if ($str == '') { return true; }
 		foreach (explode(",", $str) as $email) {
+			$email = trim($email);
 			if (util::removeBefore($email, "<")) {
 				if (!util::removeAfter($email, ">")) { return false; }
 			}

@@ -6,10 +6,12 @@ class WebserviceForeman {
 	private $variables;
 	private $mh;
 	private $lastId;
+	private $simulate;
 	
-	public function __construct() {
+	public function __construct($simulate) {
 		$this->workers = array();
 		$this->variables = array();
+		$this->simulate = $simulate;
 		$this->mh = curl_multi_init();
 	}
     
@@ -26,11 +28,17 @@ class WebserviceForeman {
 		$this->workers[$this->lastId] = $worker;
 		curl_multi_add_handle($this->mh, $this->lastId);
 		
-		$running = 0;
-		curl_multi_exec($this->mh, $running);
+		if (!$this->simulate) {
+			$running = 0;
+			curl_multi_exec($this->mh, $running);
+		}
 	}
 
 	public function run($onlyNeedBlockingTaskToFinish, &$msg) {
+		if ($this->simulate) { 
+			$msg = 'ok';
+			return true;
+		}
 		$ok = true;
 
 		$this->full_curl_multi_exec($still_running); // start requests

@@ -11,36 +11,37 @@ define("IGNORE", "__IGNORE__");
 class CommandProcessor {
 	static public function process(&$msg) {
 		$src = isset($_POST['src']) ? trim($_POST['src']) : '';
-		
+		$simulate = isset($_POST['simulate']) ? trim($_POST['simulate']) == 1 : false;
+
 		if (count($_FILES) > 0) {
 			if (array_key_exists('src', $_FILES)) {
 				if ($src != '') {
-					$msg = 'Cannot have more than one src of commands';
+					$msg = 'cannot have more than one src of commands';
 					return false;
 				}
 				$commandFile = $_FILES['src'];
-				return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $msg);
+				return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $simulate, $msg);
 			}
 		}
 
 		if ($src == '') {
-			$msg = 'No src of commands';
+			$msg = 'src parameter must be set';
 			return false;
 		}
 
 		if (preg_match('/\t/', $src)) {
-			return CommandProcessor::processCommands($src, $msg);
+			return CommandProcessor::processCommands($src, $simulate, $msg);
 		}
 
 		$dir = '/var/www/' . $src . '/tests/';
 		if (!file_exists($dir)) {
-			$msg = 'Web service "' . $src . '" does not exist';
+			$msg = 'web service ' . $src . ' does not exist';
 			return false;
 		}
-		return CommandProcessor::processService($dir, $msg);
+		return CommandProcessor::processService($dir, $simulate, $msg);
 	}
 
-	static private function processService($path, &$msg) {
+	static private function processService($path, $simulate, &$msg) {
 		$dir = new DirectoryIterator($path);
 		foreach ($dir as $fileInfo) {
 			if ($fileInfo->isFile()) {
@@ -59,14 +60,16 @@ class CommandProcessor {
 				$file = $fileInfo->getFilename();
 				
 				if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
-					if (!CommandProcessor::processFile($file, $path . $file, $msg)) { return false; }
+					if (!CommandProcessor::processFile($file, $path . $file, $simulate, $msg)) { return false; }
 				}
 			}
 		}
+	
+		if ($simulate) { $msg = 'ok'; }
 		return true;
 	}
 
-	static private function processFile($name, $path, &$msg) {
+	static private function processFile($name, $path, $simulate, &$msg) {
 		if (!filter_var($name, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
 			$msg = "Invalid file name";
 			return false;
@@ -76,12 +79,12 @@ class CommandProcessor {
 			return false;
 		}	
 		
-		if (CommandProcessor::processCommands(file_get_contents($path), $msg)) { return true; }
+		if (CommandProcessor::processCommands(file_get_contents($path), $simulate, $msg)) { return true; }
 		$msg = $name . ': ' . $msg;
 		return false;
 	}
 
-	static private function processCommands($str, &$msg) {
+	static private function processCommands($str, $simulate, &$msg) {
 		$fileNames = array('_file1','_file2','_file3','_file4');
 		foreach ($_FILES as $key => $value) {
 			if (in_array($key, $fileNames)) {
@@ -104,7 +107,7 @@ class CommandProcessor {
 		$expects = IGNORE;
 		$result = IGNORE;
 		$asciiTab = 9;
-		$foreman = new WebserviceForeman();
+		$foreman = new WebserviceForeman($simulate);
 		
 		foreach ($lines as $line) {
 			$lineCount++;
@@ -132,7 +135,7 @@ class CommandProcessor {
 				continue;
 			}
 
-			$arr = explode(chr($asciiTab), $line);
+			$arr = explode(chr($asciiTab), $line, 2);
 			if (!preg_match('/^[\w|\d]+$/', $arr[0])) {
 				$msg = "line " . $lineCount . ': ' . $arr[0] . ' is an invalid parameter';
 				return false;
@@ -184,7 +187,7 @@ class CommandProcessor {
 			}
 			$params[$arr[0]] = $arr[1];
 		}
-
+		
 		$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
 		return $foreman->run(false, $msg);
 	}

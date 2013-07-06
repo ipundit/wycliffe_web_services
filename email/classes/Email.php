@@ -61,7 +61,7 @@ class Email
 			}
 		} else {
 			if (isset($_FILES["to"])) {
-				$msg = "Cannot have two sources of to";
+				$msg = "cannot have more than one source of to";
 				return false;
 			}
 			if (!Email::validateEmailList($row["to"])) {

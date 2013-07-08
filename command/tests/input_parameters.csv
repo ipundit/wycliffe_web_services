@@ -1,0 +1,100 @@
+# src testing		
+URL	http://wycliffe-services.net/command/webservice.php	
+EXPECTS	src parameter must be set	
+		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	csvt	
+EXPECTS	web service csvt does not exist	
+		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	csv	
+simulate	1	
+EXPECTS	ok	
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	command	
+simulate	1	
+EXPECTS	ok	
+		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	email	
+simulate	1	
+EXPECTS	ok	
+		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	payments	
+simulate	1	
+EXPECTS	ok	
+		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	sms	
+simulate	1	
+EXPECTS	ok	
+		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	URL	http://wycliffe-services.net/command/webservice.php
+simulate	1	
+EXPECTS	ok	
+
+# processCommands testing		
+URL	http://wycliffe-services.net/command/webservice.php	
+src	URLd	http://wycliffe-services.net/command/webservice.php
+EXPECTS	line 1: must start with URL
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+noTab q"
+EXPECTS	line 3: noTab q is an invalid parameter
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+RESULT	$test
+EXPECTS	ok"
+EXPECTS	line 4: Cannot have EXPECTS after RESULT
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+RESULT	test"
+EXPECTS	line 3: RESULT must start with a $
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+EXPECTS	ok
+param	test"
+EXPECTS	line 4: Cannot have parameters after EXPECTS
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+RESULT	$test
+param	test"
+EXPECTS	line 4: Cannot have parameters after RESULT
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	repeat
+src	repeat"
+EXPECTS	line 3: src already exists
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+attach	_file1"	
+EXPECTS	line 3: _file1 was not uploaded
+
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+_file2	readme.csv
+simulate	1"
+EXPECTS	ok
+
+# multi-line quote parsing test
+URL	http://wycliffe-services.net/command/webservice.php	
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	a""sdf""zz"""
+EXPECTS	web service a"sdf"zz" does not exist

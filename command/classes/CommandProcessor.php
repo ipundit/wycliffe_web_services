@@ -7,6 +7,7 @@ define("PARAMS", 1);
 define("EXPECTS", 2);
 define("RESULT", 3);
 define("IGNORE", "__IGNORE__");
+define("ASCII_TAB", 9);
 
 class CommandProcessor {
 	static public function process(&$msg) {
@@ -55,6 +56,7 @@ class CommandProcessor {
 				}
 			}
 		}
+		
 		foreach ($dir as $fileInfo) {
 			if ($fileInfo->isFile()) {
 				$file = $fileInfo->getFilename();
@@ -95,8 +97,7 @@ class CommandProcessor {
 		}
 
 		$str = str_replace("\r\n", "\n", $str);
-		$lines = explode("\n", $str);
-
+		$lines = CommandProcessor::parseCSV($str);
 		$state = START;
 
 		$lineCount = 0;
@@ -106,17 +107,17 @@ class CommandProcessor {
 
 		$expects = IGNORE;
 		$result = IGNORE;
-		$asciiTab = 9;
 		$foreman = new WebserviceForeman($simulate);
-		
+
 		foreach ($lines as $line) {
 			$lineCount++;
 			util::removeAfter($line, '#');
+			
 			$line = trim($line);
 			
 			if ($line == '') { continue; }
 			if ($state == START && !CommandProcessor::startsWithURL($line)) {
-				$msg = "line " . $lineCount . ": must start with URL<tab>";
+				$msg = "line " . $lineCount . ": must start with URL";
 				return false;
 			}
 			if (CommandProcessor::startsWithURL($line)) {
@@ -126,7 +127,7 @@ class CommandProcessor {
 				}
 
 				$url = rtrim(substr($line, 4)); // 4 = length of URL\t
-				util::removeAfter($url, $asciiTab);
+				util::removeAfter($url, ASCII_TAB);
 				
 				$params = array();
 				$expects = IGNORE;
@@ -135,7 +136,7 @@ class CommandProcessor {
 				continue;
 			}
 
-			$arr = explode(chr($asciiTab), $line, 2);
+			$arr = explode(chr(ASCII_TAB), $line, 2);
 			if (!preg_match('/^[\w|\d]+$/', $arr[0])) {
 				$msg = "line " . $lineCount . ': ' . $arr[0] . ' is an invalid parameter';
 				return false;
@@ -194,6 +195,93 @@ class CommandProcessor {
 
 	static private function startsWithURL($str) {
 		return preg_match("/^URL\t/", $str);
+	}
+
+	static function parseCSV($data, $delimiter = '\t', $enclosure = '"', $newline = "\n"){
+		$pos = $last_pos = -1;
+		$end = strlen($data);
+		$row = 0;
+		$quote_open = false;
+		$trim_quote = false;
+
+		$replace_char = $delimiter == '\t' ? chr(ASCII_TAB) : $delimiter;
+		$return = array();
+
+		// Create a continuous loop
+		for ($i = -1;; ++$i){
+			++$pos;
+			// Get the positions
+			$comma_pos = strpos($data, $delimiter, $pos);
+			$quote_pos = strpos($data, $enclosure, $pos);
+			$newline_pos = strpos($data, $newline, $pos);
+
+			// Which one comes first?
+			$pos = min(($comma_pos === false) ? $end : $comma_pos, ($quote_pos === false) ? $end : $quote_pos, ($newline_pos === false) ? $end : $newline_pos);
+
+			// Cache it
+			$char = (isset($data[$pos])) ? $data[$pos] : null;
+			$done = ($pos == $end);
+
+			// It it a special character?
+			if ($done || $char == $delimiter || $char == $newline){
+				// Ignore it as we're still in a quote
+				if ($quote_open && !$done){
+					continue;
+				}
+
+				$length = $pos - ++$last_pos;
+
+				// Get all the contents of this column
+				if ($length > 0) {
+					$return[$row] = substr($data, $last_pos, $length);
+					$return[$row] = str_replace($enclosure . $enclosure, $enclosure, $return[$row]); // Remove double quotes
+					$return[$row] = str_replace($replace_char . $enclosure, $replace_char, $return[$row]); // Remove starting quote
+
+					if ($trim_quote) { // Remove trailing quote
+						$return[$row] = substr(trim($return[$row]), 0, -1);
+					}
+				} else {
+					$return[$row] = '';
+				}
+				
+				// And we're done
+				if ($done) {
+					break;
+				}
+
+				// Save the last position
+				$last_pos = $pos;
+
+				// Next row?
+				if ($char == $newline) {
+					++$row;
+				}
+
+				$trim_quote = false;
+			}
+			// Our quote?
+			else if ($char == $enclosure) {
+				// Toggle it
+				if ($quote_open == false){
+					// It's an opening quote
+					$quote_open = true;
+					$trim_quote = false;
+
+					// Trim this opening quote?
+					if ($last_pos + 1 == $pos){
+						++$last_pos;
+					}
+				}
+				else {
+					// It's a closing quote
+					$quote_open = false;
+
+					// Trim the last quote?
+					$trim_quote = true;
+				}
+			}
+		}
+		return $return;
 	}
 }
 ?>

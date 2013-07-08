@@ -41,6 +41,12 @@ class util {
 		$str = ltrim(substr($str, $pos + strlen($prefix)));
 		return true;
 	}
+
+	static public function startsWith($haystack, $needle) {
+		$length = strlen($needle);
+		if ($length == 0) { return true; }
+		return (substr($haystack, 0, $length) === $needle);
+	}
 	
 	static public function endsWith($haystack, $needle) {
 		$length = strlen($needle);

@@ -156,7 +156,6 @@ class Email
 	}
 
 	private static function getFactory($from) {
-		
 		if (preg_match('/.+@[' . implode(Email::jaarsDomains(), '|') . ']/', $from)) {
 			require_once('email_constants.php');
 			$server = 'smtp';

@@ -3,12 +3,11 @@
 # email = wycliffe.web.services.test.2@gmail.com password = asdfqwer12
 
 URL	http://wycliffe-services.net/email/webservice.php
-to	mylihh@gmail.com
-cc	mylihh@gmail.com
-bcc	Test email account <mylihh@gmail.com>
-from	michael_hu@wycliffe.net
-fromName	Regression Tester
-subject	Email regression test2
+to	wycliffe.web.services.test.1@gmail.com
+cc	wycliffe.web.services.test.1@gmail.com
+bcc	wycliffe.web.services.test.2@gmail.com
+fromName	Email Tester
+subject	Email regression test for wycliffe-services.net based account
 body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself in the to and cc lines, and wycliffe.web.services.test.2@gmail.com gets the bcc. Reply-To field must also be set to help@wycliffe-services.net
 replyTo	help@wycliffe-services.net
 attach1	_file1
@@ -21,7 +20,7 @@ from	test@jaars.org
 cc	wycliffe.web.services.test.1@gmail.com
 bcc	Wycliffe Web Services Test 2 <wycliffe.web.services.test.2@gmail.com>
 fromName	Email tester
-subject	Email regression test
+subject	Email regression test for Jaars based account
 body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself in the to and cc lines, and wycliffe.web.services.test.2@gmail.com gets the bcc
 attach1	_file1
 attach2	_file2

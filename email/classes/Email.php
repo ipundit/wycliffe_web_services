@@ -14,7 +14,7 @@ class Email
 		
 		if ($row["to"] == '') {
 		} else {
-			if (!Email::send($msg, $row["fromName"], $row["sender"], $row["to"], $row['subject'], 
+			if (!Email::send($msg, $row["fromName"], $row["from"], $row["to"], $row['subject'], 
 			$row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, $row['simulate'] == 1)) {
 				return false;
 			}
@@ -39,7 +39,7 @@ class Email
 	private static function validateInput(&$msg) {
 		$filters = array(
 		  "to"=>FILTER_UNSAFE_RAW,
-		  "sender"=>FILTER_SANITIZE_EMAIL,
+		  "from"=>FILTER_SANITIZE_EMAIL,
 		  "fromName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "replyTo"=>FILTER_SANITIZE_EMAIL,
 		  "subject"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
@@ -70,13 +70,13 @@ class Email
 			}
 		}
 
-		if ($row["sender"] == '') {
-			$row["sender"] = "no_reply@wycliffe-services.net";
-		} else if (!in_array($row['sender'], array(
+		if ($row["from"] == '') {
+			$row["from"] = "no_reply@wycliffe-services.net";
+		} else if (!in_array($row['from'], array(
 			'events@wycliffe-services.net', 'help@wycliffe-services.net',
 			'mailer@wycliffe-services.net', 'no-reply@wycliffe-services.net',
-			'webservice@wycliffe-services.net'))) {
-			$msg = "invalid sender";
+			'webservice@wycliffe-services.net')) && !Email::isJaarsEmail($row['from'])) {
+			$msg = "invalid from";
 			return false;
 		}
 
@@ -95,21 +95,35 @@ class Email
 		return $row;
 	}
 	
-	private static function send(&$msg, $fromName, $sender, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attachments = array(), $simulate) {
-		if ($replyTo != '') {
-			$replyTo = $fromName == '' ? $replyTo : $fromName . ' <' . $replyTo . '>';
+	private static function send(&$msg, $fromName, $from, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attachments = array(), $simulate) {
+		if (Email::isJaarsEmail($from)) {
+			$sender = 'wycliffe-services-smtp@wycliffe.net';
+			if ($replyTo != '') {
+				$msg = "replyTo not supported for Jaars emails";
+				return false;
+			}
+			$returnPath = $from;
+		} else {
+			$sender = $from;
+			$returnPath = $replyTo;
+			if ($replyTo != '' && $fromName != '') {
+				$replyTo = $fromName . ' <' . $replyTo . '>';
+			}
+			if ($fromName != '') { $fromName .= ' via Wycliffe Web Services'; }
 		}
 		
 		$headers = array(
 			'Sender' => $sender,
-			'From' => $fromName == '' ? $sender : $fromName . ' via Wycliffe Web Services <' . $sender . '>',
+			'From' => $fromName == '' ? $from : $fromName . ' <' . $from . '>',
 			'To'   => $to,
 			'Cc'   => $cc,
-			'Bcc'  => $bcc,
 			'Reply-To' => $replyTo,
-			'Return-Path' => $replyTo,
+			'Return-Path' => $returnPath, // SMTP gives 501 error if this field is set to $fromName <$replyTo>
 			'Subject' => $subject,
 		);
+		foreach ($headers as $key => $value) {
+			if ($value == '') { unset($headers[$key]); }
+		}
 
 		if ($simulate) {
 			$msg = trim(preg_replace('/\s+/', ' ', print_r($headers, true)));
@@ -126,14 +140,48 @@ class Email
 		}
 
         $body = $mime->get();
-
         $headers = $mime->headers($headers);
-		$params['sendmail_path'] = '/usr/lib/sendmail';
 
-        $mail =& Mail::factory('sendmail', $params);
-		return $mail->send($to, $headers, $body);
+		$mail = Email::getFactory($from);
+		
+		if ($cc != '') { $to = $to . ', ' . $cc; }
+		if ($bcc != '') { $to = $to . ', ' . $bcc; }
+		$mail = $mail->send($to, $headers, $body);
+		
+		if (PEAR::isError($mail)) {
+			$msg = $mail->getMessage();
+			return false;
+		}
+		return true;
 	}
 
+	private static function getFactory($from) {
+		
+		if (preg_match('/.+@[' . implode(Email::jaarsDomains(), '|') . ']/', $from)) {
+			require_once('email_constants.php');
+			$server = 'smtp';
+			$params = array(
+				'host' => 'mail.jaars.org',
+				'auth' => true,
+				'username' => JAARS_USERNAME,
+				'password' => JAARS_PASSWORD,
+			);
+		} else {
+			$server = 'sendmail';
+			$params['sendmail_path'] = '/usr/lib/sendmail';
+		}
+		return Mail::factory($server, $params);
+	}
+	
+	private static function jaarsDomains() {
+		return array('sil.org', 'wycliffe.net', 'wycliffe.org', 'jaars.org', 'kastanet.org');
+	}
+
+	private static function isJaarsEmail($email) {
+		$arr = explode('@', $email, 2);
+		return in_array($arr[1], Email::jaarsDomains());
+	}
+	
 	private static function validateEmailList($str) {
 		if ($str == '') { return true; }
 		foreach (explode(",", $str) as $email) {

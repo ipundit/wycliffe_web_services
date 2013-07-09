@@ -1,13 +1,29 @@
-# Send one email
+# Login to gmail.com with these credentials to see if the emails were sent
+# email = wycliffe.web.services.test.1@gmail.com password = asdfqwer12
+# email = wycliffe.web.services.test.2@gmail.com password = asdfqwer12
+
 URL	http://wycliffe-services.net/email/webservice.php
-to	michael_hu@wycliffe.net
-cc	Michael Hu <michael_hu@wycliffe.net>, michael_hu@wycliffe.net
-bcc	Michael Hu <michael_hu@wycliffe.net>
-sender	webservice@wycliffe-services.net
+to	mylihh@gmail.com
+cc	mylihh@gmail.com
+bcc	Test email account <mylihh@gmail.com>
+from	michael_hu@wycliffe.net
 fromName	Regression Tester
-subject	Email regression test
-body	Passes if you receive 4 copies of this email with two attachments and Reply-To = help@wycliffe-services.net
+subject	Email regression test2
+body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself in the to and cc lines, and wycliffe.web.services.test.2@gmail.com gets the bcc. Reply-To field must also be set to help@wycliffe-services.net
 replyTo	help@wycliffe-services.net
 attach1	_file1
 attach2	_file2
 EXPECTS	ok
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	wycliffe.web.services.test.1@gmail.com
+from	test@jaars.org
+cc	wycliffe.web.services.test.1@gmail.com
+bcc	Wycliffe Web Services Test 2 <wycliffe.web.services.test.2@gmail.com>
+fromName	Email tester
+subject	Email regression test
+body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself in the to and cc lines, and wycliffe.web.services.test.2@gmail.com gets the bcc
+attach1	_file1
+attach2	_file2
+EXPECTS	ok
+

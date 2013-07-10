@@ -1,7 +1,7 @@
-# to testing
+# to testing	
 URL	http://wycliffe-services.net/email/webservice.php
 EXPECTS	to parameter must be set
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester test@test.com>
 EXPECTS	invalid to
@@ -13,74 +13,74 @@ EXPECTS	invalid to
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, <Tester test@test.com>
 EXPECTS	invalid to
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	Tester <test@test.com>, test@test.com
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => Tester <test@test.com>, test@test.com )
-
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => Tester <test@test.com>, test@test.com )
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester <test@test.com>
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com, Tester <test@test.com> )
-
-# from testing
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com, Tester <test@test.com> )
+	
+# from testing	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	test@test.com
 EXPECTS	invalid from
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	events@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => events@wycliffe-services.net [From] => events@wycliffe-services.net [To] => test@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	help@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => help@wycliffe-services.net [From] => help@wycliffe-services.net [To] => test@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	mailer@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => mailer@wycliffe-services.net [From] => mailer@wycliffe-services.net [To] => test@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	no-reply@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	webservice@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => webservice@wycliffe-services.net [From] => webservice@wycliffe-services.net [To] => test@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	webservice@wycliffe-services.net
 fromName	Test
 simulate	1
 EXPECTS	Array ( [Sender] => webservice@wycliffe-services.net [From] => Test via Wycliffe Web Services <webservice@wycliffe-services.net> [To] => test@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	webservice@wycliffe-services.net
 replyTo	reply-to@test.com
 simulate	1
 EXPECTS	Array ( [Sender] => webservice@wycliffe-services.net [From] => webservice@wycliffe-services.net [To] => test@test.com [Reply-To] => reply-to@test.com [Return-Path] => reply-to@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	webservice@wycliffe-services.net
 replyTo	reply-to@test.com
 simulate	1
 EXPECTS	Array ( [Sender] => webservice@wycliffe-services.net [From] => webservice@wycliffe-services.net [To] => test@test.com [Reply-To] => reply-to@test.com [Return-Path] => reply-to@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	webservice@wycliffe-services.net
@@ -88,15 +88,15 @@ fromName	Test
 replyTo	reply-to@test.com
 simulate	1
 EXPECTS	Array ( [Sender] => webservice@wycliffe-services.net [From] => Test via Wycliffe Web Services <webservice@wycliffe-services.net> [To] => test@test.com [Reply-To] => Test <reply-to@test.com> [Return-Path] => reply-to@test.com )
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	test@jaars.org
 subject	Test
 simulate	1
 EXPECTS	Array ( [Sender] => wycliffe-services-smtp@wycliffe.net [From] => test@jaars.org [To] => test@test.com [Return-Path] => test@jaars.org [Subject] => Test )
-
-# cc testing
+	
+# cc testing	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, Tester test@test.com>
@@ -111,20 +111,20 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, <Tester test@test.com>
 EXPECTS	invalid cc
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	Tester <test@test.com>, test@test.com
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => Tester <test@test.com>, test@test.com )
-
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com [Cc] => Tester <test@test.com>, test@test.com )
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, Tester <test@test.com>
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com [Cc] => test@test.com, Tester <test@test.com> )
-
-# bcc testing
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com [Cc] => test@test.com, Tester <test@test.com> )
+	
+# bcc testing	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester test@test.com>
@@ -139,20 +139,20 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, <Tester test@test.com>
 EXPECTS	invalid bcc
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	Tester <test@test.com>, test@test.com
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com )
-
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com )
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester <test@test.com>
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com )
-
-# attach testing
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com )
+	
+# attach testing	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 attach1	_file1
@@ -160,8 +160,8 @@ attach2	_file1
 attach3	_file1
 attach4	_file1
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com ) Number of attachments: 4
-
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com ) Number of attachments: 4
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 attach5	_file1
@@ -169,10 +169,42 @@ attach6	_file1
 attach7	_file1
 attach8	_file1
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com ) Number of attachments: 4
-
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com ) Number of attachments: 4
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 attach9	_file1
 simulate	1
-EXPECTS	Array ( [Sender] => no_reply@wycliffe-services.net [From] => no_reply@wycliffe-services.net [To] => test@test.com ) Number of attachments: 1
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com ) Number of attachments: 1
+	
+# mailing list testing	
+URL	http://wycliffe-services.net/email/webservice.php
+to	_file3
+EXPECTS	first line of to file must have $email column
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	_file4
+EXPECTS	mailing list line 6: invalid to
+	
+URL	http://wycliffe-services.net/email/webservice.php
+from	$from
+to	_file4
+EXPECTS	mailing list line 3: invalid from
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	_file2
+simulate	1
+EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [4] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [5] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) )
+	
+# mailing list tags testing	
+URL	http://wycliffe-services.net/email/webservice.php
+to	_file2
+tags	filter to null set
+simulate	1
+EXPECTS	Array ( )
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	_file2
+tags	WPO, WMO wLP
+simulate	1
+EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => WPO, WMO wLP [simulate] => 1 ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => WPO, WMO wLP [simulate] => 1 ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => WPO, WMO wLP [simulate] => 1 ) )

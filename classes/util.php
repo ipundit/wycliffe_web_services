@@ -1,6 +1,7 @@
 <?php
 require_once 'Mail.php';
 require_once 'Mail/mime.php';
+define("_parseCSV_ASCII_TAB", 9);
 
 class util {
 	static public function curl_init($url, $params) {
@@ -35,7 +36,7 @@ class util {
 		$quote_open = false;
 		$trim_quote = false;
 
-		$replace_char = $delimiter == '\t' ? chr(ASCII_TAB) : $delimiter;
+		$replace_char = $delimiter == '\t' ? chr(_parseCSV_ASCII_TAB) : $delimiter;
 		$return = array();
 
 		// Create a continuous loop
@@ -69,7 +70,12 @@ class util {
 					$return[$row] = str_replace($replace_char . $enclosure, $replace_char, $return[$row]); // Remove starting quote
 
 					if ($trim_quote) { // Remove trailing quote
-						$return[$row] = substr(trim($return[$row]), 0, -1);
+						$index = strpos($return[$row], $enclosure . $replace_char);
+						if ($index === false) {
+							$return[$row] = substr(trim($return[$row]), 0, -1);
+						} else {
+							$return[$row] = substr($return[$row], 0, $index) . substr($return[$row], $index + 1);
+						}
 					}
 				} else {
 					$return[$row] = '';
@@ -206,7 +212,10 @@ class util {
 		return true;
 	}
 	public static function isJaarsEmail($email) {
-		$arr = explode('@', $email, 2);
+		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { return false; }
+
+		$arr = explode('@', $email);
+		if (count($arr) != 2) { return false; }
 		return in_array($arr[1], util::jaarsDomains());
 	}	
 

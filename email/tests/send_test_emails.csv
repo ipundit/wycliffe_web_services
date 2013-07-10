@@ -1,7 +1,7 @@
-# Login to gmail.com with these credentials to see if the emails were sent
-# email = wycliffe.web.services.test.1@gmail.com password = asdfqwer12
-# email = wycliffe.web.services.test.2@gmail.com password = asdfqwer12
-
+# Login to gmail.com with these credentials to see if the emails were sent	
+# email = wycliffe.web.services.test.1@gmail.com password = asdfqwer12	
+# email = wycliffe.web.services.test.2@gmail.com password = asdfqwer12	
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	wycliffe.web.services.test.1@gmail.com
 cc	wycliffe.web.services.test.1@gmail.com
@@ -13,7 +13,7 @@ replyTo	help@wycliffe-services.net
 attach1	_file1
 attach2	_file2
 EXPECTS	ok
-
+	
 URL	http://wycliffe-services.net/email/webservice.php
 to	wycliffe.web.services.test.1@gmail.com
 from	test@jaars.org
@@ -25,4 +25,17 @@ body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself i
 attach1	_file1
 attach2	_file2
 EXPECTS	ok
-
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	_file2
+from	test@jaars.org
+fromName	Email file tester
+subject	Email file regression test
+body	"Dear $firstName,
+Name: $firstName $lastName
+Organization: $org
+Tag line: $tagLine
+Phone number: $phoneNumber
+Not in mailingLIst: $youCouldDefineThisColumnInMailingListFile"
+tags	WMO wLP, WPO
+EXPECTS	ok

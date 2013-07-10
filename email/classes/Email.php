@@ -20,15 +20,15 @@ class Email
 			}
 			
 			foreach ($lines as $line) {
-				if (!util::sendEmail($msg, $line["fromName"], $line["from"], $line['$email'], $line['subject'], 
+				if (!util::sendEmail($msg, $line['fromName'], $line['from'], $line['to'], $line['subject'], 
 									 $line['body'], $line['cc'], $line['bcc'], $line['replyTo'], $files,
 									 $line['simulate'] == 1)) {
 					if ($line['simulate'] == 1) {
 						return false;
 					}
 					util::sendEmail($msg, 'Wycliffe Web Services mailier', 'no-reply@wycliffe-services.net', 
-									$line["from"], 'This email failed: ' . $line['subject'], 
-									'Sending email to ' . $line['$email'] . ' failed with message:<br />' . $msg);
+									$line['from'], 'This email failed: ' . $line['subject'], 
+									'Sending email to ' . $line['to'] . ' failed with message:<br />' . $msg);
 					$msg = '';
 				}
 			}
@@ -49,9 +49,8 @@ class Email
 		unset($_FILES["to"]);
 		
 		$variablesLookup = array();
-		
 		if (!Email::parseLines($csvLines, $variablesLookup, $msg)) { return false; }
-		
+
 		$filters = Email::getTags($row['tags']);
 		foreach ($row as $key => &$value) {
 			$value = array('hasVariable'=>strpos($value, '$') !== false, 'template'=>$value);
@@ -83,7 +82,6 @@ class Email
 				return false;
 			}
 		}
-		
 		return $lines;
 	}
 	
@@ -140,7 +138,6 @@ class Email
 			}
 			$i++;
 		}
-
 		return true;
 	}
 

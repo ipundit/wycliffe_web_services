@@ -1,5 +1,4 @@
 <?php 
-require_once 'classes/Email.php';
 require_once 'classes/Organization.php';
 require_once 'classes/Purchase.php';
 require_once 'classes/Record.php';
@@ -32,6 +31,7 @@ class User extends Record
 		  "address2"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "postalCode"=>FILTER_SANITIZE_STRING,
 		  "phone"=>FILTER_SANITIZE_STRING,
+		  "simulate"=>FILTER_SANITIZE_NUMBER_INT,
 		);
 		$row = filter_var_array($data, $filters);
 
@@ -39,6 +39,7 @@ class User extends Record
 			$msg = "Invalid input";
 			return false;
 		}
+		$simulate = $row['simulate'] == 1;
 		Record::initialize($row, false);
 		
 		$purchase = new Purchase();
@@ -53,13 +54,12 @@ class User extends Record
 			return false;
 		}
 		
-		if (!$this->makePurchaseImpl($org, $purchase, $msg)) { return false; }
-		$this->emailPurchaseReceipt($org, $purchase->amount(), $msg);
-		return true;
+		if (!$this->makePurchaseImpl($org, $purchase, $simulate, $msg)) { return false; }
+		return $this->emailPurchaseReceipt($org, $purchase->amount(), $msg, $simulate, $msg);
 	}
 
-	private function makePurchaseImpl($org, $purchase, &$msg) {
-		if (!$purchase->makePurchase($org, $this, $msg)) { 
+	private function makePurchaseImpl($org, $purchase, $simulate, &$msg) {
+		if (!$purchase->makePurchase($org, $this, $simulate, $msg)) { 
 			if (substr($msg, 0, 23) == 'Could not resolve host:') {
 				$msg = "Could not connect";
 			}
@@ -68,36 +68,43 @@ class User extends Record
 		return true;
 	}
 
-	private function emailPurchaseReceipt($org, $amount, $orderNumber) {
+	private function emailPurchaseReceipt($org, $amount, $orderNumber, $simulate, &$msg) {
 		// fixme: localize this
-		$body = "Thank you for donating to " . $org->name() . ".<h1>Your donation information</h1>
-		Name: " . $this->name() .
-		"<br />Email: " . $this->emailAddress() .
-		"<br />Donation tracking number: " . $orderNumber .
-		"<br />Amount: $" . $amount . " " . $org->currency() .
-		"<br />Date: " . date('F j, Y g:i a') . ' UTC';
+		$body = array(
+			"Dear " . $this->name(),
+			'',
+			'Thank you for donating to ' . $org->name() . '.<h1>Your donation information</h1>Name: ' . $this->name(),
+			'Email: ' . $this->emailAddress(),
+			'Donation tracking number: ' . $orderNumber,
+			'Amount: $' . $amount . ' ' . $org->currency(),
+			'Date: ' . date('F j, Y g:i a') . ' UTC<h1>Your contact information</h1>Phone number: ' . $this->phone(),
+			'Address: ' . $this->address(),
+			'Address line 2: ' . $this->address2(),
+			'Postal code: ' . $this->postalCode(),
+		);
 
-		$body = $body . "<h1>Your contact information</h1>
-		Phone number: " . $this->phone() .
-		"<br />Address: " . $this->address() .
-		"<br />Address line 2: " . $this->address2() .
-		"<br />Postal code: " . $this->postalCode();
+		if ($this->city() != '--') { $body[] = "City: " . $this->city(); }
+		if ($this->state() != '--') { $body[] = "State: " . $this->state(); }
 		
-		if ($this->city() != '--') { $body .= "<br />City: " . $this->city(); }
-		if ($this->state() != '--') { $body .= "<br />State: " . $this->state(); }
-		
-		$body .= "<br />Country: " . $this->country();
+		$body[] = 'Country: ' . $this->country();
+		$body[] = '';
+		$body[] = 'Regards,';
+		$body[] = 'Wycliffe payment services';
+		$body = implode(PHP_EOL, $body);
 		
 		$subject = $org->test() ? "TESTING: " : "";
 		$subject = $subject . $org->name() . " donation receipt";
 
-		$this->email($this->name(), $this->emailAddress(), $org->notify_emails(), $subject, $body);
-	}
-	
-	private function email($name, $email, $bcc, $subject, $body) {
-		$signature = 'Regards,\nWycliffe payment services';
-		$mail = new Email();
-		$mail->send("no-reply@wycliffe-services.net", $name, $email, $bcc, $subject, $body, $signature);
+		$to = $this->name() . " <" . $this->emailAddress() .">";
+		
+		$retValue = '';
+		$temp = util::sendEmail($retValue, '', "no-reply@wycliffe-services.net", $to, $subject, $body, '', 
+								$org->notify_emails(), '', array(), $simulate);
+		if ($simulate) { 
+			$msg = $retValue; // Even if sending the email fails in production, let the user know that credit card charge passed
+			return false;
+		}
+		return $temp;
 	}
 
 	public function name() {

@@ -3,7 +3,16 @@ require_once 'classes/User.php';
 
 class JapanCreditBureau
 {
-	public function makePurchase($org, $user, $purchase, &$msg) {
+	public function makePurchase($org, $user, $purchase, $simulate, &$msg) {
+		if ($simulate) {
+			if ($purchase->creditCard() == '3541599999094304') {
+				$msg = $this->declineMessage('05');
+				return false;
+			}
+			$msg = 1234;
+			return true;
+		}
+
 		require_once 'classes/Organization.php';
 		
 		if ($org->test()) {

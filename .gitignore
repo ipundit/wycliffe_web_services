@@ -214,4 +214,4 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-email/email_constants.php
+classes/email_constants.php

@@ -37,6 +37,9 @@ function addDonateClickHandler() {
 		var test = urlParam("test");
 		if (test != 1) { test = 0; }
 		
+		var simulate = urlParam("simulate");
+		if (simulate != 1) { simulate = 0; }
+
 		var country = $('#country').val();
 		var state = (country == 'SG') ? '--' : $('#state').val();
 		var city = (country == 'SG') ? '--' : $('#city').val();
@@ -59,6 +62,7 @@ function addDonateClickHandler() {
 		data.append('year', $('#year').val());
 		data.append('month', $('#month').val());
 		data.append('test', test);
+		data.append('simulate', simulate);
 		data.append('org', g_org);
 		
 		$.ajax({

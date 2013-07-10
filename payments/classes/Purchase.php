@@ -42,7 +42,7 @@ class Purchase extends Record
 		return true;
 	}
 
-	public function makePurchase($org, $user, &$msg) {
+	public function makePurchase($org, $user, $simulate, &$msg) {
 		if ($this->isPayPal()) {
 			$paymentProcessor = new PayPal();
 		} else {
@@ -63,7 +63,7 @@ class Purchase extends Record
 			}
 		}
 
-		if (!$paymentProcessor->makePurchase($org, $user, $this, $msg)) {
+		if (!$paymentProcessor->makePurchase($org, $user, $this, $simulate, $msg)) {
 			// fixme: localize this
 			$msg = "Your credit card was declined: " . $msg;
 			return false;

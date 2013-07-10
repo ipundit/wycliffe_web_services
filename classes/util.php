@@ -216,6 +216,7 @@ class util {
 			$server = 'smtp';
 			$params = array(
 				'host' => 'mail.jaars.org',
+				'port' => 587, // Jaars supports STARTTLS for encrypted connections
 				'auth' => true,
 				'username' => JAARS_USERNAME,
 				'password' => JAARS_PASSWORD,

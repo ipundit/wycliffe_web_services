@@ -11,16 +11,15 @@ $(document).ready(function() {
 	$('#maxRows').click(function() { selectRadio('choiceFile'); });
 	$('#tags').click(function() { selectRadio('choiceFile'); });
 
-//	addValidators();
-//	addSubmitHandler();
+	addValidators();
+	addSubmitHandler();
 	initForm();
 });
 
 function initForm() {
 	var fromName = urlParam("fromName");
 	if (fromName == undefined) { fromName = 'Your name'; }
-	$('#fromNameJAARS').val(fromName);
-	$('#fromNameWWS').val(fromName);
+	$('#fromName').val(fromName);
 
 	var from = urlParam("from");
 	if (from === undefined) {
@@ -89,10 +88,16 @@ function selectRadio(name) {
 
 function addSubmitHandler() {
 	$('button').click(function() {
+		if ($('#fromName').val() == 'Your name') { $('#fromName').val(''); }
+		if ($('#choiceJAARS').prop('checked') && $('#fromEmailJAARS').val() == 'Your JAARS email') { $('#fromEmailJAARS').val(''); }
+		if ($('#choiceWWS').prop('checked') && $('#fromReplyToWWS').val() == 'Your email') { $('#fromReplyToWWS').val(''); }
+		if ($('#choiceEmail').prop('checked') && $('#toEmailText').val() == 'recipient list') { $('#toEmailText').val(''); }
+	
+		$('#spinner').css('display', 'none');
 		$('#error').html('');
 		if (!$("#theForm").valid()) { return; }
 		$('#spinner').css('display', 'inline-block');
-
+return;		
 		var data = new FormData();
 		switch ($('input[name=choice]:checked', '#theForm').attr('id')) {
 		case 'choiceFile':
@@ -132,18 +137,69 @@ function addValidators() {
 	$("#theForm").validate({
 		errorPlacement: function(error, element) {
 			$('#error').html(error.html());
+		},
+		rules:{
+			fromName:{
+				noAngleBrackets: ['From', null]
+			},
+			fromEmailJAARS:{
+				dependentEmail: ['From email', '#choiceJAARS', true]
+			},
+			fromReplyToWWS:{
+				dependentEmail: ['Reply-to', '#choiceWWS', false]
+			},
+			toEmailText:{
+				dependentEmailList: ['To', '#choiceEmail', true]
+			},
+			cc:{
+				dependentEmailList: ['Cc', null, false]
+			},
+			bcc:{
+				dependentEmailList: ['Bcc', null, false]
+			},
+			subject:{
+				noAngleBrackets: ['Subject', null]
+			},
+			tags:{
+				noAngleBrackets: ['Tags', '#choiceFile']
+			},
+			
+		},
+		messages:{
 		}
 	});
+	
+	$.validator.addMethod("radioChecked", function(value, element, param) { 
+		return (param != null && !$(param).prop('checked'));
+	}, "{0} radio must be checked");
 
-	$.validator.addMethod("isCSV", function(value, element, param) {
-		if (!$('#choiceFile').prop('checked')) { return true; }
-		value = value.trim();
-		if (value.length == 0) { return false; }
-		return value.endsWith('.csv');
-	}, translate("Please choose a .csv file"));
-	$("#commandFile").rules("add", {
-		isCSV: true
-	});
+	$.validator.addMethod("noAngleBrackets", function(value, element, params) { 
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		return value.indexOf("<") == -1 && value.indexOf(">") == -1;
+	}, "{0} cannot contain the < or > characters");
+
+	$.validator.addMethod("dependentEmail", function(value, element, params) { 
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		if (params[2] && !$.validator.methods.required.call(this, value, element, params)) { return false; }
+		return $.validator.methods.email.call(this, value, element, params);
+	}, "{0} must be a valid email");
+
+	$.validator.addMethod("dependentEmailList", function(value, element, params) { 
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		if (params[2] && !$.validator.methods.required.call(this, value, element, params)) { return false; }
+		if (value == '') { return true; }
+		
+		// John Doe <test@test.com>, test@test.com
+		var array = value.split(',');
+		for (var i = 0; i < array.length; i++) {
+			var entry = array[i].trim();
+			if (endsWith(entry, '>')) {
+				entry = entry.substring(entry.indexOf("<") + 1).slice(0, -1);
+			}
+			if (!$.validator.methods.email.call({optional:function(){return false;}}, entry, null)) { return false; }
+		}
+		return true;
+	}, "{0} must be a valid, comma separated email list");
 }
 
 function removeBefore(haystack, needle) {
@@ -163,4 +219,7 @@ function getUrlVars() {
         vars[key] = value;
     });
     return vars;
+}
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }

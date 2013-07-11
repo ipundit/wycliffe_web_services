@@ -64,14 +64,14 @@ label.error {
 #fromReplyToWWS, #tags {
 	width: 212px;
 }
-#startEndRow {
+#startMaxRow {
 	display: inline-block;
 	float: right;
 }
 .inlineLabel {
 	margin-left: 15px;
 }
-#startRow, #endRow {
+#startRow, #maxRows {
 	width: 27px;
 }
 #cc, #bcc, #subject, #body {
@@ -123,8 +123,8 @@ button {
 <div class="row">
 	<div class="header"><?php echo t("From") ?>:</div>
 	<div class="cell">
-		<input type="radio" class="radio" name="choiceFrom" id="choiceJAARS" checked /> <input type="text" id="fromNameJAARS" value="Your name" /> <label for="choiceJAARS">&lt;</label> <input type="text" id="fromEmailJAARS" value="Your JAARS email" /> <label for="choiceJAARS">&gt;</label><br />
-		<input type="radio" class="radio" name="choiceFrom" id="choiceWWS" /> <input type="text" id="fromNameWWS" value="Your name" /> <label for="choiceWWS"><?php echo t("via Wycliffe Web Services"); ?> &lt;</label> <select id="fromEmailWWS" class="form-select">
+		<input type="radio" class="radio" name="choiceFrom" id="choiceJAARS" checked /> <input type="text" id="fromNameJAARS" /> <label for="choiceJAARS">&lt;</label> <input type="text" id="fromEmailJAARS" /> <label for="choiceJAARS">&gt;</label><br />
+		<input type="radio" class="radio" name="choiceFrom" id="choiceWWS" /> <input type="text" id="fromNameWWS" /> <label for="choiceWWS"><?php echo t("via Wycliffe Web Services"); ?> &lt;</label> <select id="fromEmailWWS" class="form-select">
 			<?php
 				foreach (getOptions() as $option) {
 					echo '<option value="' . $option .'">' . $option . '</option>';
@@ -135,20 +135,20 @@ button {
 	<div class="cell rightCell">
 		<br />
 		<div class="header"><label for="choiceWWS"><?php echo t("Reply-to") ?>:</label></div>
-		<div class="cell"><input type="text" id="fromReplyToWWS" value="Your email" /></div>
+		<div class="cell"><input type="text" id="fromReplyToWWS" /></div>
 	</div>
 </div>
 <div class="row">
 	<div class="header"><?php echo t("To") ?>:</div>
 	<div class="cell">
-		<input type="radio" class="radio" name="choiceTo" id="choiceEmail" checked /> <input type="text" id="toEmailText" value="recipient emails" /><br />
+		<input type="radio" class="radio" name="choiceTo" id="choiceEmail" checked /> <input type="text" id="toEmailText" /><br />
 		<input type="radio" class="radio" name="choiceTo" id="choiceFile" /> <input type="file" id="toEmailFile" size="40" />
-			<div id="startEndRow"><label for="choiceFile"><?php echo t("Start row") ?>:</label> <input type="text" id="startRow" value="1" /> <label for="choiceFile" class="inlineLabel"><?php echo t("End row") ?>:</label> <input type="text" id="endRow" value="0" /></div>
+			<div id="startMaxRow"><label for="choiceFile"><?php echo t("Start row") ?>:</label> <input type="text" id="startRow" /> <label for="choiceFile" class="inlineLabel"><?php echo t("Max rows") ?>:</label> <input type="text" id="maxRows" /></div>
 	</div>
 	<div class="cell rightCell">
 		<br />
 		<div class="header"><label for="choiceFile">Tags:</label></div>
-		<div class="cell"><input type="text" id="tags" value="" /></div>
+		<div class="cell"><input type="text" id="tags" /></div>
 	</div>
 </div>
 <div class="row">

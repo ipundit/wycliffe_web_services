@@ -8,28 +8,80 @@ $(document).ready(function() {
 	$('#toEmailText').click(function() { selectRadio('choiceEmail'); });
 	$('#toEmailFile').click(function() { selectRadio('choiceFile'); });
 	$('#startRow').click(function() { selectRadio('choiceFile'); });
-	$('#endRow').click(function() { selectRadio('choiceFile'); });
+	$('#maxRows').click(function() { selectRadio('choiceFile'); });
 	$('#tags').click(function() { selectRadio('choiceFile'); });
 
-	addValidators();
-	addSubmitHandler();
-	preselectRadio();
+//	addValidators();
+//	addSubmitHandler();
+	initForm();
 });
 
-function preselectRadio() {
-	var service = urlParam("service");
-	if (service == undefined || $('#text').val() != '') { 
-		selectRadio('choiceText');
-		return;
+function initForm() {
+	var fromName = urlParam("fromName");
+	if (fromName == undefined) { fromName = 'Your name'; }
+	$('#fromNameJAARS').val(fromName);
+	$('#fromNameWWS').val(fromName);
+
+	var from = urlParam("from");
+	if (from === undefined) {
+		selectRadio('choiceJAARS');
+		$('#fromEmailJAARS').val('Your JAARS email');
+		$('#fromEmailWWS').val('no-reply');
+	} else {
+		var index = from.indexOf('@wycliffe-services.net');
+		if (index == -1) {
+			selectRadio('choiceJAARS');
+			$('#fromEmailJAARS').val(from);
+			$('#fromEmailWWS').val('no-reply');
+		} else {
+			$('#fromEmailJAARS').val('Your JAARS email');
+			selectRadio('choiceWWS');
+			from = from.substring(0, index);
+
+			$("#fromEmailWWS > option").each(function() {
+				if (this.value == from) {
+					$(this).prop('selected', true);
+					return;
+				}
+			});
+		}
+	}
+	
+	var replyTo = urlParam("replyTo");
+	if (replyTo === undefined) { replyTo = "Your email"; }
+	$('#fromReplyToWWS').val(replyTo);
+
+	var to = urlParam("to");
+	var startRow = urlParam("startRow");
+	var maxRows = urlParam("maxRows");
+	var tags = urlParam("tags");
+	if (to !== undefined || (startRow == undefined && maxRows == undefined && tags == undefined)) { 
+		selectRadio('choiceEmail');
+	} else {
+		selectRadio('choiceFile');
 	}
 
-	selectRadio('choiceService');
-	$("#service > option").each(function() {
-		if (this.value == service) {
-			$(this).prop('selected', true);
-			return;
-		}
-	});
+	if (to === undefined) { to = "recipient list"; }
+	$('#toEmailText').val(to);
+	if (startRow === undefined) { startRow = 1; }
+	$('#startRow').val(startRow);
+	if (maxRows === undefined) { maxRows = 0; }
+	$('#maxRows').val(maxRows);
+	if (tags !== undefined) { $('#tags').val(tags); }
+
+	var cc = urlParam("cc");
+	if (cc !== undefined) { $('#cc').val(cc); }
+	var bcc = urlParam("bcc");
+	if (bcc !== undefined) { $('#bcc').val(bcc); }
+	
+	var subject = urlParam("subject");
+	if (subject !== undefined) { $('#subject').val(subject); }
+	var body = urlParam("body");
+	if (body !== undefined) { $('#body').val(body); }
+	
+	var simulate = urlParam("simulate");
+	if (simulate === undefined) { simulate = 0; }
+	$('#simulate').prop('checked', simulate == 1);
 }
 function selectRadio(name) {
 	$('#' + name).prop('checked', true);

@@ -36,6 +36,6 @@ Name: $firstName $lastName
 Organization: $org
 Tag line: $tagLine
 Phone number: $phoneNumber
-Not in mailingLIst: $youCouldDefineThisColumnInMailingListFile"
+Not in mailingList: $youCouldDefineThisColumnInMailingListFile"
 tags	WMO wLP, WPO
 EXPECTS	ok

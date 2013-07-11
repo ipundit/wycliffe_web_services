@@ -60,9 +60,8 @@ button {
 }
 </style>
 
-<script language='JavaScript' type='text/javascript' src='../jquery-1.10.0.min.js'></script>
+<script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
-<script language='JavaScript' type='text/javascript' src='../additional-methods.min.js'></script>
 <script language='JavaScript' type='text/javascript'>
 	// Need to get translations of validation messages
 	var translationMappings = {

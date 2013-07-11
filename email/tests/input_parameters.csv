@@ -194,7 +194,45 @@ EXPECTS	mailing list line 3: invalid from
 URL	http://wycliffe-services.net/email/webservice.php
 to	_file2
 simulate	1
-EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [4] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [5] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => [simulate] => 1 ) )
+EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) [4] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) [5] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) )
+	
+# mailing list startRow and maxRows testing	
+URL	http://wycliffe-services.net/email/webservice.php
+startRow	0
+to	_file2
+EXPECTS	startRow must be an integer greater than or equal to 1
+	
+URL	http://wycliffe-services.net/email/webservice.php
+startRow	a
+to	_file2
+EXPECTS	startRow must be an integer greater than or equal to 1
+	
+URL	http://wycliffe-services.net/email/webservice.php
+startRow	2.1
+to	_file2
+EXPECTS	startRow must be an integer greater than or equal to 1
+	
+URL	http://wycliffe-services.net/email/webservice.php
+maxRows	-1
+to	_file2
+EXPECTS	maxRows must be an integer greater than or equal to 0
+	
+URL	http://wycliffe-services.net/email/webservice.php
+maxRows	a
+to	_file2
+EXPECTS	maxRows must be an integer greater than or equal to 0
+	
+URL	http://wycliffe-services.net/email/webservice.php
+maxRows	1.5
+to	_file2
+EXPECTS	maxRows must be an integer greater than or equal to 0
+	
+URL	http://wycliffe-services.net/email/webservice.php
+startRow	2
+maxRows	1
+to	_file2
+simulate	1
+EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) )
 	
 # mailing list tags testing	
 URL	http://wycliffe-services.net/email/webservice.php
@@ -207,4 +245,4 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	_file2
 tags	WPO, WMO wLP
 simulate	1
-EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => WPO, WMO wLP [simulate] => 1 ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => WPO, WMO wLP [simulate] => 1 ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [tags] => WPO, WMO wLP [simulate] => 1 ) )
+EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [body] => [simulate] => 1 ) )

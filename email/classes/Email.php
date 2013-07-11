@@ -20,6 +20,7 @@ class Email
 
 			if ($row['simulate'] == 1) {
 				$msg = trim(preg_replace('/\s+/', ' ', print_r($lines, true)));
+//$msg = '<pre>' . print_r($lines, true) . '</pre>';
 				return false;
 			}
 
@@ -86,7 +87,7 @@ class Email
 		unset($_FILES["to"]);
 		
 		$variablesLookup = array();
-		if (!Email::parseLines($csvLines, $variablesLookup, $msg)) { return false; }
+		if (!Email::parseLines($csvLines, $row['startRow'], $row['maxRows'], $variablesLookup, $msg)) { return false; }
 
 		$filters = Email::getTags($row['tags']);
 		foreach ($row as $key => &$value) {
@@ -143,7 +144,7 @@ class Email
 		return $tags;
 	}
 	
-	private static function parseLines($lines, &$variablesLookup, &$msg) {
+	private static function parseLines($lines, $startRow, $maxRows, &$variablesLookup, &$msg) {
 		$isFirstLine = true;
 		$keys = '';
 		$i = 1;
@@ -159,8 +160,9 @@ class Email
 				continue;
 			}
 
+			if ($line == '' || $i < $startRow) { $i++; continue; }
+			if ($maxRows != 0 && $startRow + $maxRows <= $i) { break; }
 			$variablesLookup[$i] = array('$email' => '');
-			if ($line == '') { $i++; continue; }
 			
 			$j = 0;
 			foreach ($columns as $column) {
@@ -207,6 +209,10 @@ class Email
 	}
 	
 	private static function validateInput($arr, &$msg) {
+		if (!isset($arr['startRow'])) { $arr['startRow'] = 1; }
+		if (!isset($arr['maxRows'])) { $arr['maxRows'] = 0; }
+		if (!isset($arr['simulate'])) { $arr['simulate'] = 0; }
+
 		$filters = array(
 		  "to"=>FILTER_UNSAFE_RAW,
 		  "from"=>FILTER_UNSAFE_RAW,
@@ -217,8 +223,11 @@ class Email
 		  "bcc"=>FILTER_UNSAFE_RAW,
 		  "body"=>FILTER_UNSAFE_RAW,
 		  "tags"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
-		  "simulate"=>FILTER_VALIDATE_INT,
+		  "startRow"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>1)),
+		  "maxRows"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0)),
+		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
+
 		$row = filter_var_array($arr, $filters);
 
 		foreach ($row as &$value) {
@@ -230,6 +239,19 @@ class Email
 				$msg = "to parameter must be set";
 				return false;
 			}
+			
+			if ($row['startRow'] == '') {
+				$msg = 'startRow must be an integer greater than or equal to 1';
+				return false;
+			}
+			if ($row['maxRows'] == '') {
+				$msg = 'maxRows must be an integer greater than or equal to 0';
+				return false;
+			}
+			if ($row['simulate'] == '') {
+				$msg = 'simulate must be a 0 or 1';
+				return false;
+			}
 		} else {
 			if (isset($_FILES["to"])) {
 				$msg = "cannot have more than one source of to";
@@ -239,6 +261,10 @@ class Email
 				$msg = "invalid to";
 				return false;
 			}
+			
+			unset($row['tags']);
+			unset($row['startRow']);
+			unset($row['maxRows']);
 		}
 
 		if ($row["from"] == '') {

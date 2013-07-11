@@ -151,6 +151,15 @@ function addValidators() {
 			toEmailText:{
 				dependentEmailList: ['To', '#choiceEmail', true]
 			},
+			toEmailFile:{
+				isCSV: ['To', '#choiceFile']
+			},
+			startRow:{
+				dependentMinInt: ['Start row', '#choiceFile', 1]
+			},
+			maxRows:{
+				dependentMinInt: ['Max rows', '#choiceFile', 0]
+			},
 			cc:{
 				dependentEmailList: ['Cc', null, false]
 			},
@@ -163,10 +172,7 @@ function addValidators() {
 			tags:{
 				noAngleBrackets: ['Tags', '#choiceFile']
 			},
-			
 		},
-		messages:{
-		}
 	});
 	
 	$.validator.addMethod("radioChecked", function(value, element, param) { 
@@ -200,6 +206,20 @@ function addValidators() {
 		}
 		return true;
 	}, "{0} must be a valid, comma separated email list");
+
+	$.validator.addMethod("dependentMinInt", function(value, element, params) { 
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		if (!$.validator.methods.required.call(this, value, element, params)) { return false; }
+		if (value != parseInt(value)) { return false; }
+		return $.validator.methods.min.call(this, value, element, params[2]);
+	}, "{0} must be an integer with a minimum of {2}");
+
+	$.validator.addMethod("isCSV", function(value, element, params) {
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		value = value.trim();
+		if (value.length == 0) { return false; }
+		return value.endsWith('.csv');
+	}, translate("Please choose a mailing list template .csv file."));
 }
 
 function removeBefore(haystack, needle) {

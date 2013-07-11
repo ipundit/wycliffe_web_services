@@ -47,6 +47,9 @@ label { display: inline-block; }
 #toEmailText {
 	width: 579px;
 }
+#toEmailFile {
+	width: 190px;
+}
 #fromReplyToWWS, #tags {
 	width: 212px;
 }
@@ -110,7 +113,7 @@ button {
 		<?php echo generateMapping("Please enter a valid email."); ?>,
 		<?php echo generateMapping("Subject cannot contain the < or > characters."); ?>,
 		<?php echo generateMapping("Tags cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please choose a .csv file"); ?>
+		<?php echo generateMapping("Please choose a mailing list template .csv file."); ?>
 		
 	};
 	
@@ -146,7 +149,7 @@ button {
 	<div class="header"><?php echo t("To") ?>:</div>
 	<div class="cell">
 		<input type="radio" class="radio" name="choiceTo" id="choiceEmail" checked /> <input type="text" name="toEmailText" id="toEmailText" /><br />
-		<input type="radio" class="radio" name="choiceTo" id="choiceFile" /> <input type="file" name="toEmailFile" id="toEmailFile" size="40" />
+		<input type="radio" class="radio" name="choiceTo" id="choiceFile" /> <input type="file" name="toEmailFile" id="toEmailFile" size="40" /> <a href="template.csv">mailing list template</a>
 			<div id="startMaxRow"><label for="choiceFile"><?php echo t("Start row") ?>:</label> <input type="text" name="startRow" id="startRow" /> <label for="choiceFile" class="inlineLabel"><?php echo t("Max rows") ?>:</label> <input type="text" name="maxRows" id="maxRows" /></div>
 	</div>
 	<div class="cell rightCell">

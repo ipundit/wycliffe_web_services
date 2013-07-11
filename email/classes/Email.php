@@ -269,10 +269,7 @@ class Email
 
 		if ($row["from"] == '') {
 			$row["from"] = "no-reply@wycliffe-services.net";
-		} else if (!in_array($row['from'], array(
-				'events@wycliffe-services.net', 'help@wycliffe-services.net',
-				'mailer@wycliffe-services.net', 'no-reply@wycliffe-services.net',
-				'webservice@wycliffe-services.net')) && !util::isJaarsEmail($row['from'])) {
+		} else if (!in_array($row['from'], Email::wycliffeServicesEmails()) && !util::isJaarsEmail($row['from'])) {
 			if (!isset($_FILES["to"]) || strpos($row['from'], '$') === false) {
 				$msg = "invalid from";
 				return false;
@@ -290,6 +287,13 @@ class Email
 		}
 		
 		return $row;
+	}
+	
+	public static function wycliffeServicesEmails() {
+		return array(
+			'events@wycliffe-services.net', 'help@wycliffe-services.net',
+			'mailer@wycliffe-services.net', 'no-reply@wycliffe-services.net',
+			'webservice@wycliffe-services.net');
 	}
 	
 	private static function validateEmailList($str) {

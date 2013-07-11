@@ -149,7 +149,7 @@ button {
 	<div class="header"><?php echo t("To") ?>:</div>
 	<div class="cell">
 		<input type="radio" class="radio" name="choiceTo" id="choiceEmail" checked /> <input type="text" name="to" id="to" /><br />
-		<input type="radio" class="radio" name="choiceTo" id="choiceFile" /> <input type="file" name="toEmailFile" id="toEmailFile" size="40" /> <a href="template.csv">mailing list template</a>
+		<input type="radio" class="radio" name="choiceTo" id="choiceFile" /> <input type="file" name="toEmailFile" id="toEmailFile" size="40" /> <a href="mailing_list.csv">mailing list template</a>
 			<div id="startMaxRow"><label for="choiceFile"><?php echo t("Start row") ?>:</label> <input type="text" name="startRow" id="startRow" /> <label for="choiceFile" class="inlineLabel"><?php echo t("Max rows") ?>:</label> <input type="text" name="maxRows" id="maxRows" /></div>
 	</div>
 	<div class="cell rightCell">

@@ -14,29 +14,9 @@ h1 {
 }
 
 label { display: inline-block; }
-.error { color: red; }
-label.error {
-	display: block;
-	text-align: left;
-	font-weight: bold;
-}
+#error { color: red; }
 
-#radioButtons { float: left; }
-#uploadFiles { 
-	float: left;
-	margin-left: 10px;
-}
-
-#commandFile { width: 338px; }
-@-moz-document url-prefix() { /* firefox */
-	.form-select { width: 92px; }
-}
-@media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
-	#commandFile { width: 328px; }
-}
-
-.attachment { width: 180px; }
-.rightFileLabel { margin-left: 5px; }
+.attachment { width: 263px; }
 
 .row {
 	clear: both;
@@ -44,7 +24,7 @@ label.error {
 }
 .header {
 	float: left;
-	width: 60px;
+	width: 61px;
 	text-align: right;
 	margin-right: 5px;
 }
@@ -55,15 +35,34 @@ label.error {
 	margin: 2px 0 0 15px;
 }
 
+#fromNameJAARS, #fromNameWWS {
+	width: 127px;
+}
 #fromEmailJAARS {
-	width: 412px;
+	width: 417px;
 }
 #toEmailText {
-	width: 585px;
+	width: 579px;
 }
 #fromReplyToWWS, #tags {
 	width: 212px;
 }
+#body {
+	width: 603px;
+	height: 500px;
+}
+@-moz-document url-prefix() { /* firefox */
+	#fromNameJAARS, #fromNameWWS { width: 132px; }
+	#fromEmailJAARS { width: 416px; }
+	#toEmailText { width: 585px; }
+	#body { width: 605px; }
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
+	#toEmailText { width: 585px; }
+	#fromNameJAARS, #fromNameWWS { width: 155px; }
+	#fromEmailJAARS { width: 395px; }
+}
+
 #startMaxRow {
 	display: inline-block;
 	float: right;
@@ -74,9 +73,10 @@ label.error {
 #startRow, #maxRows {
 	width: 27px;
 }
-#cc, #bcc, #subject, #body {
+#cc, #bcc, #subject {
 	width: 605px;
 }
+
 button {
 	height: 43px;
 	margin: -3px 0 0 0;
@@ -93,9 +93,6 @@ button {
     margin: 4px 0 0 7px;
     width: 16px;
 }
-#body {
-	height: 500px;
-}
 #attachmentsDiv {
 	width: 282px;
 }
@@ -103,7 +100,6 @@ button {
 
 <script language='JavaScript' type='text/javascript' src='../jquery-1.10.0.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
-<script language='JavaScript' type='text/javascript' src='../additional-methods.min.js'></script>
 <script language='JavaScript' type='text/javascript'>
 	// Need to get translations of validation messages
 	var translationMappings = {
@@ -119,6 +115,7 @@ button {
 </head>
 <body>
 
+<div id="error"></div>
 <form id="theForm" action="#" method="post">
 <div class="row">
 	<div class="header"><?php echo t("From") ?>:</div>
@@ -158,7 +155,6 @@ button {
 		<input type="checkbox" id="simulate" /> <label for="simulate"><?php echo t("Simulate") ?></label>
 	</div>
 </div>
-</div>
 <div class="row">
 	<div class="header"><?php echo t("Bcc"); ?>:</div>
 	<div class="cell"><input type="text" id="bcc" /></div>
@@ -186,18 +182,7 @@ button {
 		8. <input type="file" id="file8" class="attachment" /><br />
 		9. <input type="file" id="file9" class="attachment" />
 	</div>
-
-		
-<!---	
-	<div id="uploadFiles">
-	<h1><?php echo t("And upload files"); ?>:</h1>
-	<label>_file1: </label><input type="file" name="file1" id="file1" class="attachment" /><label class="rightFileLabel">_file3: </label><input type="file" name="file3" id="file3" class="attachment" /><br />
-	<label>_file2: </label><input type="file" name="file2" id="file2" class="attachment" /><label class="rightFileLabel">_file4: </label><input type="file" name="file4" id="file4" class="attachment" /><br />
---->	
 </div>
-	
-	
-	
 </form>
 </body>
 </html>

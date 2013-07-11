@@ -1,9 +1,13 @@
 <?php 
 require_once 'util.php';
 define("_EMAIL_ASCII_TAB_", 9);
+define('_EMAIL_TIMEOUT_', 2);
 
 class Email
 {
+	private static $currentLineNumber = 0;
+	private static $currentLine = array();
+	
 	public static function sendFromPost(&$msg) {
 		$msg = '';
 		$row = Email::validateInput($_POST, $msg);
@@ -18,18 +22,21 @@ class Email
 				$msg = trim(preg_replace('/\s+/', ' ', print_r($lines, true)));
 				return false;
 			}
+
+			ini_set('display_errors', '0'); 
+			register_shutdown_function('Email::shutdown'); 
 			
-			foreach ($lines as $line) {
+			foreach ($lines as $lineNumber => $line) {
+				self::$currentLineNumber = $lineNumber;
+				self::$currentLine = $line;
+			
 				if (!util::sendEmail($msg, $line['fromName'], $line['from'], $line['to'], $line['subject'], 
 									 $line['body'], $line['cc'], $line['bcc'], $line['replyTo'], $files,
 									 $line['simulate'] == 1)) {
-					if ($line['simulate'] == 1) {
-						return false;
-					}
-					util::sendEmail($msg, 'Wycliffe Web Services mailier', 'no-reply@wycliffe-services.net', 
-									$line['from'], 'This email failed: ' . $line['subject'], 
-									'Sending email to ' . $line['to'] . ' failed with message:<br />' . $msg);
-					$msg = '';
+					if ($line['simulate'] == 1) { return false;	}
+					
+					Emai::sendErrorMessage($msg);
+					return false;
 				}
 			}
 		} else {
@@ -43,6 +50,36 @@ class Email
 		return true;
 	}
 
+	private static function shutdown() {
+		$err = error_get_last();
+		if ($err == null) { return; }
+
+		if (connection_aborted()) {
+			Email::sendErrorMessage('you pressed the stop button');
+			return;
+		}
+
+		if ($err['message'] == 'Maximum execution time of ' . _EMAIL_TIMEOUT_ . ' seconds exceeded') {
+			$msg = 'timed out; you are only allowed to use ' . _EMAIL_TIMEOUT_ . ' seconds of server time per call';
+			Email::sendErrorMessage($msg);
+			echo $msg;
+			return;
+		}
+		
+		echo '<b>Fatal error:</b> ' . $err['message'] . ' in <b>' . $err['file'] . '</b> on line <b>' . $err['line'] .'</b>';
+	}
+
+	private static function sendErrorMessage($msg) {
+		$ignore = '';
+		$body = 'Sending email failed on <b>line ' . self::$currentLineNumber . 
+				'</b> of the mailing list file with message: <b>' . $msg . '</b>. Restart sending emails from line ' . 
+				self::$currentLineNumber . ' onwards.';
+		
+		util::sendEmail($ignore, 'Wycliffe Web Services mailier', 'no-reply@wycliffe-services.net', 
+						self::$currentLine['from'], 'Email to ' . self::$currentLine['to'] . ' failed with subject: ' .
+						self::$currentLine['subject'], $body);
+	}
+	
 	private static function fillTemplateFromCSV($row, &$msg) {
 		unset($row['to']);
 		$csvLines = util::parseCSV(file_get_contents($_FILES["to"]['tmp_name']));

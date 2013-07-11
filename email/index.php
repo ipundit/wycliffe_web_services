@@ -44,13 +44,13 @@ label { display: inline-block; }
 #fromEmailJAARS {
 	width: 417px;
 }
-#toEmailText {
+#to {
 	width: 579px;
 }
 #toEmailFile {
 	width: 190px;
 }
-#fromReplyToWWS, #tags {
+#replyTo, #tags {
 	width: 212px;
 }
 #body {
@@ -60,13 +60,13 @@ label { display: inline-block; }
 @-moz-document url-prefix() { /* firefox */
 	#fromName { width: 132px; }
 	#fromEmailJAARS { width: 416px; }
-	#toEmailText { width: 585px; }
+	#to { width: 585px; }
 	#body { width: 605px; }
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
 	#fromName { width: 155px; }
 	#fromEmailJAARS { width: 395px; }
-	#toEmailText { width: 585px; }
+	#to { width: 585px; }
 }
 
 #startMaxRow {
@@ -142,13 +142,13 @@ button {
 	<div class="cell rightCell">
 		<br />
 		<div class="header"><label for="choiceWWS"><?php echo t("Reply-to") ?>:</label></div>
-		<div class="cell"><input type="text" name="fromReplyToWWS" id="fromReplyToWWS" /></div>
+		<div class="cell"><input type="text" name="replyTo" id="replyTo" /></div>
 	</div>
 </div>
 <div class="row">
 	<div class="header"><?php echo t("To") ?>:</div>
 	<div class="cell">
-		<input type="radio" class="radio" name="choiceTo" id="choiceEmail" checked /> <input type="text" name="toEmailText" id="toEmailText" /><br />
+		<input type="radio" class="radio" name="choiceTo" id="choiceEmail" checked /> <input type="text" name="to" id="to" /><br />
 		<input type="radio" class="radio" name="choiceTo" id="choiceFile" /> <input type="file" name="toEmailFile" id="toEmailFile" size="40" /> <a href="template.csv">mailing list template</a>
 			<div id="startMaxRow"><label for="choiceFile"><?php echo t("Start row") ?>:</label> <input type="text" name="startRow" id="startRow" /> <label for="choiceFile" class="inlineLabel"><?php echo t("Max rows") ?>:</label> <input type="text" name="maxRows" id="maxRows" /></div>
 	</div>

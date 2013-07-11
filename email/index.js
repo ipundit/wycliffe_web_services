@@ -3,9 +3,9 @@ $(document).ready(function() {
 	$('#fromEmailJAARS').click(function() { selectRadio('choiceJAARS'); });
 	$('#fromNameWWS').click(function() { selectRadio('choiceWWS'); });
 	$('#fromEmailWWS').click(function() { selectRadio('choiceWWS'); });
-	$('#fromReplyToWWS').click(function() { selectRadio('choiceWWS'); });
+	$('#replyTo').click(function() { selectRadio('choiceWWS'); });
 	
-	$('#toEmailText').click(function() { selectRadio('choiceEmail'); });
+	$('#to').click(function() { selectRadio('choiceEmail'); });
 	$('#toEmailFile').click(function() { selectRadio('choiceFile'); });
 	$('#startRow').click(function() { selectRadio('choiceFile'); });
 	$('#maxRows').click(function() { selectRadio('choiceFile'); });
@@ -17,15 +17,13 @@ $(document).ready(function() {
 });
 
 function initForm() {
-	var fromName = urlParam("fromName");
-	if (fromName == undefined) { fromName = 'Your name'; }
-	$('#fromName').val(fromName);
-
 	var from = urlParam("from");
 	if (from === undefined) {
 		selectRadio('choiceJAARS');
-		$('#fromEmailJAARS').val('Your JAARS email');
-		$('#fromEmailWWS').val('no-reply');
+		if ($('#fromEmailJAARS').val() == '') {
+			$('#fromEmailJAARS').val('Your JAARS email');
+			$('#fromEmailWWS').val('no-reply');
+		}
 	} else {
 		var index = from.indexOf('@wycliffe-services.net');
 		if (index == -1) {
@@ -33,10 +31,9 @@ function initForm() {
 			$('#fromEmailJAARS').val(from);
 			$('#fromEmailWWS').val('no-reply');
 		} else {
-			$('#fromEmailJAARS').val('Your JAARS email');
 			selectRadio('choiceWWS');
-			from = from.substring(0, index);
 
+			from = from.substring(0, index);
 			$("#fromEmailWWS > option").each(function() {
 				if (this.value == from) {
 					$(this).prop('selected', true);
@@ -46,10 +43,6 @@ function initForm() {
 		}
 	}
 	
-	var replyTo = urlParam("replyTo");
-	if (replyTo === undefined) { replyTo = "Your email"; }
-	$('#fromReplyToWWS').val(replyTo);
-
 	var to = urlParam("to");
 	var startRow = urlParam("startRow");
 	var maxRows = urlParam("maxRows");
@@ -60,28 +53,43 @@ function initForm() {
 		selectRadio('choiceFile');
 	}
 
-	if (to === undefined) { to = "recipient list"; }
-	$('#toEmailText').val(to);
-	if (startRow === undefined) { startRow = 1; }
-	$('#startRow').val(startRow);
-	if (maxRows === undefined) { maxRows = 0; }
-	$('#maxRows').val(maxRows);
-	if (tags !== undefined) { $('#tags').val(tags); }
-
-	var cc = urlParam("cc");
-	if (cc !== undefined) { $('#cc').val(cc); }
-	var bcc = urlParam("bcc");
-	if (bcc !== undefined) { $('#bcc').val(bcc); }
+	var defaultValues = {
+		'fromName': 'Your name', 
+		'to': 'recipient list', 
+		'replyTo': 'Your email',
+		'startRow': 1,
+		'maxRows': 0,
+		'tags': '',
+		'cc': '',
+		'bcc': '',
+		'subject': '',
+		'body': '',
+		'simulate': '0',
+	};
 	
-	var subject = urlParam("subject");
-	if (subject !== undefined) { $('#subject').val(subject); }
-	var body = urlParam("body");
-	if (body !== undefined) { $('#body').val(body); }
-	
-	var simulate = urlParam("simulate");
-	if (simulate === undefined) { simulate = 0; }
-	$('#simulate').prop('checked', simulate == 1);
+	for (key in defaultValues) { 
+		initFormElement(key, defaultValues[key]);
+	}
 }
+function initFormElement(id, defaultValue) {	
+	var value = urlParam(id);
+	var element = $('#'+ id);
+	
+	if (value === undefined) { 
+		if (element.get(0).type == 'checkbox') {
+			element.prop('checked', defaultValue == 1);
+		} else {
+			if (element.val() == '') { element.val(defaultValue); }
+		}
+	} else {
+		if (element.get(0).type == 'checkbox') {
+			element.prop('checked', value == 1);
+		} else {
+			element.val(value);
+		}
+	}
+}
+
 function selectRadio(name) {
 	$('#' + name).prop('checked', true);
 }
@@ -90,28 +98,46 @@ function addSubmitHandler() {
 	$('button').click(function() {
 		if ($('#fromName').val() == 'Your name') { $('#fromName').val(''); }
 		if ($('#choiceJAARS').prop('checked') && $('#fromEmailJAARS').val() == 'Your JAARS email') { $('#fromEmailJAARS').val(''); }
-		if ($('#choiceWWS').prop('checked') && $('#fromReplyToWWS').val() == 'Your email') { $('#fromReplyToWWS').val(''); }
-		if ($('#choiceEmail').prop('checked') && $('#toEmailText').val() == 'recipient list') { $('#toEmailText').val(''); }
+		if ($('#choiceWWS').prop('checked') && $('#replyTo').val() == 'Your email') { $('#replyTo').val(''); }
+		if ($('#choiceEmail').prop('checked') && $('#to').val() == 'recipient list') { $('#to').val(''); }
 	
-		$('#spinner').css('display', 'none');
 		$('#error').html('');
 		if (!$("#theForm").valid()) { return; }
 		$('#spinner').css('display', 'inline-block');
-return;		
+
 		var data = new FormData();
-		switch ($('input[name=choice]:checked', '#theForm').attr('id')) {
-		case 'choiceFile':
-			data.append('src', document.getElementById('commandFile').files[0]);
+		data.append('fromName', $('#fromName').val());
+
+		switch ($('input[name=choiceFrom]:checked', '#theForm').attr('id')) {
+		case 'choiceJAARS':
+			data.append('from', $('#fromEmailJAARS').val());
 			break;
-		case 'choiceService':
-			data.append('src', $('#service').val());
-			break;
-		case 'choiceText':
-			data.append('src', $('#text').val());
+		case 'choiceWWS':
+			data.append('from', $('#fromEmailWWS').val() + '@wycliffe-services.net');
+			data.append('replyTo', $('#replyTo').val());
 			break;
 		}
-		for (i = 1; i <= 4; i++) {
-			if ($('#file' + i).val() != '') { data.append('_file' + i, document.getElementById('file' + i).files[0]); }
+
+		switch ($('input[name=choiceTo]:checked', '#theForm').attr('id')) {
+		case 'choiceEmail':
+			data.append('to', $('#to').val());
+			break;
+		case 'choiceFile':
+			data.append('to', document.getElementById('toEmailFile').files[0]);
+			data.append('startRow', $('#startRow').val());
+			data.append('maxRows', $('#maxRows').val());
+			data.append('tags', $('#tags').val());
+			break;
+		}
+			
+		data.append('cc', $('#cc').val());
+		data.append('bcc', $('#bcc').val());
+		data.append('subject', $('#subject').val());
+		data.append('body', $('#body').val());
+		if ($('#simulate').prop('checked')) { data.append('simulate', 1); }
+
+		for (i = 1; i <= 9; i++) {
+			if ($('#file' + i).val() != '') { data.append('attach' + i, document.getElementById('file' + i).files[0]); }
 		}
 		
 		$.ajax({
@@ -145,10 +171,10 @@ function addValidators() {
 			fromEmailJAARS:{
 				dependentEmail: ['From email', '#choiceJAARS', true]
 			},
-			fromReplyToWWS:{
+			replyTo:{
 				dependentEmail: ['Reply-to', '#choiceWWS', false]
 			},
-			toEmailText:{
+			to:{
 				dependentEmailList: ['To', '#choiceEmail', true]
 			},
 			toEmailFile:{

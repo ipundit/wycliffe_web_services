@@ -128,7 +128,7 @@ class util {
 			$str = '';
 			return true;
 		}
-		$str = rtrim(substr($str, 0, $index - 1));
+		$str = rtrim(substr($str, 0, $index));
 		return true;
 	}
 	
@@ -211,6 +211,7 @@ class util {
 		}
 		return true;
 	}
+	
 	public static function isJaarsEmail($email) {
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { return false; }
 

@@ -1,4 +1,5 @@
 <?php 
+require_once 'util.php';
 require_once 'classes/Record.php';
 require_once 'classes/ChinaUnionPay.php';
 require_once 'classes/JapanCreditBureau.php';
@@ -19,7 +20,7 @@ class Purchase extends Record
 		Record::__construct("purchase", $columns, "purchaseId");
 	}
 
-	public function readFromData($data) {
+	public function readFromData($data, &$msg) {
 		$filters = array(
 		  "amount"=>FILTER_VALIDATE_FLOAT,
 		  "cardName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
@@ -30,13 +31,14 @@ class Purchase extends Record
 		);
 		$row = filter_var_array($data, $filters);
 
-		if (!$this->containsColumns($row, "amount,cardName,creditCard,month,year")) { return false; }
+		$msg = $this->containsColumns($row, "amount,cardName,creditCard,month,year");
+		if ($msg != '') { return false; }
 		if (!isset($row['project'])) { $row["project"] = ''; }
 		$row["purchaseId"] = '';
 		
-		if (!$this->isValidCreditCard($row['creditCard'])) { return false; }
-		if (!preg_match("/^01|02|03|04|05|06|07|08|09|10|11|12$/i", $row['month'])) { return false; }
-		if (!preg_match("/^20[1-9][0-9]$/i", $row['year'])) { return false; }
+		if (!$this->isValidCreditCard($row['creditCard'])) { $msg = "creditCard"; return false; }
+		if (!preg_match("/^01|02|03|04|05|06|07|08|09|10|11|12$/i", $row['month'])) { $msg = "month"; return false; }
+		if (!preg_match("/^20[1-9][0-9]$/i", $row['year'])) { $msg = "year"; return false; }
 		
 		Record::initialize($row, false);
 		return true;

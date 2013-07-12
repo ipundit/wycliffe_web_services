@@ -7,14 +7,15 @@ class Organization extends Record
 	
 	public function __construct() {}
 	
-	public function readFromData($data, $useDefaultOrg = false) {
+	public function readFromData($data, &$msg, $useDefaultOrg = false) {
 		$filters = array(
 		  "org"=>FILTER_SANITIZE_STRING,
 		  "test"=>FILTER_VALIDATE_INT,
 		);
 		$row = filter_var_array($data, $filters);
 
-		if (!$useDefaultOrg && !$this->containsColumns($row, "org")) { return false; }
+		$temp = $this->containsColumns($row, "org");
+		if (!$useDefaultOrg && $temp != '') { $msg = $temp; return false; }
 		if (!isset($row["org"])) { $row["org"] = "wycliffe_singapore"; };
 
 		$columns = array(
@@ -36,7 +37,7 @@ class Organization extends Record
 		Record::__construct("organization", $columns, "org");
 		
 		$res = Record::select(array_keys($columns), "`org`=?", $row["org"]);
-		if ($res->numRows() != 1) { throw new Exception($row["org"] . " is not an Organization."); }
+		if ($res->numRows() != 1) { $msg = $row["org"] . " is not an Organization."; return false; }
 		Record::initialize($res->fetchRow(), true);
 
 		$this->test = isset($row['test']) ? $row['test'] == 1 : 0;

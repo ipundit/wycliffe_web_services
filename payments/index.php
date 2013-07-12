@@ -178,7 +178,8 @@ function configureForORG() {
 
 	$project = isset($_GET["project"]) ? filter_var($_GET["project"], FILTER_SANITIZE_STRING) : "";
 	$org = new Organization();
-	$org->readFromData($_GET, true);
+	$msg = '';
+	$org->readFromData($_GET, $msg, true);
 
 	return array(
 		"project" => $project,

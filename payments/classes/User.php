@@ -21,6 +21,8 @@ class User extends Record
 	}
 
 	public function makePurchase($data, &$msg) {
+		if (!isset($data['simulate'])) { $data['simulate'] = 0; }
+
 		$filters = array(
 		  "email"=>FILTER_VALIDATE_EMAIL,
 		  "name"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
@@ -31,26 +33,27 @@ class User extends Record
 		  "address2"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "postalCode"=>FILTER_SANITIZE_STRING,
 		  "phone"=>FILTER_SANITIZE_STRING,
-		  "simulate"=>FILTER_SANITIZE_NUMBER_INT,
+		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
 		$row = filter_var_array($data, $filters);
 
-		if (!$this->containsColumns($row, "email,name,country,state,city,address,address2,postalCode,phone")) {
-			$msg = "Invalid input";
+		$msg = $this->containsColumns($row, "email,name,country,state,city,address,address2,postalCode,phone,simulate");
+		if ($msg != '') {
+			$msg = "Invalid input for " . $msg;
 			return false;
 		}
 		$simulate = $row['simulate'] == 1;
 		Record::initialize($row, false);
 		
 		$purchase = new Purchase();
-		if (!$purchase->readFromData($data)) {
-			$msg = "Invalid purchase input";
+		if (!$purchase->readFromData($data, $msg)) {
+			$msg = "Invalid purchase input for " . $msg;
 			return false;
 		}
 
 		$org = new Organization();
-		if (!$org->readFromData($data)) {
-			$msg = "Invalid organization input";
+		if (!$org->readFromData($data, $msg)) {
+			$msg = "Invalid organization input for " . $msg;
 			return false;
 		}
 		

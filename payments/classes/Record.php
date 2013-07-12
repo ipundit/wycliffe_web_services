@@ -114,9 +114,9 @@ class Record
 	
 	protected function containsColumns($row, $columns) {
 		foreach (explode(",", $columns) as $column) {
-			if (!isset($row[$column])) { return false; }
+			if (!isset($row[$column])) { return $column; }
 		}
-		return true;
+		return '';
 	}
 
 /*

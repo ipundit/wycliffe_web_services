@@ -1,6 +1,4 @@
-﻿<?php
-$org = configureForORG(); $bundle = configureForLang();?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
@@ -85,44 +83,14 @@ label.error {
 <script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
 <script language='JavaScript' type='text/javascript'>
-	g_org = "<?php echo $org["org"]; ?>"
-	g_redirect_url = "<?php echo $org["redirect_url"]; ?>";
-	g_thank_you_for_donation = "<?php echo t("Thank you for your donation."); ?>";
+<?php 
+	$org = configureForORG();
+	$bundle = configureForLang();
 	
-	// Need to get translations of validation messages.
-	// Might need to monkey patch jQuery.validator.messages	but it looks like we override them.
-	// Generate client side lookup table for validation messages.
-	var translationMappings = {
-		<?php echo generateMapping("Has angle brackets"); ?>,
-		<?php echo generateMapping("Please enter your name."); ?>,
-		<?php echo generateMapping("Name cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your email."); ?>,
-		<?php echo generateMapping("Please enter a valid email."); ?>,
-		<?php echo generateMapping("Please enter the same email." ); ?>,
-		<?php echo generateMapping("Please enter your phone number."); ?>,
-		<?php echo generateMapping("Phone number cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("State cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your address."); ?>,
-		<?php echo generateMapping("Address cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Address line 2 cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your city."); ?>,
-		<?php echo generateMapping("City cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your state."); ?>,
-		<?php echo generateMapping("State cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your postal code."); ?>,
-		<?php echo generateMapping("Postal code cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter the amount you want to donate."); ?>,
-		<?php echo generateMapping("Please enter a valid amount to donate."); ?>,
-		<?php echo generateMapping("Project cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your name on card."); ?>,
-		<?php echo generateMapping("Name on card cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter your credit card number."); ?>,
-		<?php echo generateMapping("Please enter a valid credit card number."); ?>
-	};
-	
-	function translate(englishString) {
-		return translationMappings[englishString];
-	}
+	echo 'var g_org = "' . $org["org"] . '";';
+	echo 'var g_redirect_url = "' . $org["redirect_url"] . '";';
+	echo 'var g_translations = {' . $bundle->generateMapping() . '};';
+?>
 </script>
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
 </head>
@@ -222,21 +190,13 @@ function configureForORG() {
 		"redirect_url" => $org->redirect_url(),
 	);
 }
-
 function configureForLang() {
 	require_once 'classes/StringBundle.php';
 	$lang = isset($_GET["lang"]) ? filter_var($_GET["lang"], FILTER_SANITIZE_STRING) : "en";
 	return new StringBundle($lang);
 }
-
-// Server side localization function based on Drupal's t() function.
 function t($englishText) {
 	global $bundle;
 	return $bundle->translate($englishText);
-}
-
-// Used for mapping client side error messages.
-function generateMapping($englishText) {
-	return '"' . $englishText . '" : "' . t($englishText) . '"';
 }
 ?>

@@ -31,6 +31,7 @@ function fireCountryChange() {
 
 function addDonateClickHandler() {
 	$('#donate').click(function() {
+		
 		if (!$("#theForm").valid()) { return; }
 		$('#spinner').css('display', 'inline-block');
 
@@ -72,7 +73,7 @@ function addDonateClickHandler() {
 			success: function(retValue, textStatus) {
 				$('#spinner').hide();
 				if (retValue.indexOf('ok') == 0) {
-					alert(g_thank_you_for_donation);
+					alert(g_translations["Thank you for your donation."]);
 					window.location = g_redirect_url;
 				} else {
 					$('#instructions').html('<span style="color:red">' + retValue  + '</span>');
@@ -105,60 +106,60 @@ function addValidators() {
 
 	$.validator.addMethod("noAngleBrackets", function(value, element, param) { 
 		return value.indexOf("<") == -1 && value.indexOf(">") == -1;
-	}, translate("Has angle brackets"));
+	}, g_translations["Has angle brackets"]);
 
 	$("#name").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your name."),
-			noAngleBrackets: translate("Name cannot contain the < or > characters.")
+			required: g_translations["Please enter your name."],
+			noAngleBrackets: g_translations["Name cannot contain the < or > characters."]
 		}
 	});
 	$("#phone").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your phone number."),
-			noAngleBrackets: translate("Phone number cannot contain the < or > characters.")
+			required: g_translations["Please enter your phone number."],
+			noAngleBrackets: g_translations["Phone number cannot contain the < or > characters."]
 		}
 	});
 	$("#state").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your state."),
-			noAngleBrackets: translate("State cannot contain the < or > characters.")
+			required: g_translations["Please enter your state."],
+			noAngleBrackets: g_translations["State cannot contain the < or > characters."]
 		}
 	});
 	$("#city").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your city."),
-			noAngleBrackets: translate("City cannot contain the < or > characters.")
+			required: g_translations["Please enter your city."],
+			noAngleBrackets: g_translations["City cannot contain the < or > characters."]
 		}
 	});
 	$("#address").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your address."),
-			noAngleBrackets: translate("Address cannot contain the < or > characters.")
+			required: g_translations["Please enter your address."],
+			noAngleBrackets: g_translations["Address cannot contain the < or > characters."]
 		}
 	});
 	$("#address2").rules("add", {
 		noAngleBrackets: true,
 		messages: { 
-			noAngleBrackets: translate("Address line 2 cannot contain the < or > characters.")
+			noAngleBrackets: g_translations["Address line 2 cannot contain the < or > characters."]
 		}
 	});
 	$("#postalCode").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your postal code."),
-			noAngleBrackets: translate("Postal code cannot contain the < or > characters.")
+			required: g_translations["Please enter your postal code."],
+			noAngleBrackets: g_translations["Postal code cannot contain the < or > characters."]
 		}
 	});
 
@@ -166,35 +167,35 @@ function addValidators() {
 		required: true,
 		email: true,
 		messages: { 
-			required: translate("Please enter your email."),
-			email: translate("Please enter a valid email.")
+			required: g_translations["Please enter your email."],
+			email: g_translations["Please enter a valid email."]
 		}
 	});
 	$("#email2").rules("add", {
 		equalTo: "#email",
-		messages: { equalTo: translate("Please enter the same email.") }
+		messages: { equalTo: g_translations["Please enter the same email."] }
 	});
 
 	$("#amount").rules("add", {
 		required: true,
 		number: true,
 		messages: { 
-			required: translate("Please enter the amount you want to donate."),
-			number: translate("Please enter a valid amount to donate.")
+			required: g_translations["Please enter the amount you want to donate."],
+			number: g_translations["Please enter a valid amount to donate."]
 		}
 	});
 	$("#project").rules("add", {
 		noAngleBrackets: true,
 		messages: { 
-			noAngleBrackets: translate("Project cannot contain the < or > characters.")
+			noAngleBrackets: g_translations["Project cannot contain the < or > characters."]
 		}
 	});
 	$("#cardName").rules("add", {
 		required: true,
 		noAngleBrackets: true,
 		messages: { 
-			required: translate("Please enter your name on card."),
-			noAngleBrackets: translate("Name on card cannot contain the < or > characters.")
+			required: g_translations["Please enter your name on card."],
+			noAngleBrackets: g_translations["Name on card cannot contain the < or > characters."]
 		}
 	});
 
@@ -212,14 +213,14 @@ function addValidators() {
 			// Not a CUP credit card - delegate to the built-in method
 			return jQuery.validator.methods.creditcard.call(this, value, element);
 		}
-	}, translate("Please enter a valid credit card number."));
+	}, g_translations["Please enter a valid credit card number."]);
 
 	$("#creditCard").rules("add", {
 		required: true,
 		extendedCreditCard: true,
 		messages: { 
-			required: translate("Please enter your name on card."),
-			noAngleBrackets: translate("Name on card cannot contain the < or > characters.")
+			required: g_translations["Please enter your name on card."],
+			noAngleBrackets: g_translations["Name on card cannot contain the < or > characters."]
 		}
 	});
 }

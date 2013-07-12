@@ -98,111 +98,15 @@ function removeBefore(haystack, needle) {
 }
 
 function addValidators() {
-	$("#theForm").validate({
-		errorPlacement: function(error, element) {
-			error.insertAfter("#instructions");
-		}
-	});
+	$.validator.messages.required = "Please enter your {1}."
 
-	$.validator.addMethod("noAngleBrackets", function(value, element, param) { 
+	$.validator.addMethod("noAngleBrackets", function(value, element, params) { 
 		return value.indexOf("<") == -1 && value.indexOf(">") == -1;
-	}, g_translations["Has angle brackets"]);
-
-	$("#name").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your name."],
-			noAngleBrackets: g_translations["Name cannot contain the < or > characters."]
-		}
-	});
-	$("#phone").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your phone number."],
-			noAngleBrackets: g_translations["Phone number cannot contain the < or > characters."]
-		}
-	});
-	$("#state").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your state."],
-			noAngleBrackets: g_translations["State cannot contain the < or > characters."]
-		}
-	});
-	$("#city").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your city."],
-			noAngleBrackets: g_translations["City cannot contain the < or > characters."]
-		}
-	});
-	$("#address").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your address."],
-			noAngleBrackets: g_translations["Address cannot contain the < or > characters."]
-		}
-	});
-	$("#address2").rules("add", {
-		noAngleBrackets: true,
-		messages: { 
-			noAngleBrackets: g_translations["Address line 2 cannot contain the < or > characters."]
-		}
-	});
-	$("#postalCode").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your postal code."],
-			noAngleBrackets: g_translations["Postal code cannot contain the < or > characters."]
-		}
-	});
-
-	$("#email").rules("add", {
-		required: true,
-		email: true,
-		messages: { 
-			required: g_translations["Please enter your email."],
-			email: g_translations["Please enter a valid email."]
-		}
-	});
-	$("#email2").rules("add", {
-		equalTo: "#email",
-		messages: { equalTo: g_translations["Please enter the same email."] }
-	});
-
-	$("#amount").rules("add", {
-		required: true,
-		number: true,
-		messages: { 
-			required: g_translations["Please enter the amount you want to donate."],
-			number: g_translations["Please enter a valid amount to donate."]
-		}
-	});
-	$("#project").rules("add", {
-		noAngleBrackets: true,
-		messages: { 
-			noAngleBrackets: g_translations["Project cannot contain the < or > characters."]
-		}
-	});
-	$("#cardName").rules("add", {
-		required: true,
-		noAngleBrackets: true,
-		messages: { 
-			required: g_translations["Please enter your name on card."],
-			noAngleBrackets: g_translations["Name on card cannot contain the < or > characters."]
-		}
-	});
+	}, "{0} cannot contain the < or > characters.");
 
     // Create our own custom validator for CUP credit cards
-	jQuery.validator.addMethod("extendedCreditCard", function(value, element) {
-		// See if it's a CUP credit card
-		if (value.indexOf("62", 0) === 0) {
+	$.validator.addMethod("extendedCreditCard", function(value, element) {
+		if (value.indexOf("62", 0) === 0) { // See if it's a CUP credit card
 			// Should only consist of spaces, digits and dashes and be 16-19 digits long (sans dashes and spaces)
 			if (/[0-9 \-]+/.test(value)) {
 				var digitCount = value.replace(/ /g, "").replace(/\-/, "").length;
@@ -211,18 +115,110 @@ function addValidators() {
 			return false;
 		} else {
 			// Not a CUP credit card - delegate to the built-in method
-			return jQuery.validator.methods.creditcard.call(this, value, element);
+			return $.validator.methods.creditcard.call(this, value, element);
 		}
-	}, g_translations["Please enter a valid credit card number."]);
+	}, "Please enter a valid {0}.");
 
-	$("#creditCard").rules("add", {
-		required: true,
-		extendedCreditCard: true,
-		messages: { 
-			required: g_translations["Please enter your name on card."],
-			noAngleBrackets: g_translations["Name on card cannot contain the < or > characters."]
+	var settings = $("#theForm").validate({
+		errorPlacement: function(error, element) {
+			error.insertAfter("#instructions");
+		},
+		rules:{
+			name:{
+				required: [true, 'name'],
+				noAngleBrackets: 'Name'
+			},
+			phone:{
+				required: [true, 'phone number'],
+				noAngleBrackets: 'Phone number'
+			},
+			state:{
+				required: [true, 'state'],
+				noAngleBrackets: 'State'
+			},
+			city:{
+				required: [true, 'city'],
+				noAngleBrackets: 'City'
+			},
+			address:{
+				required: [true, 'address'],
+				noAngleBrackets: 'Address'
+			},
+			address2:{
+				noAngleBrackets: 'Address line 2'
+			},
+			postalCode:{
+				required: [true, 'postal code'],
+				noAngleBrackets: 'Postal code'
+			},
+			project:{
+				noAngleBrackets: 'Project'
+			},
+			cardName:{
+				required: [true, 'name on card'],
+				noAngleBrackets: 'Name on card'
+			},
+			email:{
+				required: [true, 'email'],
+				email: true
+			},
+			email2:{
+				equalTo: "#email"
+			},
+			amount:{
+				required: [true, 'amount'],
+				number: true
+			},
+			creditCard:{
+				required: [true, 'credit card number'],
+				extendedCreditCard: 'credit card number'
+			}
+		},
+		messages:{
+			email:{
+				email: g_translations["Please enter a valid email."]
+			},
+			email2:{
+				equalTo: g_translations["Please enter the same email."]
+			},
+			amount:{
+				required: g_translations["Please enter the amount you want to donate."],
+				number: g_translations["Please enter a valid amount to donate."]
+			},
+			creditCard:{
+				extendedCreditCard: g_translations["Please enter a valid amount to donate."]
+			}
 		}
-	});
+	}).settings;
+	translateErrorMessages(settings);
+}
+
+function translateErrorMessages(settings) {
+	if (typeof String.prototype.startsWith != 'function') {
+		String.prototype.startsWith = function (str) {
+			return this.slice(0, str.length) == str;
+		};
+	}
+	if (typeof String.prototype.capitalizeFirstLetter != 'function') {
+		String.prototype.capitalizeFirstLetter = function (str) {
+			return this.charAt(0).toUpperCase() + this.slice(1);
+		};
+	}
+
+	for (customValidator in $.validator.messages) {
+		var template = $.validator.messages[customValidator];
+		if (typeof(template) == 'string' && template.indexOf('{') == -1) { continue; }
+		
+		for (key in settings.rules) {
+			if (undefined !== settings.rules[key][customValidator] && undefined === settings.messages[key]) {
+				var variable = settings.rules[key][customValidator];
+				var str = $.validator.format(template, variable);
+
+				settings.messages[key] = {};
+				settings.messages[key][customValidator] = g_translations[str];
+			}
+		}
+	}
 }
 
 function fillTestForm() {

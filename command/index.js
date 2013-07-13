@@ -50,6 +50,34 @@ function setupEventHandlers() {
 	$('#commandFile').click(function() { selectRadio('choiceFile'); });
 	$('#service').click(function() { selectRadio('choiceService'); });
 	$('#text').click(function() { selectRadio('choiceText'); });
+	
+	$('#downloadSample').click(function() { 
+		window.location="downloadSample.php?service=" + $('#service').val();
+	});
+	
+	$('#fromSample').click(function() {
+		$('#errorAnchor').html('Downloading<div id="spinner" style="display:inline-block"></div></button>');
+
+		var data = new FormData();
+		data.append('service', $('#service').val());
+		
+		$.ajax({
+			type: 'POST',
+			url: 'downloadSample.php',
+			data: data,
+			success: function(retValue, textStatus) {
+				$('#errorAnchor').html('');
+				$('#text').val(retValue);
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				$('#errorAnchor').html(XMLHttpRequest.statusText.removeBefore('(0)'));
+			},
+			// Required options for file uploading to work
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+	});
 }
 
 function formDefaultValues() {

@@ -132,7 +132,7 @@ function submitHandler(form, fieldsToUploadCallback, onSuccessCallback) {
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
 			$('#spinner').hide();
-			$('#errorAnchor').html('<span style="color:red">' + XMLHttpRequest.statusText.removeBefore('(0)') + '</span>');
+			$('#errorAnchor').html(XMLHttpRequest.statusText.removeBefore('(0)'));
 		},
 		// Required options for file uploading to work
 		cache: false,

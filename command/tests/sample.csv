@@ -1,0 +1,11 @@
+URL	http://wycliffe-services.net/command/webservice.php
+src	"URL	http://wycliffe-services.net/command/webservice.php
+src	command
+RESULT	$test
+EXPECTS	ok"
+EXPECTS	line 4: Cannot have EXPECTS after RESULT
+RESULT	$prevCall
+	
+URL	http://wycliffe-services.net/command/webservice.php	
+src	$prevCall
+EXPECTS	web service line 4: Cannot have EXPECTS after RESULT does not exist

@@ -23,18 +23,32 @@ label.error {
 	margin-left: 10px;
 }
 
+#text {
+	display: block;
+	clear: both;
+	height: 500px;
+	width: 831px;
+}
+.attachment { width: 180px; }
+
 #commandFile { width: 338px; }
 @-moz-document url-prefix() { /* firefox */
 	.form-select { width: 82px; }
+	#text { width: 840px; }
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
 	#commandFile { width: 328px; }
+	#text { width: 815px; }
+	.attachment { width: 185px; }
 }
 
-.attachment { width: 180px; }
+#fromSample, #downloadSample {
+	margin-left: 5px;
+}
+
 .rightFileLabel { margin-left: 5px; }
 
-button {
+#submit {
 	height: 43px;
 	margin: 6px 0 0 0;
 	padding: 6px 22px;
@@ -50,13 +64,6 @@ button {
     height: 16px;
     margin: 4px 0 0 7px;
     width: 16px;
-}
-
-#text {
-	display: block;
-	clear: both;
-	width: 815px;
-	height: 500px;
 }
 </style>
 
@@ -84,14 +91,14 @@ button {
 		?>
 	</select>
 	<label for="choiceService">/tests/*.csv</label><br />
-	<input type="radio" name="choice" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label>
+	<input type="radio" name="choice" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label><button id="fromSample" type="button"><?php echo t('From sample') ?></button><button id="downloadSample" type="button"><?php echo t('Download') ?></button>
 	<div id="errorAnchor" class="error"></div>
 </div>
 <div id="uploadFiles">
 	<h1><?php echo t("And upload files"); ?>:</h1>
 	<label>_file1: </label><input type="file" name="file1" id="file1" class="attachment" /><label class="rightFileLabel">_file3: </label><input type="file" name="file3" id="file3" class="attachment" /><br />
 	<label>_file2: </label><input type="file" name="file2" id="file2" class="attachment" /><label class="rightFileLabel">_file4: </label><input type="file" name="file4" id="file4" class="attachment" /><br />
-	<button type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
+	<button id="submit" type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </div>
 <textarea id="text"></textarea>
 </form>

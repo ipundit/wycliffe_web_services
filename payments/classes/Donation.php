@@ -121,7 +121,6 @@ class Donation extends Record
 			$retValue = true;
 		}
 
-		unlink($file);
 		return $retValue;
 	}
 	

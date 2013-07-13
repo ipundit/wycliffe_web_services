@@ -1,7 +1,7 @@
 /*********************************************************************************************************
  * formSetup.js will setup:                                                                              *
  * 1) Some useful string functions                                                                       *
- * 2) The input validators according to validatorRules() and validatorMessages() callbacks.                    *
+ * 2) The input validators according to validatorRules() and validatorMessages() callbacks.              *
  * 3) The submit handler given fieldsToUpload(). The common test and simulate params are initialized     *
  *    from the GET url string for you if you don't initialize them yourself.                             *
  *    onSuccess() is called if the form submission is successful.                                        *

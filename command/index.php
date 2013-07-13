@@ -65,8 +65,8 @@ button {
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
 <script language='JavaScript' type='text/javascript'>
 <?php 
-	$bundle = configureForLang();
-	echo 'index_js_init({' . $bundle->generateMapping() . '})';
+	require_once 'translation.php';
+	echo 'index_js_init({' . configureForLang(100) . '})';
 ?>
 </script>
 </head>
@@ -111,14 +111,5 @@ function getOptions() {
 	}
 	asort($retValue);
 	return $retValue;
-}
-function configureForLang() {
-	require_once 'StringBundle.php';
-	$lang = isset($_GET["lang"]) ? filter_var($_GET["lang"], FILTER_SANITIZE_STRING) : "en";
-	return new StringBundle($lang);
-}
-function t($englishText) {
-	global $bundle;
-	return $bundle->translate($englishText);
 }
 ?>

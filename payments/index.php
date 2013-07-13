@@ -86,8 +86,8 @@ label.error {
 <script language='JavaScript' type='text/javascript'>
 <?php 
 	$org = configureForORG();
-	$bundle = configureForLang();
-	echo 'index_js_init("' . $org["org"] . '","' . $org["redirect_url"] . '",{' . $bundle->generateMapping() . '})';
+	require_once 'translation.php';
+	echo 'index_js_init("' . $org["org"] . '","' . $org["redirect_url"] . '",{' . configureForLang(0) . '})';
 ?>
 </script>
 </head>
@@ -187,14 +187,5 @@ function configureForORG() {
 		"currency" => $org->currency(),
 		"redirect_url" => $org->redirect_url(),
 	);
-}
-function configureForLang() {
-	require_once 'StringBundle.php';
-	$lang = isset($_GET["lang"]) ? filter_var($_GET["lang"], FILTER_SANITIZE_STRING) : "en";
-	return new StringBundle($lang);
-}
-function t($englishText) {
-	global $bundle;
-	return $bundle->translate($englishText);
 }
 ?>

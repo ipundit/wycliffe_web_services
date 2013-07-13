@@ -5,7 +5,7 @@ class StringBundle extends Record
 {
 	private $strings;
 	
-	public function __construct($language) {
+	public function __construct($language, $startRow, $endRow) {
 		$columns = array(
 		    "en"=>"text",
 		    $language =>"text"
@@ -13,7 +13,15 @@ class StringBundle extends Record
 
 		Record::__construct("string_bundle", $columns, "en");
 		
-		$res = Record::selectAll(array_keys($columns));
+		if ($startRow == -1 && $endRow == -1) {
+			$where = '';
+		} else {
+			if ($startRow == -1) { $startRow = 0; }
+			if ($endRow == -1) { $endRow = $startRow + 99; }
+			$where = "`id` between " . $startRow . " and " . $endRow;
+		}
+		
+		$res = Record::selectAll(array_keys($columns), $where);
 		if ($res->numRows() < 1) { throw new Exception($key . " is not a String Bundle."); }
 		
 		$this->strings = array();

@@ -48,16 +48,25 @@ class Donation extends Record
 	}
 	
 	public function reportCSV($data) {
+		if (!isset($data['simulate'])) { $data['simulate'] = 0; }
+
 		$msg = '';
 		$org = new Organization();
 		if (!$org->readFromData($data, $msg)) { return 'invalid ' . $msg; }
 		
 		$filters = array(
+		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
+		);
+		$row = filter_var_array($data, $filters);
+		$msg = $this->containsColumns($row, "simulate");
+		if ($msg != '') { return "invalid " . $msg; }
+		$simulate = $row['simulate'];
+
+		$filters = array(
 		  "startDate"=>FILTER_SANITIZE_STRING,
 		  "endDate"=>FILTER_SANITIZE_STRING,
 		);
 		$row = filter_var_array($data, $filters);
-		
 		foreach($row as $key => $value) {
 			$value = trim($value);
 			if ($value != '' && date('Y-m-d', strtotime($value)) != $value) { return 'invalid ' . $key; }
@@ -68,11 +77,18 @@ class Donation extends Record
 		if (FALSE  === file_put_contents($file, $report)) { return 'could not write file'; }
 
 		$msg = '';
-		if (!$this->emailReport($file, $org->notify_emails(),
-			'Credit card donation report startDate=' . $row['startDate'] . ' endDate=' . $row['endDate'], $msg)) {
-			return $msg;
+		switch ($simulate) {
+		case 0:
+			if (!$this->emailReport($file, $org->notify_emails(), 
+				'Credit card donation report startDate=' . $row['startDate'] . ' endDate=' . $row['endDate'], $msg)) {
+				return $msg;
+			}
+			// fall through
+		case 1:
+			return 'Your report has been sent to the ' . $org->name() . ' notification email address.';
+		case 2:
+			return $org->org() == 'regression_test' ? trim(preg_replace('/\s+/', ' ', $report)) : 'simulate=2 only works for org=regression_test';
 		}
-		return 'Your report has been sent to the ' . $org->name() . ' notification email address.';
 	}
 	
 	private function emailReport($file, $to, $subject, &$msg) {

@@ -2,5 +2,7 @@
 require_once 'classes/Donation.php';
 
 $donation = new Donation();
-echo $donation->reportCSV($_GET);
+
+$data = empty($_POST) ? $_GET : $_POST;
+echo $donation->reportCSV($data);
 ?>

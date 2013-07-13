@@ -75,26 +75,28 @@ class Record
 		$res = $statement->execute($values);
 		$statement->free();
 
-		if (\PEAR::isError($res)) { die($res->getMessage()); }
+		if (PEAR::isError($res)) { die($res->getUserInfo()); }
 		return $res;
 	}
 	
 	protected function selectAll($columns, $where = '') {
 		if (is_array($columns)) { $columns = "`" . implode("`,`", $columns) . "`"; }
-		if ($where != '') { $where = ' ' . $where; }
+		if ($where != '') { $where = ' WHERE ' . $where; }
 		
 		$statement = $this->db->prepare('SELECT ' . $columns . ' FROM ' . $this->databaseName . '.' . $this->tableName . $where, MDB2_PREPARE_RESULT);
+		if (PEAR::isError($statement)) { die($statement->getUserInfo()); }
+
 		$res = $statement->execute();
 		$statement->free();
 
-		if (\PEAR::isError($res)) { die($res->getMessage()); }
+		if (PEAR::isError($res)) { die($res->getUserInfo()); }
 		return $res;
 	}
 
-	private function getRows($where) {
+	protected function getRows($columns, $where) {
 		$retValue = array();
 
-		$res = $this->selectAll('*', $where);
+		$res = $this->selectAll($columns, $where);
 		if ($res->numRows() < 1) { return $retValue; }
 
         while ($row = $res->fetchRow()) {

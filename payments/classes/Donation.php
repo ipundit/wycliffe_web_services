@@ -1,11 +1,10 @@
 <?php 
 require_once 'classes/Record.php';
+require_once 'classes/Organization.php';
 
 class Donation extends Record
 {
-	public function __construct() {}
-	
-	public function recordDonation($org, $user, $purchase, &$msg) {
+	public function __construct() {
 		$columns = array(
 		    "id"=>"integer",
 		    "email"=>"text",
@@ -24,7 +23,9 @@ class Donation extends Record
 			"createTimestamp"=>"timestamp",
 		);
 		Record::__construct("donation", $columns, "id");
-
+	}
+	
+	public function recordDonation($org, $user, $purchase, &$msg) {
 		$row = array(
 			'email' => $user->emailAddress(),
 			'name' => $user->name(),
@@ -46,23 +47,84 @@ class Donation extends Record
 		return $msg == '';
 	}
 	
-	public function reportCSV($startDate, $endDate) {
-		$headers = array('name','email','phone','country','state','city','saddress','address2',
-					   'postalCode', 'purchaseId', 'amount', 'project', 'date');
-
-		// fixme: setup WHERE clause for $startDate $endDate in yyyy-mm-dd format
-		$where = '';
-		$rows = Record::getRows($headers, $where);
+	public function reportCSV($data) {
+		$msg = '';
+		$org = new Organization();
+		if (!$org->readFromData($data, $msg)) { return 'invalid ' . $msg; }
 		
-		$retValue = array(implode('\t', headers));
+		$filters = array(
+		  "startDate"=>FILTER_SANITIZE_STRING,
+		  "endDate"=>FILTER_SANITIZE_STRING,
+		);
+		$row = filter_var_array($data, $filters);
+		
+		foreach($row as $key => $value) {
+			$value = trim($value);
+			if ($value != '' && date('Y-m-d', strtotime($value)) != $value) { return 'invalid ' . $key; }
+		}
+		
+		$report = $this->generateReport($org->org(), $row['startDate'], $row['endDate']);
+		$file = tempnam(sys_get_temp_dir(), 'reportCSV') . '.csv';
+		if (FALSE  === file_put_contents($file, $report)) { return 'could not write file'; }
+
+		$msg = '';
+		if (!$this->emailReport($file, $org->notify_emails(),
+			'Credit card donation report startDate=' . $row['startDate'] . ' endDate=' . $row['endDate'], $msg)) {
+			return $msg;
+		}
+		return 'Your report has been sent to the ' . $org->name() . ' notification email address.';
+	}
+	
+	private function emailReport($file, $to, $subject, &$msg) {
+		$params = array(
+			'to' => $to,
+			'subject' => $subject,
+			'attach1' => '@' . $file,
+		);
+		$ch = util::curl_init('https://wycliffe-services.net/email/webservice.php', $params);
+		$result = curl_exec($ch);
+		if (curl_errno($ch)) {
+			$msg = curl_error($ch);
+			$retValue = false;
+		} else {
+			curl_close($ch);
+			$retValue = true;
+		}
+
+		unlink($file);
+		return $retValue;
+	}
+	
+	private function generateReport($org, $startDate, $endDate) {
+		$asciiTab = chr(9);
+		
+		$headers = array('name','email','phone','country','state','city','address','address2',
+					     'postalCode','purchaseId','amount','project','date');
+		$retValue = array(implode($asciiTab, $headers));
+		$headers[count($headers) - 1] = 'createTimestamp';
+
+		$where = '`org` = "' . $org . '"';
+		
+		if ($startDate != '' || $endDate != '') {
+			if ($startDate == '') { $startDate = '2000-01-01'; }
+			if ($endDate == '') { $endDate = date('Y-m-d'); }
+			$where .= " AND `createTimestamp` between '" . $startDate . "' and DATE_ADD('" . $endDate . "',INTERVAL 1 DAY)";
+		}
+		$rows = Record::getRows($headers, $where);
+
+		foreach ($headers as &$header) {
+			$header = strtolower ($header);
+		}
+
 		foreach ($rows as $row) {
 			$csvRow = array();
-			foreach ($headers as $header) {
-				$csvRow[] = $row[$header];
+			
+			for ($i = 0; $i < count($headers); $i++) {
+				$csvRow[] = $row[$headers[$i]];
 			}
-			$retValue[] = implode('\t', $csvRow);
+			$retValue[] = implode($asciiTab, $csvRow);
 		}
-		return implode('\n', $retValue);
+		return implode(PHP_EOL, $retValue);
 	}
 }
 ?>

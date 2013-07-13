@@ -82,22 +82,19 @@ label.error {
 </style>
 <script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
+<script language='JavaScript' type='text/javascript' src='index.js'></script>
 <script language='JavaScript' type='text/javascript'>
 <?php 
 	$org = configureForORG();
 	$bundle = configureForLang();
-	
-	echo 'var g_org = "' . $org["org"] . '";';
-	echo 'var g_redirect_url = "' . $org["redirect_url"] . '";';
-	echo 'var g_translations = {' . $bundle->generateMapping() . '};';
+	echo 'index_js_init("' . $org["org"] . '","' . $org["redirect_url"] . '",{' . $bundle->generateMapping() . '})';
 ?>
 </script>
-<script language='JavaScript' type='text/javascript' src='index.js'></script>
 </head>
 <body>
 <form id="theForm" action="#" method="post">
 <img src="<?php echo $org["img_prefix"]; ?>header.png" />
-<h3 id="instructions">You are donating to <?php echo $org["name"]; ?>, a Participating Organization of the Wycliffe Global Alliance. Your donation will be converted to <?php echo $org["currency"]; ?> for processing purposes.</h3>
+<h3 id="errorAnchor">You are donating to <?php echo $org["name"]; ?>, a Participating Organization of the Wycliffe Global Alliance. Your donation will be converted to <?php echo $org["currency"]; ?> for processing purposes.</h3>
 
 <fieldset id="contactInfo"><legend><?php echo t("Contact Information"); ?></legend>
 <div>
@@ -167,7 +164,7 @@ label.error {
 </div>
 </fieldset>
 <img id="JCB" src="JCB.gif" /><img id="unionPay" src="unionpay.png" />
-<button type="button" id="donate"><?php echo t("Donate"); ?><div id="spinner"></div></button>
+<button type="submit" id="donate"><?php echo t("Donate"); ?><div id="spinner"></div></button>
 <img id="footer" src="<?php echo $org["img_prefix"]; ?>footer.png" />
 </form>
 </body>

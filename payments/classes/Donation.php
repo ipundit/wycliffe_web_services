@@ -1,5 +1,5 @@
 <?php 
-require_once 'classes/Record.php';
+require_once 'Record.php';
 require_once 'classes/Organization.php';
 
 class Donation extends Record

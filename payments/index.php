@@ -189,7 +189,7 @@ function configureForORG() {
 	);
 }
 function configureForLang() {
-	require_once 'classes/StringBundle.php';
+	require_once 'StringBundle.php';
 	$lang = isset($_GET["lang"]) ? filter_var($_GET["lang"], FILTER_SANITIZE_STRING) : "en";
 	return new StringBundle($lang);
 }

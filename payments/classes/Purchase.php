@@ -1,6 +1,6 @@
 <?php 
+require_once 'Record.php';
 require_once 'util.php';
-require_once 'classes/Record.php';
 
 class Purchase extends Record
 {

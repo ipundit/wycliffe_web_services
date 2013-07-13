@@ -1,7 +1,7 @@
 <?php 
+require_once 'Record.php';
 require_once 'classes/Organization.php';
 require_once 'classes/Purchase.php';
-require_once 'classes/Record.php';
 
 class User extends Record
 {

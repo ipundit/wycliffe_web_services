@@ -9,6 +9,16 @@ class Email
 	private static $currentLine = array();
 	
 	public static function sendFromPost(&$msg) {
+		util::saveAllFiles();
+		try {
+			$retValue = Email::sendFromPostImpl($msg);
+		} catch (Exception $ignore) {}
+		util::deleteAllFiles();
+
+		return $retValue;
+	}
+	
+	private static function sendFromPostImpl(&$msg) {
 		$msg = '';
 		$row = Email::validateInput($_POST, $msg);
 		if ($msg != '') { return false;	}
@@ -53,6 +63,7 @@ class Email
 
 	private static function shutdown() {
 		$err = error_get_last();
+		util::deleteAllFiles($files);
 		if ($err == null) { return; }
 
 		if (connection_aborted()) {

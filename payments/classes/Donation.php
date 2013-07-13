@@ -73,12 +73,26 @@ class Donation extends Record
 		}
 		
 		$report = $this->generateReport($org->org(), $row['startDate'], $row['endDate']);
-		$file = tempnam(sys_get_temp_dir(), 'reportCSV') . '.csv';
+		$file = tempnam(sys_get_temp_dir(), 'reportCSV');
+		unlink($file);
+		$file = $file . '.csv';
+		
+		try {
+			$retValue = $this->reportCSVimpl($file, $report, $simulate, $org, $row);
+		} catch (Exception $ignore) {}
+		try {
+			if (file_exists($file)) { unlink($file); }
+		} catch (Exception $ignore) {}
+		
+		return $retValue;
+	}
+	
+	private function reportCSVimpl($file, $report, $simulate, $org, $row) {
 		if (FALSE  === file_put_contents($file, $report)) { return 'could not write file'; }
 
-		$msg = '';
 		switch ($simulate) {
 		case 0:
+			$msg = '';
 			if (!$this->emailReport($file, $org->notify_emails(), 
 				'Credit card donation report startDate=' . $row['startDate'] . ' endDate=' . $row['endDate'], $msg)) {
 				return $msg;

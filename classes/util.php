@@ -4,6 +4,8 @@ require_once 'Mail/mime.php';
 define("_parseCSV_ASCII_TAB", 9);
 
 class util {
+	static private $files = array();
+	
 	static public function curl_init($url, $params) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_HEADER, false);     // Don't return the header, just the html
@@ -240,6 +242,25 @@ class util {
 	
 	private static function jaarsDomains() {
 		return array('sil.org', 'wycliffe.net', 'wycliffe.org', 'jaars.org', 'kastanet.org');
+	}
+		
+	public static function saveAllFiles() {
+		foreach ($_FILES as $file) {
+			util::$files[] = $file;
+		}
+	}
+	public static function deleteAllFiles() {
+		foreach (util::$files as $key => $value) {
+			try {
+				if (file_exists($value['tmp_name'])) { unlink($value['tmp_name']); }
+			} catch (Exception $ignore) {}
+			unset($_FILES[$key]);
+		}
+		foreach ($_FILES as $file) {
+			try {
+				if (file_exists($file['tmp_name'])) { unlink($file['tmp_name']); }
+			} catch (Exception $ignore) {}
+		}
 	}
 }
 ?>

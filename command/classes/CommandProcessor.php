@@ -11,6 +11,16 @@ define("ASCII_TAB", 9);
 
 class CommandProcessor {
 	static public function process(&$msg) {
+		util::saveAllFiles();
+		try {
+			$retValue = CommandProcessor::processImpl($msg);
+		} catch (Exception $ignore) {}
+		util::deleteAllFiles();
+
+		return $retValue;
+	}
+	
+	static private function processImpl(&$msg) {
 		$src = isset($_POST['src']) ? trim($_POST['src']) : '';
 		$simulate = isset($_POST['simulate']) ? trim($_POST['simulate']) == 1 : false;
 

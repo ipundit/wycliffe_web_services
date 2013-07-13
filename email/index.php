@@ -14,7 +14,12 @@ h1 {
 }
 
 label { display: inline-block; }
-#error { color: red; }
+.error { color: red; }
+label.error {
+	display: block;
+	text-align: left;
+	font-weight: bold;
+}
 
 .attachment { width: 263px; }
 
@@ -106,27 +111,18 @@ button {
 
 <script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
-<script language='JavaScript' type='text/javascript'>
-	// Need to get translations of validation messages
-	var translationMappings = {
-		<?php echo generateMapping("From cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please enter a valid email."); ?>,
-		<?php echo generateMapping("Subject cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Tags cannot contain the < or > characters."); ?>,
-		<?php echo generateMapping("Please choose a mailing list template .csv file."); ?>
-		
-	};
-	
-	function translate(englishString) {
-		return translationMappings[englishString];
-	}
-</script>
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<?php 
+	require_once 'translation.php';
+	echo 'index_js_init({' . configureForLang(200) . '})';
+?>
+</script>
 </head>
 <body>
 
-<div id="error"></div>
 <form id="theForm" action="#" method="post">
+<div id="errorAnchor" class="error"></div>
 <div class="row">
 	<div class="header"><?php echo t("From") ?>:</div>
 	<div class="cell">
@@ -154,7 +150,7 @@ button {
 	</div>
 	<div class="cell rightCell">
 		<br />
-		<div class="header"><label for="choiceFile">Tags:</label></div>
+		<div class="header"><label for="choiceFile"><?php echo t("Tags"); ?>:</label></div>
 		<div class="cell"><input type="text" name="tags" id="tags" /></div>
 	</div>
 </div>
@@ -169,7 +165,7 @@ button {
 	<div class="header"><?php echo t("Bcc"); ?>:</div>
 	<div class="cell"><input type="text" name="bcc" id="bcc" /></div>
 	<div class="cell rightCell">
-		<button type="button"><?php echo t("Submit"); ?><div id="spinner"></div></button>
+		<button type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 	</div>
 </div>
 <div class="row">
@@ -207,17 +203,5 @@ function getOptions() {
 		util::removeAfter($value, '@');
 	}
 	return $arr;
-}
-
-function t($englishText) {
-	// Do nothing stub for localization.  Implement this if necessary in the future
-//	global $bundle;
-//	return $bundle->translate($englishText);
-	return $englishText;
-}
-
-// Used for mapping client side error messages.
-function generateMapping($englishText) {
-	return '"' . $englishText . '" : "' . t($englishText) . '"';
 }
 ?>

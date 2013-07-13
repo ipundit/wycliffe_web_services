@@ -1,35 +1,9 @@
-document.write('<script src="../formSetup.js" type="text/javascript"></script>');
+document.write('<script type="text/javascript" src="../formSetup.js" ></script>');
 
 var g_translations;
 
 function index_js_init(translationMapping) {
 	var g_translations = translationMapping;
-
-	$.validator.addMethod("isCSV", function(value, element, param) {
-		if (!$('#choiceFile').prop('checked')) { return true; }
-		value = value.trim();
-		if (value.length == 0) { return false; }
-		return value.endsWith('.csv');
-	}, "Please choose a .csv file");
-}
-
-function preselectRadio() {
-	var service = urlParam("service");
-	if (service == undefined || $('#text').val() != '') { 
-		selectRadio('choiceText');
-		return;
-	}
-
-	selectRadio('choiceService');
-	$("#service > option").each(function() {
-		if (this.value == service) {
-			$(this).prop('selected', true);
-			return;
-		}
-	});
-}
-function selectRadio(name) {
-	$('#' + name).prop('checked', true);
 }
 
 /*****************************************************************************************************
@@ -41,7 +15,7 @@ function selectRadio(name) {
 function validatorRules() {
 	return {
 		commandFile:{
-			isCSV: true,
+			isCSV: ['Command file', '#choiceFile']
 		},
 	};
 }
@@ -76,9 +50,20 @@ function setupEventHandlers() {
 	$('#commandFile').click(function() { selectRadio('choiceFile'); });
 	$('#service').click(function() { selectRadio('choiceService'); });
 	$('#text').click(function() { selectRadio('choiceText'); });
-	preselectRadio();
 }
 
-function testFields() {
+function formDefaultValues() {
+	var service = urlParam("service");
+	if (service != undefined) {
+		return {
+			'choiceService': 1,
+			'service': service
+		};
+	}
+
+	if ($('#text').val() != '' && $('#choiceText').prop('checked')) { return {}; }
+	if ($('#commandFile').val() != '' && $('#choiceFile').prop('checked')) { return {}; }
+	if ($('#text').val() != '') { return { 'choiceText': 1 }; }
+	if ($('#commandFile').val() != '') { return { 'choiceFile': 1 }; }
 	return {}
 }

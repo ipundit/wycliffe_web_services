@@ -22,7 +22,7 @@ class StringBundle extends Record
 		}
 		
 		$res = Record::selectAll(array_keys($columns), $where);
-		if ($res->numRows() < 1) { throw new Exception($key . " is not a String Bundle."); }
+		if ($res->numRows() < 1) { throw new Exception($language . " is not a supported language."); }
 		
 		$this->strings = array();
         while (($row = $res->fetchRow())) {

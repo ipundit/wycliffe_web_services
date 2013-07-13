@@ -1,28 +1,41 @@
 /*********************************************************************************************************
  * formSetup.js will setup:                                                                              *
  * 1) Some useful string functions                                                                       *
- * 2) The input validators according to validatorRules() and validatorMessages() callbacks.              *
- * 3) The submit handler given fieldsToUpload(). The common test and simulate params are initialized     *
+ * 2) The event handlers by just passing control back to your setupEventHandlers() callback function     *
+ * 3) The input validators according to validatorRules() and validatorMessages() callbacks.              *
+ * 4) The submit handler given fieldsToUpload(). The common test and simulate params are initialized     *
  *    from the GET url string for you if you don't initialize them yourself.                             *
  *    onSuccess() is called if the form submission is successful.                                        *
  *    Assumes that you have elements id=errorAnchor and id=spinner to show the error messages and submit *
  *    spinner respectively.                                                                              *
- * 4) The event handlers by just passing control back to your setupEventHandlers() callback function     *
  *********************************************************************************************************/
 
 $(document).ready(function() {
 	setupStringPrototypes();
-	fillTestForm(testFields());
-	setupValidators(validatorRules(), validatorMessages(), fieldsToUpload, onSuccess);
 	setupEventHandlers();
+	fillTestForm(formDefaultValues());
+	setupValidators(validatorRules(), validatorMessages(), fieldsToUpload, onSuccess);
 });
 
 function setupValidators(rules, messages, fieldsToUploadCallback, onSuccessCallback) {
 	$.validator.messages.required = "Please enter your {1}."
 
+	$.validator.addMethod("radioChecked", function(value, element, param) { 
+		return (param != null && !$(param).prop('checked'));
+	}, "{0} radio must be checked");
+
+	
 	$.validator.addMethod("noAngleBrackets", function(value, element, params) { 
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
 		return value.indexOf("<") == -1 && value.indexOf(">") == -1;
-	}, "{0} cannot contain the < or > characters.");
+	}, "{0} cannot contain the < or > characters");
+
+	$.validator.addMethod("isCSV", function(value, element, params) {
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		value = value.trim();
+		if (value.length == 0) { return false; }
+		return value.endsWith('.csv');
+	}, "Please choose a .csv file");
 
 	var validator = $("#theForm").validate({
 		errorPlacement: function(error, element) {
@@ -54,8 +67,11 @@ function translateErrorMessages(settings) {
 	}
 }
 
+function selectRadio(name) {
+	$('#' + name).prop('checked', true);
+}
 function fillTestForm(fields) {
-	if (fields === undefined || fields == null || urlParam("test") != 1) { return; }
+	if (fields === undefined || fields == null) { return; }
 	
 	footer = fields['footer'];
 	if (undefined !== footer) {
@@ -63,8 +79,24 @@ function fillTestForm(fields) {
 		$('#footer').after(footer);
 	}
 	
-	for (var key in fields) {
-		$('#' + key).val(fields[key]);
+	for (var id in fields) {
+		var value = urlParam(id);
+		var element = $('#'+ id);
+		var elementType = element.get(0).type;
+		
+		if (value === undefined) { 
+			if (elementType == 'checkbox' || elementType == 'radio') {
+				element.prop('checked', fields[id] == 1);
+			} else {
+				if (element.val() == '' || elementType == 'select-one') { element.val(fields[id]); }
+			}
+		} else {
+			if (elementType == 'checkbox' || elementType == 'radio') {
+				element.prop('checked', value == 1);
+			} else {
+				element.val(value);
+			}
+		}
 	}
 }
 
@@ -111,10 +143,17 @@ function submitHandler(form, fieldsToUploadCallback, onSuccessCallback) {
 
 function setupStringPrototypes() {
 	if (typeof String.prototype.startsWith != 'function') {
-		String.prototype.startsWith = function (str) {
-			return this.slice(0, str.length) == str;
+		String.prototype.startsWith = function (prefix) {
+			return this.slice(0, prefix.length) == prefix;
 		};
 	}
+	
+	if (typeof String.prototype.endsWith != 'function') {
+		String.prototype.startsWith = function (suffix) {
+			return this.indexOf(suffix, this.length - suffix.length) !== -1;
+		};
+	}
+
 	if (typeof String.prototype.removeBefore != 'function') {
 		String.prototype.removeBefore = function (needle) {
 			var index = this.indexOf(needle);

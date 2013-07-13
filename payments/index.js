@@ -57,37 +57,37 @@ function validatorRules() {
 	return {
 		name:{
 			required: [true, 'name'],
-			noAngleBrackets: 'Name'
+			noAngleBrackets: ['Name', null]
 		},
 		phone:{
 			required: [true, 'phone number'],
-			noAngleBrackets: 'Phone number'
+			noAngleBrackets: ['Phone number', null]
 		},
 		state:{
 			required: [true, 'state'],
-			noAngleBrackets: 'State'
+			noAngleBrackets: ['State', null]
 		},
 		city:{
 			required: [true, 'city'],
-			noAngleBrackets: 'City'
+			noAngleBrackets: ['City', null]
 		},
 		address:{
 			required: [true, 'address'],
-			noAngleBrackets: 'Address'
+			noAngleBrackets: ['Address', null]
 		},
 		address2:{
-			noAngleBrackets: 'Address line 2'
+			noAngleBrackets: ['Address line 2', null]
 		},
 		postalCode:{
 			required: [true, 'postal code'],
-			noAngleBrackets: 'Postal code'
+			noAngleBrackets: ['Postal code', null]
 		},
 		project:{
-			noAngleBrackets: 'Project'
+			noAngleBrackets: ['Project', null]
 		},
 		cardName:{
 			required: [true, 'name on card'],
-			noAngleBrackets: 'Name on card'
+			noAngleBrackets: ['Name on card', null]
 		},
 		email:{
 			required: [true, 'email'],
@@ -151,10 +151,12 @@ function onSuccess(retValue) {
 
 function setupEventHandlers() {
 	$('#country').change(function() { fireCountryChange(); });
-	fireCountryChange();
 }
 
-function testFields() {
+function formDefaultValues() {
+	fireCountryChange();
+	if (urlParam("test") != 1) { return {}; }
+
 	return {
 		'name': 'TEST CARD1',
 		'phone': '+60123456789',

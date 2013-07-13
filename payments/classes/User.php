@@ -20,7 +20,7 @@ class User extends Record
 		Record::__construct("user", $columns, "email");
 	}
 
-	public function makePurchase($data, &$msg) {
+	public function makePurchase($data, $onSecureServer, &$msg) {
 		if (!isset($data['simulate'])) { $data['simulate'] = 0; }
 
 		$filters = array(
@@ -43,6 +43,7 @@ class User extends Record
 			return false;
 		}
 		$simulate = $row['simulate'] == 1;
+		$simulate = true; // fixme: hardcode simulate until production server is ready
 		Record::initialize($row, false);
 		
 		$purchase = new Purchase();
@@ -56,19 +57,25 @@ class User extends Record
 			$msg = "Invalid organization input for " . $msg;
 			return false;
 		}
-		
-		if (!$this->makePurchaseImpl($org, $purchase, $simulate, $msg)) { return false; }
-		return $this->emailPurchaseReceipt($org, $purchase->amount(), $msg, $simulate, $msg);
-	}
 
-	private function makePurchaseImpl($org, $purchase, $simulate, &$msg) {
-		if (!$purchase->makePurchase($org, $this, $simulate, $msg)) { 
-			if (substr($msg, 0, 23) == 'Could not resolve host:') {
-				$msg = "Could not connect";
+		if (!$purchase->makePurchase($org, $this, $onSecureServer, $simulate, $msg)) { 
+			if (substr($msg, 0, 23) == 'Could not resolve host:') {	$msg = "Could not connect";	}
+			return false;
+		}
+
+		if ($onSecureServer) { 
+			require_once 'classes/Donation.php';
+			$donation = new Donation();
+			
+			if ($donation->recordDonation($org->org(), $this, $purchase, $msg)) {
+				$msg = $purchase->purchaseId();
+				return true;
 			}
 			return false;
 		}
-		return true;
+		
+		$simulate = false; // fixme: remove when email testing passes
+		return $this->emailPurchaseReceipt($org, $purchase->amount(), $msg, $simulate, $msg);
 	}
 
 	private function emailPurchaseReceipt($org, $amount, $orderNumber, $simulate, &$msg) {

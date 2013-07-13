@@ -1,9 +1,6 @@
 <?php 
 require_once 'util.php';
 require_once 'classes/Record.php';
-require_once 'classes/ChinaUnionPay.php';
-require_once 'classes/JapanCreditBureau.php';
-require_once 'classes/MerchantAccounts.php';
 
 class Purchase extends Record
 {
@@ -25,7 +22,7 @@ class Purchase extends Record
 		  "amount"=>FILTER_VALIDATE_FLOAT,
 		  "cardName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "creditCard"=>FILTER_SANITIZE_STRING,
-		  "month"=>FILTER_VALIDATE_INT,
+		  "month"=>FILTER_SANITIZE_STRING,
 		  "year"=>FILTER_VALIDATE_INT,
 		  "project"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		);
@@ -44,7 +41,63 @@ class Purchase extends Record
 		return true;
 	}
 
-	public function makePurchase($org, $user, $simulate, &$msg) {
+	public function makePurchase($org, $user, $onSecureServer, $simulate, &$msg) {
+		if ($onSecureServer) {
+			if ($this->chargeCreditCard($org, $user, $simulate, $msg)) {
+				$this->row['purchaseId'] = $msg;
+				return true;
+			}
+			return false;
+		}
+		
+		$url = $simulate ? 'https://wycliffe-services.net/payments/processor.php' :
+						   'https://gateway.pvbcard.com/processor.php';
+		
+		$params = array(
+			'org' => $org->org(),
+			'name' => $user->name(),
+			'email' => $user->emailAddress(),
+			'phone' => $user->phone(),
+			'country' => $user->country(),
+			'address' => $user->address(),
+			'address2' => $user->address2(),
+			'state' => $user->state(),
+			'city' => $user->city(),
+			'postalCode' => $user->postalCode(),
+			'amount' => $this->amount(),
+			'project' => $this->project(),
+			'cardName' => $this->cardName(),
+			'creditCard' => $this->creditCard(),
+			'month' => $this->month(true),
+			'year' => $this->year(true),
+			'test' => $org->test(),
+		);
+		
+		$ch = util::curl_init($url, $params);
+		$result = curl_exec($ch);
+		if (curl_errno($ch)) {
+			$msg = curl_error($ch);
+			return false;
+		} else {
+			curl_close($ch);
+		}
+		
+		if (substr($result, 0, 2) == 'ok') {
+			$msg = substr($result, 2);
+			$this->row['purchaseId'] = $msg;
+			return true;
+		}
+		
+		// fixme: localize this
+		$msg = "Your credit card was declined: " . $result;
+		return false;
+	}
+	
+	public function chargeCreditCard($org, $user, $simulate, &$msg) {
+		require_once 'classes/ChinaUnionPay.php';
+		require_once 'classes/JapanCreditBureau.php';
+		require_once 'classes/MerchantAccounts.php';
+
 		if ($this->isPayPal()) {
 			$paymentProcessor = new PayPal();
 		} else {
@@ -60,20 +113,15 @@ class Purchase extends Record
 				$paymentProcessor = new ChinaUnionPay();
 				break;
 			default:
-				$msg = "Only Visa, Mastercard, JCB and China Union Pay cards are accepted.";
+				$msg = "Only Visa, Mastercard, JCB and China Union Pay cards are accepted."; // fixme: localize this
 				return false;
 			}
-		}
-
-		if (!$paymentProcessor->makePurchase($org, $user, $this, $simulate, $msg)) {
-			// fixme: localize this
-			$msg = "Your credit card was declined: " . $msg;
-			return false;
-		}
-		$this->row['purchaseId'] = $msg;
-		return true;
+ 		}
+		
+		$simulate = false; // fixme: Remove this when we no longer need to test integration with the payment processor
+		return $paymentProcessor->makePurchase($org, $user, $this, $simulate, $msg);
 	}
-	
+
 	private function isValidCreditCard(&$cc) {
 		// Strip any non-digits (useful for credit card numbers with spaces and hyphens)
 		$cc = preg_replace('/\D/', '', $cc);
@@ -136,10 +184,13 @@ class Purchase extends Record
 	public function creditCard() {
 		return $this->row['creditCard'];
 	}
-	public function month() {
-		return $this->row['month'];
+	public function month($useTwoDigits = false) {
+		$str = $this->row['month'];
+		if (!$useTwoDigits && substr($str, 0, 1) == '0') { $str = substr($str, 1); }
+		return $str;
 	}
-	public function year() {
+	public function year($useFourDigits = false) {
+		if ($useFourDigits) { return $this->row['year']; }
 		return substr($this->row['year'], 2);
 	}
 	public function project() {

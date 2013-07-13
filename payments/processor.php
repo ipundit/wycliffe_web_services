@@ -2,6 +2,6 @@
 require_once 'classes/User.php';
 
 $user = new User();
-if ($user->makePurchase($_POST, false, $msg)) { $msg = 'ok' . $msg; }
+if ($user->makePurchase($_POST, true, $msg)) { $msg = 'ok' . $msg; }
 echo $msg;
 ?>

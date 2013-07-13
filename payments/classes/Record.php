@@ -79,11 +79,11 @@ class Record
 		return $res;
 	}
 	
-	protected function selectAll($columns) {
-		
+	protected function selectAll($columns, $where = '') {
 		if (is_array($columns)) { $columns = "`" . implode("`,`", $columns) . "`"; }
-
-		$statement = $this->db->prepare('SELECT ' . $columns . ' FROM ' . $this->databaseName . '.' . $this->tableName, MDB2_PREPARE_RESULT);
+		if ($where != '') { $where = ' ' . $where; }
+		
+		$statement = $this->db->prepare('SELECT ' . $columns . ' FROM ' . $this->databaseName . '.' . $this->tableName . $where, MDB2_PREPARE_RESULT);
 		$res = $statement->execute();
 		$statement->free();
 
@@ -91,6 +91,18 @@ class Record
 		return $res;
 	}
 
+	private function getRows($where) {
+		$retValue = array();
+
+		$res = $this->selectAll('*', $where);
+		if ($res->numRows() < 1) { return $retValue; }
+
+        while ($row = $res->fetchRow()) {
+            $retValue[] = $row;
+        }
+		return $retValue;
+	}
+	
 	private function inDatabase($key, $value) {
 		return $this->select($key, $key . "=?", $value)->numRows() >= 1;
 	}
@@ -118,9 +130,6 @@ class Record
 		}
 		return '';
 	}
-
-/*
-	We shouldn't store any donor or payment information in a centralized database - instead, let each PO do that for privacy reasons
 
 	public function serialize($key = '') {
 		if (!$this->isChanged) { return ''; }
@@ -165,7 +174,6 @@ class Record
 		$this->isChanged = false;
 		return '';
 	}
-*/
 
 /*
 	Keep database connection open across a request

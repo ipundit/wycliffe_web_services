@@ -62,21 +62,15 @@ button {
 
 <script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
-<script language='JavaScript' type='text/javascript'>
-	// Need to get translations of validation messages
-	var translationMappings = {
-		<?php echo generateMapping("Please enter a valid URL to a .csv file"); ?>,
-		<?php echo generateMapping("Please choose a .csv file"); ?>
-	};
-	
-	function translate(englishString) {
-		return translationMappings[englishString];
-	}
-</script>
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<?php 
+	$bundle = configureForLang();
+	echo 'index_js_init({' . $bundle->generateMapping() . '})';
+?>
+</script>
 </head>
 <body>
-
 <form id="theForm" action="#" method="post">
 <div id="radioButtons">
 	<h1><?php echo t("Run web service commands from"); ?>:</h1>
@@ -91,13 +85,13 @@ button {
 	</select>
 	<label for="choiceService">/tests/*.csv</label><br />
 	<input type="radio" name="choice" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label>
-	<div class="error" id="error"></div>
+	<div id="errorAnchor" class="error"></div>
 </div>
 <div id="uploadFiles">
 	<h1><?php echo t("And upload files"); ?>:</h1>
 	<label>_file1: </label><input type="file" name="file1" id="file1" class="attachment" /><label class="rightFileLabel">_file3: </label><input type="file" name="file3" id="file3" class="attachment" /><br />
 	<label>_file2: </label><input type="file" name="file2" id="file2" class="attachment" /><label class="rightFileLabel">_file4: </label><input type="file" name="file4" id="file4" class="attachment" /><br />
-	<button type="button"><?php echo t("Submit"); ?><div id="spinner"></div></button>
+	<button type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </div>
 <textarea id="text"></textarea>
 </form>
@@ -118,16 +112,13 @@ function getOptions() {
 	asort($retValue);
 	return $retValue;
 }
-
-function t($englishText) {
-	// Do nothing stub for localization.  Implement this if necessary in the future
-//	global $bundle;
-//	return $bundle->translate($englishText);
-	return $englishText;
+function configureForLang() {
+	require_once 'StringBundle.php';
+	$lang = isset($_GET["lang"]) ? filter_var($_GET["lang"], FILTER_SANITIZE_STRING) : "en";
+	return new StringBundle($lang);
 }
-
-// Used for mapping client side error messages.
-function generateMapping($englishText) {
-	return '"' . $englishText . '" : "' . t($englishText) . '"';
+function t($englishText) {
+	global $bundle;
+	return $bundle->translate($englishText);
 }
 ?>

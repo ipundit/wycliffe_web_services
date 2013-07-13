@@ -1,11 +1,17 @@
-$(document).ready(function() {
-	$('#commandFile').click(function() { selectRadio('choiceFile'); });
-	$('#service').click(function() { selectRadio('choiceService'); });
-	$('#text').click(function() { selectRadio('choiceText'); });
-	addValidators();
-	addSubmitHandler();
-	preselectRadio();
-});
+document.write('<script src="../formSetup.js" type="text/javascript"></script>');
+
+var g_translations;
+
+function index_js_init(translationMapping) {
+	var g_translations = translationMapping;
+
+	$.validator.addMethod("isCSV", function(value, element, param) {
+		if (!$('#choiceFile').prop('checked')) { return true; }
+		value = value.trim();
+		if (value.length == 0) { return false; }
+		return value.endsWith('.csv');
+	}, "Please choose a .csv file");
+}
 
 function preselectRadio() {
 	var service = urlParam("service");
@@ -26,80 +32,53 @@ function selectRadio(name) {
 	$('#' + name).prop('checked', true);
 }
 
-function addSubmitHandler() {
-	$('button').click(function() {
-		$('#error').html('');
-		if (!$("#theForm").valid()) { return; }
-		$('#spinner').css('display', 'inline-block');
+/*****************************************************************************************************
+ * The rest of the file are callbacks called by formSetup.js using the Template Method pattern. See  *
+ * formSetup.js for more details of how it peforms most of the tasks of initializing, validating and *
+ * submitting a form for you.                                                                        *
+ *****************************************************************************************************/
 
-		var data = new FormData();
-		switch ($('input[name=choice]:checked', '#theForm').attr('id')) {
-		case 'choiceFile':
-			data.append('src', document.getElementById('commandFile').files[0]);
-			break;
-		case 'choiceService':
-			data.append('src', $('#service').val());
-			break;
-		case 'choiceText':
-			data.append('src', $('#text').val());
-			break;
-		}
-		for (i = 1; i <= 4; i++) {
-			if ($('#file' + i).val() != '') { data.append('_file' + i, document.getElementById('file' + i).files[0]); }
-		}
-		
-		$.ajax({
-			type: 'POST',
-			url: 'webservice.php',
-			data: data,
-			success: function(retValue, textStatus) {
-				$('#spinner').hide();
-				$('#error').html(retValue);
-			},
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				$('#spinner').hide();
-				$('#error').html(removeBefore(XMLHttpRequest.statusText, '(0)'));
-			},
-			// Required options for file uploading to work
-			cache: false,
-			contentType: false,
-			processData: false
-		});
-	});
+function validatorRules() {
+	return {
+		commandFile:{
+			isCSV: true,
+		},
+	};
 }
-function addValidators() {
-	$("#theForm").validate({
-		errorPlacement: function(error, element) {
-			$('#error').html(error.html());
-		}
-	});
-
-	$.validator.addMethod("isCSV", function(value, element, param) {
-		if (!$('#choiceFile').prop('checked')) { return true; }
-		value = value.trim();
-		if (value.length == 0) { return false; }
-		return value.endsWith('.csv');
-	}, translate("Please choose a .csv file"));
-	$("#commandFile").rules("add", {
-		isCSV: true
-	});
+function validatorMessages() {
+	return {};
 }
 
-function removeBefore(haystack, needle) {
-	var index = haystack.indexOf(needle);
-	if (index == -1) { return haystack; }
-	return haystack.substring(index + needle.length).ltrim();
+function fieldsToUpload() {
+	var retValue = [];
+
+	switch ($('input[name=choice]:checked', '#theForm').attr('id')) {
+	case 'choiceFile':
+		retValue['src'] = document.getElementById('commandFile').files[0];
+		break;
+	case 'choiceService':
+		retValue['src'] = $('#service').val();
+		break;
+	case 'choiceText':
+		retValue['src'] = $('#text').val();
+		break;
+	}
+	for (i = 1; i <= 4; i++) {
+		if ($('#file' + i).val() != '') { retValue['_file' + i] = document.getElementById('file' + i).files[0]; }
+	}
+	return retValue;
+}
+function onSuccess(retValue) {
+	$('#errorAnchor').html(retValue);
 }
 
-function urlParam(name) {
-	var retValue = getUrlVars()[name];
-	if (retValue === undefined) { return retValue; }
-	return retValue.replace(/%20/g, ' ');
+function setupEventHandlers() {
+	$('#commandFile').click(function() { selectRadio('choiceFile'); });
+	$('#service').click(function() { selectRadio('choiceService'); });
+	$('#text').click(function() { selectRadio('choiceText'); });
+	preselectRadio();
 }
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    return vars;
+
+function testFields() {
+	return {}
 }

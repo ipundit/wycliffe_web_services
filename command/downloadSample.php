@@ -11,7 +11,7 @@ if (isset($_POST['service'])) {
 
 if (isset($_POST['simulate'])) {
 	$simulate = $_POST['simulate'];
-} else if (isset($_GET['service'])) {
+} else if (isset($_GET['simulate'])) {
 	$simulate = $_GET['simulate'];
 } else {
 	$simulate = 0;

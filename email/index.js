@@ -155,18 +155,19 @@ function onSuccess(retValue) {
 	$('#errorAnchor').html(retValue);
 }
 
-function setupEventHandlers() {
-	$('#fromNameJAARS').click(function() { selectRadio('choiceJAARS'); });
-	$('#fromEmailJAARS').click(function() { selectRadio('choiceJAARS'); });
-	$('#fromNameWWS').click(function() { selectRadio('choiceWWS'); });
-	$('#fromEmailWWS').click(function() { selectRadio('choiceWWS'); });
-	$('#replyTo').click(function() { selectRadio('choiceWWS'); });
-	
-	$('#to').click(function() { selectRadio('choiceEmail'); });
-	$('#toEmailFile').click(function() { selectRadio('choiceFile'); });
-	$('#startRow').click(function() { selectRadio('choiceFile'); });
-	$('#maxRows').click(function() { selectRadio('choiceFile'); });
-	$('#tags').click(function() { selectRadio('choiceFile'); });
+function eventHandlers() {
+	return {
+		'fromNameJAARS': 'choiceJAARS',
+		'fromEmailJAARS': 'choiceJAARS',
+		'fromNameWWS': 'choiceWWS',
+		'fromEmailWWS': 'choiceWWS',
+		'replyTo': 'choiceWWS',
+		'to': 'choiceEmail',
+		'toEmailFile': 'choiceFile',
+		'startRow': 'choiceFile',
+		'maxRows': 'choiceFile',
+		'tags': 'choiceFile',
+	};
 }
 
 function formDefaultValues() {

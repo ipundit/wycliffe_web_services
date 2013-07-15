@@ -1,7 +1,7 @@
 /*********************************************************************************************************
  * formSetup.js will setup:                                                                              *
  * 1) Some useful string functions                                                                       *
- * 2) The event handlers by just passing control back to your setupEventHandlers() callback function     *
+ * 2) The event handlers through the eventHandlers() callback function                                   *
  * 3) The input validators according to validatorRules() and validatorMessages() callbacks.              *
  * 4) The submit handler given fieldsToUpload(). The common test and simulate params are initialized     *
  *    from the GET url string for you if you don't initialize them yourself.                             *
@@ -12,8 +12,8 @@
 
 $(document).ready(function() {
 	setupStringPrototypes();
-	setupEventHandlers();
-	fillTestForm(formDefaultValues());
+	setupEventHandlers(eventHandlers());
+	setupForm(formDefaultValues());
 	setupValidators(validatorRules(), validatorMessages(), fieldsToUpload, onSuccess);
 });
 
@@ -67,10 +67,50 @@ function translateErrorMessages(settings) {
 	}
 }
 
+function setupEventHandlers(lookup) {
+	if (undefined === lookup) { return; }
+	
+	for (key in lookup) {
+		var payload = lookup[key];
+		var theCommand;
+		if (Object.prototype.toString.call(payload) === '[object Array]') {
+			theCommand = payload[0];
+		} else {
+			theCommand = 'click';
+		}
+		
+		switch (theCommand) {
+		case 'click':
+			$('#' + key).click(function() { formEventHandler(lookup[this.id]); });
+			break;
+		case 'change':
+			$('#' + key).change(function() { formEventHandler(lookup[this.id]); });
+			break;
+		default:
+			alert(theCommand + ' is not supported');
+		}
+	}
+}
+
+function formEventHandler(payload) {
+	var command;
+	if (Object.prototype.toString.call(payload) === '[object Array]') {
+		command = payload[1];
+	} else {
+		command = payload;
+	}
+	
+	if (typeof command == 'function') {
+		command();
+	} else {
+		selectRadio(command);
+	}
+}
+
 function selectRadio(name) {
 	$('#' + name).prop('checked', true);
 }
-function fillTestForm(fields) {
+function setupForm(fields) {
 	if (fields === undefined || fields == null) { return; }
 	
 	footer = fields['footer'];

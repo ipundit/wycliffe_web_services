@@ -149,8 +149,13 @@ function onSuccess(retValue) {
 	}
 }
 
-function setupEventHandlers() {
-	$('#country').change(function() { fireCountryChange(); });
+function eventHandlers() {
+	return {
+		'country': [
+			'change',
+			function() { fireCountryChange(); }
+		]
+	};
 }
 
 function formDefaultValues() {

@@ -9,7 +9,7 @@ class EmailParser
 		$struct = mailparse_msg_get_structure($mail);
 
 		$message = '';
-		if (!EmailParser::initHeaders($mail, $struct, $message)) { return; }
+		if (!EmailParser::initHeaders($mail, $struct, $message)) { return false; }
 		EmailParser::initBody($mail, $struct, $buffer, $message);
 		EmailParser::initAttachments($mail, $struct, $buffer, $message);
 		return $message;

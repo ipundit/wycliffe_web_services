@@ -303,8 +303,7 @@ class Email
 	public static function wycliffeServicesEmails() {
 		return array(
 			'events@wycliffe-services.net', 'help@wycliffe-services.net',
-			'mailer@wycliffe-services.net', 'no-reply@wycliffe-services.net',
-			'webservice@wycliffe-services.net');
+			'no-reply@wycliffe-services.net', 'webservice@wycliffe-services.net');
 	}
 	
 	private static function validateEmailList($str) {

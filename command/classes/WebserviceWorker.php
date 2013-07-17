@@ -23,7 +23,7 @@ class WebserviceWorker {
 
 	public function processReturn($str, &$retValue) {
 		if ($this->expects != IGNORE && $this->expects != $str) {
-			$retValue = 'line ' . $this->lineCount . ': failed EXPECTS ' . $str;
+			$retValue = 'line ' . $this->lineCount . ': failed EXPECTS<br />' . PHP_EOL . $this->expects . PHP_EOL . ' <br />GOT<br /> '. PHP_EOL . $str;
 			return false;
 		}
 		$retValue = $str;

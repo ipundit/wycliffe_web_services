@@ -106,6 +106,9 @@ class CommandProcessor {
 			}
 		}
 
+		if (strpos($str, chr(ASCII_TAB) . '"') == 0) {
+			$str = str_replace('"', '""', $str);
+		}
 		$lines = util::parseCSV($str);
 		$state = START;
 
@@ -120,7 +123,7 @@ class CommandProcessor {
 
 		foreach ($lines as $line) {
 			$lineCount++;
-			util::removeAfter($line, '#');
+			util::removeAfter($line, '# ');
 			
 			$line = trim($line);
 			
@@ -159,6 +162,7 @@ class CommandProcessor {
 				}
 				$state = EXPECTS;
 				$expects = $arr[1];
+				
 				$expectsLineCount = $lineCount;
 				continue;
 			}

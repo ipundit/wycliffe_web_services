@@ -49,11 +49,20 @@ class util {
 			$quote_pos = strpos($data, $enclosure, $pos);
 			$newline_pos = strpos($data, $newline, $pos);
 
-			// Which one comes first?
-			$pos = min(($comma_pos === false) ? $end : $comma_pos, ($quote_pos === false) ? $end : $quote_pos, ($newline_pos === false) ? $end : $newline_pos);
+			do {
+				// Which one comes first?
+				$pos = min(($comma_pos === false) ? $end : $comma_pos, ($quote_pos === false) ? $end : $quote_pos, ($newline_pos === false) ? $end : $newline_pos);
 
-			// Cache it
-			$char = (isset($data[$pos])) ? $data[$pos] : null;
+				// Cache it
+				$char = (isset($data[$pos])) ? $data[$pos] : null;
+				if ($char == $enclosure) { // ignore double quotes
+					if (isset($data[$pos + 1]) && $data[$pos + 1] == $enclosure) {
+						$quote_pos = strpos($data, $enclosure, $pos + 2);
+						continue;
+					}
+				}
+				break;
+			} while (true);
 			$done = ($pos == $end);
 
 			// It it a special character?
@@ -185,7 +194,7 @@ class util {
 		}
 
 		if ($simulate) {
-			$msg = trim(preg_replace('/\s+/', ' ', print_r($headers, true)));
+			$msg = trim(preg_replace('/\s+/', ' ', print_r($headers, true) . $body));
 			if (count($attachments) > 0) { $msg = $msg . ' Number of attachments: ' . count($attachments); }
 			return false;
 		}

@@ -162,7 +162,7 @@ class Email
 		$i = 1;
 
 		foreach ($lines as $line) {
-			util::removeAfter($line, '#');
+			util::removeAfter($line, '# ');
 			
 			$columns = explode(chr(_EMAIL_ASCII_TAB_), $line);
 			if ($isFirstLine) {
@@ -233,11 +233,11 @@ class Email
 		  "subject"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "cc"=>FILTER_UNSAFE_RAW,
 		  "bcc"=>FILTER_UNSAFE_RAW,
-		  "body"=>FILTER_UNSAFE_RAW,
 		  "tags"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "startRow"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>1)),
 		  "maxRows"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0)),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
+		  "body"=>FILTER_UNSAFE_RAW,
 		);
 
 		$row = filter_var_array($arr, $filters);
@@ -308,25 +308,28 @@ class Email
 			return false;
 		}
 		
-		$spamChecker = new Akismet('http://wycliffe-services.net/email/webservice.php', '9b41b2cabb36', 
-			array(
-					'author'     => $row['fromName'],
-					'email'      => $row["from"],
-					'website'    => 'http://wycliffe-services.net/',
-					'body'       => $row["body"],
-					'user_agent' => 'Wycliffe Web Services/1.0 | email/1.0',
-					'referrer'   => 'http://wycliffe-services.net/email/webservice.php',
-			));
+		if ($row['simulate'] != 1 || $row['fromName'] == 'Free Viagra') {
+			$spamChecker = new Akismet('http://wycliffe-services.net/email/webservice.php', '9b41b2cabb36', 
+				array(
+						'author'     => $row['fromName'],
+						'email'      => $row["from"],
+						'website'    => 'http://wycliffe-services.net/',
+						'body'       => $row["body"],
+						'user_agent' => 'Wycliffe Web Services/1.0 | email/1.0',
+						'referrer'   => 'http://wycliffe-services.net/email/webservice.php',
+				));
+			
+			if ($spamChecker->errorsExist()) {
+				$msg = "cannot connect to spam server";
+				return false;
+			}
+			if( $spamChecker->isSpam()) {
+				$msg = "spam detected";
+				return false;
+			}
+		}
 		
-		if ($spamChecker->errorsExist()) {
-			$msg = "cannot connect to spam server";
-			return false;
-		}
-		if( $spamChecker->isSpam()) {
-			$msg = "spam detected";
-			return false;
-		}
-
+		$row['body'] .= PHP_EOL . PHP_EOL . '<span style="color:#BBBBBB">--' . PHP_EOL . 'Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>';
 		return $row;
 	}
 	

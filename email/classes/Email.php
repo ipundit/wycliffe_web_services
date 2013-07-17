@@ -297,6 +297,16 @@ class Email
 			return false;
 		}
 		
+		if (!Email::validateEmailList($row["replyTo"])) {
+			$msg = "invalid replyTo";
+			return false;
+		}
+		
+		if (Email::isInjectionAttack($row["subject"])) {
+			$msg = "invalid subject";
+			return false;
+		}
+		
 		return $row;
 	}
 	
@@ -308,6 +318,8 @@ class Email
 	
 	private static function validateEmailList($str) {
 		if ($str == '') { return true; }
+		if (Email::isInjectionAttack($str)) { return false; }
+		
 		foreach (explode(",", $str) as $email) {
 			$email = trim($email);
 			if (util::removeBefore($email, "<")) {
@@ -316,6 +328,22 @@ class Email
 			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { return false; }
 		}
 		return true;
+	}
+	static private function isInjectionAttack($str) {
+		if (Email::containsNewLines($str)) { return true; }
+		return Email::headerBlacklist($str);
+	}
+	static private function containsNewLines($str) {
+		return preg_match("/(%0A|%0D|\\n+|\\r+)/i", $str) != 0;
+	}
+	function headerBlacklist($str) {
+		$strs = array("content-type:","mime-version:","multipart\/mixed","Content-Transfer-Encoding:","bcc:","cc:","to:");
+		$str = strtolower($str);
+		
+		foreach($strs as $bad_string) {
+			if (preg_match("/.*" . $bad_string . ".*/", $str)) { return true; }
+		}
+		return false;
 	}
 }
 ?>

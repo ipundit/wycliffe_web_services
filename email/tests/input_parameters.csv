@@ -1,7 +1,11 @@
 # to testing	
 URL	http://wycliffe-services.net/email/webservice.php
 EXPECTS	to parameter must be set
-	
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	valid@email.com%0Acc:spam-1@some-domain.com
+EXPECTS	invalid to
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester test@test.com>
 EXPECTS	invalid to
@@ -29,7 +33,12 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	test@test.com
 EXPECTS	invalid from
-	
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+from	events@wycliffe-services.net%0Acc:spam-1@some-domain.com
+EXPECTS	invalid from
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	events@wycliffe-services.net
@@ -66,7 +75,7 @@ from	webservice@wycliffe-services.net
 fromName	Test
 simulate	1
 EXPECTS	Array ( [Sender] => webservice@wycliffe-services.net [From] => Test via Wycliffe Web Services <webservice@wycliffe-services.net> [To] => test@test.com )
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	webservice@wycliffe-services.net
@@ -106,7 +115,12 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, Tester <test@test.com
 EXPECTS	invalid cc
-	
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+cc	events@wycliffe-services.net%0Abcc:spam-1@some-domain.com
+invalid cc
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, <Tester test@test.com>
@@ -129,7 +143,12 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester test@test.com>
 EXPECTS	invalid bcc
-	
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+bcc	events@wycliffe-services.net%0Acc:spam-1@some-domain.com
+EXPECTS	invalid bcc
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester <test@test.com
@@ -151,7 +170,20 @@ to	test@test.com
 bcc	test@test.com, Tester <test@test.com>
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com )
-	
+
+#replyTo testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+from	webservice@wycliffe-services.net
+replyTo	events@wycliffe-services.net%0Acc:spam-1@some-domain.com
+EXPECTS	invalid replyTo
+
+#subject testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+subject	subject=GETVIAGRA%0Acc:spam-1@some-domain.com
+EXPECTS	invalid subject
+
 # attach testing	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com

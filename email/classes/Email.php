@@ -1,5 +1,6 @@
 <?php 
 require_once 'util.php';
+require_once 'classes/akismet.class.php';
 define("_EMAIL_ASCII_TAB_", 9);
 define('_EMAIL_TIMEOUT_', 2);
 
@@ -282,7 +283,7 @@ class Email
 			$row["from"] = "no-reply@wycliffe-services.net";
 		} else if (!in_array($row['from'], Email::wycliffeServicesEmails()) && !util::isJaarsEmail($row['from'])) {
 			if (!isset($_FILES["to"]) || strpos($row['from'], '$') === false) {
-				$msg = "invalid from";
+				$msg = "invalid from email";
 				return false;
 			}
 		}
@@ -307,6 +308,25 @@ class Email
 			return false;
 		}
 		
+		$spamChecker = new Akismet('http://wycliffe-services.net/email/webservice.php', '9b41b2cabb36', 
+			array(
+					'author'     => $row['fromName'],
+					'email'      => $row["from"],
+					'website'    => 'http://wycliffe-services.net/',
+					'body'       => $row["body"],
+					'user_agent' => 'Wycliffe Web Services/1.0 | email/1.0',
+					'referrer'   => 'http://wycliffe-services.net/email/webservice.php',
+			));
+		
+		if ($spamChecker->errorsExist()) {
+			$msg = "cannot connect to spam server";
+			return false;
+		}
+		if( $spamChecker->isSpam()) {
+			$msg = "spam detected";
+			return false;
+		}
+
 		return $row;
 	}
 	

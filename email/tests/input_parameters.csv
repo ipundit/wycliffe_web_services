@@ -32,12 +32,12 @@ EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wy
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	test@test.com
-EXPECTS	invalid from
+EXPECTS	invalid from email
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	events@wycliffe-services.net%0Acc:spam-1@some-domain.com
-EXPECTS	invalid from
+EXPECTS	invalid from email
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
@@ -50,12 +50,6 @@ to	test@test.com
 from	help@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => help@wycliffe-services.net [From] => help@wycliffe-services.net [To] => test@test.com )
-	
-URL	http://wycliffe-services.net/email/webservice.php
-to	test@test.com
-from	mailer@wycliffe-services.net
-simulate	1
-EXPECTS	Array ( [Sender] => mailer@wycliffe-services.net [From] => mailer@wycliffe-services.net [To] => test@test.com )
 	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
@@ -119,7 +113,7 @@ EXPECTS	invalid cc
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	events@wycliffe-services.net%0Abcc:spam-1@some-domain.com
-invalid cc
+EXPECTS	invalid cc
 
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
@@ -184,6 +178,12 @@ to	test@test.com
 subject	subject=GETVIAGRA%0Acc:spam-1@some-domain.com
 EXPECTS	invalid subject
 
+#spam testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+fromName	Free Viagra
+EXPECTS	spam detected
+
 # attach testing	
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
@@ -221,7 +221,7 @@ EXPECTS	mailing list line 6: invalid to
 URL	http://wycliffe-services.net/email/webservice.php
 from	$from
 to	_file4
-EXPECTS	mailing list line 3: invalid from
+EXPECTS	mailing list line 3: invalid from email
 	
 URL	http://wycliffe-services.net/email/webservice.php
 to	_file2

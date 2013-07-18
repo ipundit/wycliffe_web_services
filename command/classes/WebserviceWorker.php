@@ -21,12 +21,8 @@ class WebserviceWorker {
 		return $this->mId;
 	}
 
-	private static function normalizeRandomDirectoryAfterTemp($match) {
-		return '/tmp/random_string/';
-	}
-	
 	public function processReturn($str, &$retValue) {
-		$str = preg_replace_callback('/\/tmp\/(\w+)\//', 'WebserviceWorker::normalizeRandomDirectoryAfterTemp', $str); // to make email_processor.csv regression test pass
+		$str = preg_replace_callback('/\/tmp\/(\w+)\//', function($match) { return '/tmp/random_string/'; }, $str); // to make email_processor.csv regression test pass
 		if ($this->expects != IGNORE && $this->expects != $str) {
 			$retValue = 'line ' . $this->lineCount . ': failed EXPECTS<br />' . PHP_EOL . $this->expects . PHP_EOL . ' <h3>GOT</h3> '. PHP_EOL . $str;
 			return false;

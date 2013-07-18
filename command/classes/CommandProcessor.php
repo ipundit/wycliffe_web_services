@@ -113,9 +113,7 @@ class CommandProcessor {
 			}
 		}
 
-		if (strpos($str, chr(ASCII_TAB) . '"') == 0) {
-			$str = str_replace('"', '""', $str);
-		}
+		$str = CommandProcessor::escapeDoubleQuotes($str);
 		$lines = util::parseCSV($str);
 		$state = START;
 
@@ -213,6 +211,29 @@ class CommandProcessor {
 		return $foreman->run(false, $msg);
 	}
 
+	static private function escapeDoubleQuotes($str) {
+		$end = strlen($str);
+		$pos = -1;
+		$inMultiLine = false;
+		do {
+			$pos = strpos($str, '"', $pos + 1);
+			if ($pos === false) { break; }
+			if ($pos > 0 && $str[$pos - 1] == chr(ASCII_TAB)) {
+				if ($inMultiLine) {	return "invalid str: inMultiLine already"; }
+				$inMultiLine = true;
+				continue;
+			}
+			if ($inMultiLine) {
+				$inMultiLine = false;
+				continue;
+			}
+			$str = substr($str, 0, $pos) . '"' . substr($str, $pos);
+			$pos++;
+			$end++;
+		} while ($pos < $end);
+		return $str;
+	}
+	
 	static private function startsWithURL($str) {
 		return preg_match("/^URL\t/", $str);
 	}

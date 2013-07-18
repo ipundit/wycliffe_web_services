@@ -152,7 +152,7 @@ function fieldsToUpload() {
 	return retValue;
 }
 function onSuccess(retValue) {
-	$('#errorAnchor').html(retValue);
+	$('#errorAnchor').html('<span>' + retValue + '</span>');
 }
 
 function eventHandlers() {

@@ -43,7 +43,7 @@ function fieldsToUpload() {
 	return retValue;
 }
 function onSuccess(retValue) {
-	$('#errorAnchor').html(retValue);
+	$('#errorAnchor').html('<span>' + retValue + '</span>');
 }
 
 function eventHandlers() {
@@ -52,7 +52,7 @@ function eventHandlers() {
 		'service': 'choiceService',
 		'fromSample': function() { 
 			selectRadio('choiceText');
-			$('#errorAnchor').html('Downloading<div id="spinner" style="display:inline-block"></div></button>');
+			$('#errorAnchor').html('<span>Downloading<div id="spinner" style="display:inline-block"></div><span>');
 
 			var data = new FormData();
 			data.append('service', $('#service').val());
@@ -66,7 +66,7 @@ function eventHandlers() {
 					$('#text').val(retValue);
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
-					$('#errorAnchor').html(XMLHttpRequest.statusText.removeBefore('(0)'));
+					$('#errorAnchor').html('<span>' + XMLHttpRequest.statusText.removeBefore('(0)') + '</span>');
 				},
 				// Required options for file uploading to work
 				cache: false,

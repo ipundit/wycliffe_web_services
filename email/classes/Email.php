@@ -8,23 +8,25 @@ class Email
 {
 	private static $currentLineNumber = 0;
 	private static $currentLine = array();
+	private static $baseDir;
 	
 	public static function sendFromPost(&$msg) {
-		util::saveAllFiles();
+		$baseDir = util::saveAllFiles();
+		Email::$baseDir = $baseDir;
+		
 		try {
-			$retValue = Email::sendFromPostImpl($msg);
+			$retValue = Email::sendFromPostImpl($baseDir, $msg);
 		} catch (Exception $ignore) {}
-		util::deleteAllFiles();
-
+		util::delTree($baseDir);
 		return $retValue;
 	}
 	
-	private static function sendFromPostImpl(&$msg) {
+	private static function sendFromPostImpl($baseDir, &$msg) {
 		$msg = '';
 		$row = Email::validateInput($_POST, $msg);
 		if ($msg != '') { return false;	}
 		
-		$files = Email::getPathToAttachments();
+		$files = Email::getPathToAttachments($baseDir);
 		if ($row["to"] == '') {
 			$lines = Email::fillTemplateFromCSV($row, $msg);
 			if ($msg != '') { return false; }
@@ -64,7 +66,7 @@ class Email
 
 	private static function shutdown() {
 		$err = error_get_last();
-		util::deleteAllFiles($files);
+		util::delTree(Email::$baseDir);
 		if ($err == null) { return; }
 
 		if (connection_aborted()) {
@@ -208,12 +210,12 @@ class Email
 		return true;
 	}
 	
-	private static function getPathToAttachments() {
+	private static function getPathToAttachments($baseDir) {
 		$retValue = array();
 		
 		foreach ($_FILES as $key => $value) {
 			if (preg_match('/^attach[1-9]$/', $key)) {
-				util::renameTempfile($key);
+				util::renameTempfile($key, $baseDir);
 				$retValue[$key] = $_FILES[$key]['tmp_name'];
 			}
 		}

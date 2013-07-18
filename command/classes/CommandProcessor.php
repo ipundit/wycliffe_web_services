@@ -11,87 +11,84 @@ define("ASCII_TAB", 9);
 
 class CommandProcessor {
 	static public function process(&$msg) {
-		util::saveAllFiles();
+		$baseDir = util::saveAllFiles();
 		try {
-			$retValue = CommandProcessor::processImpl($msg);
+			$retValue = CommandProcessor::processImpl($baseDir, $msg);
 		} catch (Exception $ignore) {}
-		util::deleteAllFiles();
-
+		util::delTree($baseDir);
 		return $retValue;
 	}
 	
-	static private function processImpl(&$msg) {
-		$src = isset($_POST['src']) ? trim($_POST['src']) : '';
-		$simulate = isset($_POST['simulate']) ? trim($_POST['simulate']) == 1 : false;
-
-		if (count($_FILES) > 0) {
-			if (array_key_exists('src', $_FILES)) {
-				if ($src != '') {
-					$msg = 'cannot have more than one src of commands';
-					return false;
-				}
-				$commandFile = $_FILES['src'];
-				return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $simulate, $msg);
-			}
-		}
-
-		if ($src == '') {
-			$msg = 'src parameter must be set';
-			return false;
-		}
-
-		if (preg_match('/\t/', $src)) {
-			return CommandProcessor::processCommands($src, $simulate, $msg);
-		}
-
-		$dir = '/var/www/' . $src . '/tests/';
-		if (!file_exists($dir)) {
-			$msg = 'web service ' . $src . ' does not exist';
-			return false;
-		}
-		return CommandProcessor::processService($dir, $simulate, $msg);
-	}
-
-	static private function processService($path, $simulate, &$msg) {
-		$baseDir = util::createTempDir();
-		$retValue = true;
-		
+	static private function processImpl($baseDir, &$msg) {
 		try {
-			$dir = new DirectoryIterator($path);
-			foreach ($dir as $fileInfo) {
-				if ($fileInfo->isFile()) {
-					$file = $fileInfo->getFilename();
-					
-					if (preg_match('/^_file[1-4]_.+$/', $file)) {
-						$newFile = substr($file, 7); // remove 7 char _file1_ prefix
-						$newPath = $baseDir . $newFile;
-						copy($path . $file, $newPath);
-						$_FILES[substr($file, 0, 6)] = array('name' => $newFile, 'tmp_name' => $newPath);
+			$src = isset($_POST['src']) ? trim($_POST['src']) : '';
+			$simulate = isset($_POST['simulate']) ? trim($_POST['simulate']) == 1 : false;
+
+			if (count($_FILES) > 0) {
+				if (array_key_exists('src', $_FILES)) {
+					if ($src != '') {
+						$msg = 'cannot have more than one src of commands';
+						return false;
 					}
+					$commandFile = $_FILES['src'];
+					return CommandProcessor::processFile($commandFile['name'], $commandFile['tmp_name'], $baseDir, $simulate, $msg);
 				}
 			}
-			
-			foreach ($dir as $fileInfo) {
-				if ($fileInfo->isFile()) {
-					$file = $fileInfo->getFilename();
-					
-					if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
-						$retValue = CommandProcessor::processFile($file, $path . $file, $simulate, $msg);
-						if (!$retValue) { break; }
-					}
-				}
+
+			if ($src == '') {
+				$msg = 'src parameter must be set';
+				return false;
 			}
-			if ($retValue) { $msg = 'regression tests passed'; }
+
+			if (preg_match('/\t/', $src)) {
+				return CommandProcessor::processCommands($src, $baseDir, $simulate, $msg);
+			}
+
+			$dir = '/var/www/' . $src . '/tests/';
+			if (!file_exists($dir)) {
+				$msg = 'web service ' . $src . ' does not exist';
+				return false;
+			}
+			return CommandProcessor::processService($dir, $baseDir, $simulate, $msg);
 		} catch (Exception $e) {
 			$retValue = false;
 			$msg = "exception caught";
 		}
+	}
+
+	static private function processService($path, $baseDir, $simulate, &$msg) {
+		$retValue = true;
+		
+		$dir = new DirectoryIterator($path);
+		foreach ($dir as $fileInfo) {
+			if ($fileInfo->isFile()) {
+				$file = $fileInfo->getFilename();
+				
+				if (preg_match('/^_file[1-4]_.+$/', $file)) {
+					$newFile = substr($file, 7); // remove 7 char _file1_ prefix
+					$newPath = $baseDir . $newFile;
+					move_uploaded_file($path . $file, $newPath);
+					$_FILES[substr($file, 0, 6)] = array('name' => $newFile, 'tmp_name' => $newPath);
+				}
+			}
+		}
+		
+		foreach ($dir as $fileInfo) {
+			if ($fileInfo->isFile()) {
+				$file = $fileInfo->getFilename();
+				
+				if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
+					$retValue = CommandProcessor::processFile($file, $path . $file, $baseDir, $simulate, $msg);
+					if (!$retValue) { break; }
+				}
+			}
+		}
+		if ($retValue) { $msg = 'regression tests passed'; }
 	
-		util::delTree($baseDir);
 		return $retValue;
 	}
 
-	static private function processFile($name, $path, $simulate, &$msg) {
+	static private function processFile($name, $path, $baseDir, $simulate, &$msg) {
 		if (!filter_var($name, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
 			$msg = "Invalid file name";
 			return false;
@@ -101,16 +98,16 @@ class CommandProcessor {
 			return false;
 		}	
 		
-		if (CommandProcessor::processCommands(file_get_contents($path), $simulate, $msg)) { return true; }
+		if (CommandProcessor::processCommands(file_get_contents($path), $baseDir, $simulate, $msg)) { return true; }
 		$msg = $name . ': ' . $msg;
 		return false;
 	}
 
-	static private function processCommands($str, $simulate, &$msg) {
+	static private function processCommands($str, $baseDir, $simulate, &$msg) {
 		$fileNames = array('_file1','_file2','_file3','_file4');
 		foreach ($_FILES as $key => $value) {
 			if (in_array($key, $fileNames)) {
-				util::renameTempFile($key);
+				util::renameTempFile($key, $baseDir);
 			} else {
 				unset($_FILES[$key]);
 			}

@@ -308,7 +308,7 @@ class Email
 			return false;
 		}
 		
-		if (isSpam($row['fromName'], $row['from'], $row['body'], $row['simulate'] == 1)) {
+		if (Email::isSpam($row['fromName'], $row['from'], $row['body'], $row['simulate'] == 1)) {
 			$msg = "spam detected";
 			return false;
 		}

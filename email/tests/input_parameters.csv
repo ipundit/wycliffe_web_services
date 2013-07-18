@@ -178,6 +178,12 @@ to	test@test.com
 subject	subject=GETVIAGRA%0Acc:spam-1@some-domain.com
 EXPECTS	invalid subject
 
+# simulate testing
+URL	http://wycliffe-services.net/email/webservice.php
+to	test@test.com
+simulate	3
+EXPECTS	simulate must be 0 or 1 or 2
+
 # spam testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com

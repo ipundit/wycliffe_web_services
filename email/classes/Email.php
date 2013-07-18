@@ -22,6 +22,7 @@ class Email
 	}
 	
 	private static function sendFromPostImpl($baseDir, &$msg) {
+		$dryRun = '';
 		$msg = '';
 		$row = Email::validateInput($_POST, $msg);
 		if ($msg != '') { return false;	}
@@ -40,30 +41,67 @@ class Email
 			ini_set('display_errors', '0'); 
 			register_shutdown_function('Email::shutdown'); 
 			
-			foreach ($lines as $lineNumber => $line) {
+			foreach ($lines as $lineNumber => &$line) {
 				self::$currentLineNumber = $lineNumber;
 				self::$currentLine = $line;
 			
 				if (!util::sendEmail($msg, $line['fromName'], $line['from'], $line['to'], $line['subject'], 
 									 $line['body'], $line['cc'], $line['bcc'], $line['replyTo'], $files,
-									 $line['simulate'] == 1)) {
+									 $line['simulate'])) {
 					if ($line['simulate'] == 1) { return false;	}
 					
 					Emai::sendErrorMessage($msg);
 					return false;
 				}
+				if ($line['simulate'] == 2) {
+					$line = $msg;
+					$msg = '';
+					continue;
+				}
 			}
+			$dryRun = implode('<hr />', $lines);
 		} else {
 			if (!util::sendEmail($msg, $row["fromName"], $row["from"], $row["to"], $row['subject'], 
-								 $row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, $row['simulate'] == 1)) {
+										$row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, $row['simulate'])) {
 				return false;
+			}
+			if ($row['simulate'] == 2) {
+				$dryRun = $msg;
+				$msg = '';
 			}
 		}
 
-		$msg = "ok";
+		if ($row['simulate'] == 2) {
+			$dryRun = Email::dryRunHTML($dryRun);
+			if (FALSE  === file_put_contents('/var/www/email/dryRun.html', implode(PHP_EOL, $dryRun))) { 
+				$msg = 'could not write to dryRun file';
+				return false;
+			}
+			$msg = 'ok, see <a href="http://www.wycliffe-services.net/email/dryRun.html">dry run page</a>';
+		} else {
+			$msg = 'ok';
+		}
 		return true;
 	}
 
+	private static function dryRunHTML($body) {
+		return array(
+		'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+		'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">',
+		'<head>',
+		'<title>Dry run output</title>',
+		'<style type="text/css">div { display: inline-block; } .col1 { width: 100px; } .col2 { display:inline; }</style>',
+		'</head>',
+		'<body>',
+		$body,
+		'<form action="clearDryRunPage.php" method="post">',
+		'<p><button type="submit">Clear this page so no one else can see your dry run results</button></p>',
+		'</form>',
+		'</body>',
+		'</html>',
+		);
+	}
+	
 	private static function shutdown() {
 		$err = error_get_last();
 		util::delTree(Email::$baseDir);
@@ -238,7 +276,7 @@ class Email
 		  "tags"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "startRow"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>1)),
 		  "maxRows"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0)),
-		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
+		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
 		  "body"=>FILTER_UNSAFE_RAW,
 		);
 
@@ -260,10 +298,6 @@ class Email
 			}
 			if ($row['maxRows'] == '') {
 				$msg = 'maxRows must be an integer greater than or equal to 0';
-				return false;
-			}
-			if ($row['simulate'] == '') {
-				$msg = 'simulate must be a 0 or 1';
 				return false;
 			}
 		} else {
@@ -307,6 +341,11 @@ class Email
 		
 		if (Email::isInjectionAttack($row["subject"])) {
 			$msg = "invalid subject";
+			return false;
+		}
+
+		if ($row['simulate'] == '') {
+			$msg = 'simulate must be 0 or 1 or 2';
 			return false;
 		}
 		

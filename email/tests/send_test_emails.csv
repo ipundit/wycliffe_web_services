@@ -38,4 +38,5 @@ Tag line: $tagLine
 Phone number: $phoneNumber
 Not in mailingList: $youCouldDefineThisColumnInMailingListFile"
 tags	WMO wLP, WPO
-EXPECTS	ok
+simulate	2
+EXPECTS	ok, see <a href="http://www.wycliffe-services.net/email/dryRun.html">dry run page</a>

@@ -114,9 +114,7 @@ class util {
 				}
 				
 				// And we're done
-				if ($done) {
-					break;
-				}
+				if ($done) { break; }
 
 				// Save the last position
 				$last_pos = $pos;
@@ -184,7 +182,7 @@ class util {
 		return (substr($haystack, -$length) === $needle);
 	}
 	
-	static public function sendEmail(&$msg, $fromName, $from, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attachments = array(), $simulate) {
+	static public function sendEmail(&$msg, $fromName, $from, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attachments = array(), $simulate = 0) {
 		if (util::isJaarsEmail($from)) {
 			$sender = 'wycliffe-services-smtp@wycliffe.net';
 			if ($replyTo != '') {
@@ -214,10 +212,18 @@ class util {
 			if ($value == '') { unset($headers[$key]); }
 		}
 
-		if ($simulate) {
+		if ($simulate == 1) {
 			$msg = trim(preg_replace('/\s+/', ' ', print_r($headers, true) . $body));
 			if (count($attachments) > 0) { $msg = $msg . ' Number of attachments: ' . count($attachments); }
 			return false;
+		} else if ($simulate == 2) {
+			foreach ($headers as $key => &$value) {
+				$value = '<div><div class="col1">' . $key . ':</div><div class="col2">' . htmlentities($value, ENT_NOQUOTES) . '</div></div>';
+			}
+			$headers[] = '';
+			$headers[] = '<pre>' . $body . '</pre>';
+			$msg = implode('<br />', $headers);
+			return true;
 		}
 				
         $mime = new Mail_mime('');

@@ -42,8 +42,7 @@ class User extends Record
 			$msg = "Invalid input for " . $msg;
 			return false;
 		}
-		$simulate = $row['simulate'] == 1;
-		$simulate = true; // fixme: hardcode simulate until production server is ready
+		$simulate = 1; // fixme: hardcode simulate until production server is ready
 		Record::initialize($row, false);
 		
 		$purchase = new Purchase();
@@ -58,7 +57,7 @@ class User extends Record
 			return false;
 		}
 
-		if (!$purchase->makePurchase($org, $this, $onSecureServer, $simulate, $msg)) { 
+		if (!$purchase->makePurchase($org, $this, $onSecureServer, $simulate == 1, $msg)) { 
 			if (substr($msg, 0, 23) == 'Could not resolve host:') {	$msg = "Could not connect";	}
 			return false;
 		}
@@ -74,7 +73,7 @@ class User extends Record
 			return false;
 		}
 		
-		$simulate = false; // fixme: remove when email testing passes
+		$simulate = 0; // fixme: remove when email testing passes
 		return $this->emailPurchaseReceipt($org, $purchase->amount(), $msg, $simulate, $msg);
 	}
 
@@ -110,7 +109,7 @@ class User extends Record
 		$retValue = '';
 		$temp = util::sendEmail($retValue, '', "no-reply@wycliffe-services.net", $to, $subject, $body, '', 
 								$org->notify_emails(), '', array(), $simulate);
-		if ($simulate) { 
+		if ($simulate == 1) { 
 			$msg = $retValue; // Even if sending the email fails in production, let the user know that credit card charge passed
 			return false;
 		}

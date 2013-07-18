@@ -353,8 +353,11 @@ class Email
 			$msg = "spam detected";
 			return false;
 		}
-		
-		$row['body'] .= PHP_EOL . PHP_EOL . '<span style="color:#BBBBBB">--' . PHP_EOL . 'Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>';
+
+		$footer = 'Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>';
+		if (!util::endsWith($row['body'], $footer)) {
+			$row['body'] .= PHP_EOL . PHP_EOL . '<span style="color:#BBBBBB">--' . PHP_EOL . $footer;
+		}
 		return $row;
 	}
 	

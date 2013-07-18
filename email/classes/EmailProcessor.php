@@ -4,66 +4,82 @@ require_once 'classes/Email.php';
 
 class EmailProcessor
 {
-	public static function readFromData(&$message) {
-		if (!EmailProcessor::receivedEmail($buffer)) {
-			$message = buffer;
-			return false;
-		}
-		return EmailProcessor::parse($buffer, $message, EmailProcessor::simulate());
+	public static function readFromData(&$message, &$error) {
+		if (!EmailProcessor::receivedEmail($buffer, $error)) { return false; }
+		return EmailProcessor::parse($buffer, $message, $error, EmailProcessor::simulate());
 	}
-	public static function parse($buffer, &$message, $simulateSpamCheck = false) {
+	
+	public static function parse($buffer, &$message, &$error, $simulateSpamCheck = false) {
 		$mail = mailparse_msg_create();
 		mailparse_msg_parse($mail, $buffer);
 		$struct = mailparse_msg_get_structure($mail);
 
-		if (!EmailProcessor::initHeaders($mail, $struct, $message)) { return false; }
+		if (!EmailProcessor::initHeaders($mail, $struct, $message, $error)) { return false; }
 
 		EmailProcessor::initBody($mail, $struct, $buffer, $message);
 		$body = $message['html'] == '' ? $message['body'] : $message['html'];
 		if (Email::isSpam($message['from'], $message['from'], $body, $simulateSpamCheck)) {
-			$message = "spam email discarded";
+			$error = "spam email discarded";
 			return false;
 		}
 
-		if (!EmailProcessor::initAttachments($mail, $struct, $buffer, $message)) { return false; }
+		if (!EmailProcessor::initAttachments($mail, $struct, $buffer, $message, $error)) { return false; }
 		return true;
 	}
-	
-	private static function receivedEmail(&$buffer) {
-		if (!EmailProcessor::getFilePath($buffer)) { return false; }
+
+	public static function processMessage($message, &$error) {
+		if (EmailProcessor::simulate()) {
+			deleteAttachments($message['attachments']);
+			echo trim(preg_replace('/\s+/', ' ', print_r($message, true)));
+			return;
+		}
+
+		deleteAttachments($message['attachments']);
+		echo '<pre>' .print_r($message, true) . '</pre>';
+	}
+
+	private static function receivedEmail(&$buffer, &$error) {
+		if (!EmailProcessor::getFilePath($path, $error)) { return false; }
 		
-		if ($buffer == '') { 
+		if ($path == '') { 
+			$buffer = '';
 			$handle = fopen('php://stdin', 'r');
 			while(!feof($handle)) {
 				$buffer .= fgets($handle);
 			}
 			fclose($handle);
 		} else {
-			$buffer = file_get_contents($buffer);
+			$buffer = file_get_contents($path);
 		}
 		return true;
 	}
-	private static function getFilePath(&$path) {
+	private static function getFilePath(&$path, &$error) {
 		$fileName = isset($_GET['testFile']) ? $_GET['testFile'] : (isset($_POST['testFile']) ? $_POST['testFile'] : '');
 		if ($fileName == '') { return true; }
 		
 		$fileName = filter_var($fileName, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES));
 		if ($fileName == '') {
-			$path = 'invalid fileName';
+			$error = 'invalid fileName';
 			return false;
 		}
 		
 		$path = '/var/www/email/tests/' . $fileName;
 		if (file_exists($path)) { return true; }
 
-		$path = $path . ' does not exist';
+		$error = $path . ' does not exist';
+		$path = '';
 		return false;
 	}
 	
-	private static function initHeaders($mail, &$struct, &$message) {
+	private static function initHeaders($mail, &$struct, &$message, &$error) {
 		$info = EmailProcessor::getInfo($mail, array_shift($struct));
+		
+		if (!isset($info['headers']['from'])) {
+			$error = "malformed email";
+			return false;
+		}
 		if (EmailProcessor::isBounceMessage($info)) {
-			$message = "bounce or spam email discarded";
+			$error = "bounce email discarded";
 			return false;
 		}
 
@@ -94,7 +110,7 @@ class EmailProcessor
 			array_shift($struct);
 		}
 	}
-	private static function initAttachments($mail, &$struct, $buffer, &$message) {
+	private static function initAttachments($mail, &$struct, $buffer, &$message, &$error) {
 		$message['attachments'] = array();
 
 		while (!empty($struct)) {
@@ -117,7 +133,7 @@ class EmailProcessor
 				EmailProcessor::processAttachment($buffer, $info, $message);
 				continue;
 			}
-			$message = 'Unexpected info: ' . print_r($info, true);
+			$error = 'Unexpected info: ' . print_r($info, true);
 			return false;
 		}
 		return true;
@@ -143,7 +159,6 @@ class EmailProcessor
 	}
 
 	private static function isBounceMessage($info) {
-		if (!isset($info['headers']['from'])) { return true; }
 		if (util::startsWith($info['headers']['from'], 'postmaster')) { return true; }
 		if (isset($info['content-report-type']) && $info['content-report-type'] == 'delivery-status') { return true; }
 		return false;

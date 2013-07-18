@@ -6,19 +6,16 @@
  *****************************************************************************************************/
 require_once('classes/EmailProcessor.php');
 
-if (!EmailProcessor::readFromData(&$message)) { 
-	echo $message;
+if (!EmailProcessor::readFromData($message, $error)) { 
+	echo $error;
 	return;
 }
-
-if (simulate()) {
-	deleteAttachments($message['attachments']);
-	echo trim(preg_replace('/\s+/', ' ', print_r($message, true)));
+if (!EmailProcessor::processMessage($message, $error)) { 
+	echo $error;
 	return;
 }
+echo 'ok';
 
-deleteAttachments($message['attachments']);
-echo '<pre>' .print_r($message, true) . '</pre>';
 
 /*
 $handler = EmailResponder::factory($message['to']);

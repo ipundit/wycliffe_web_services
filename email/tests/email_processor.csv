@@ -7,7 +7,11 @@ testFile	<script>
 EXPECTS	invalid fileName
 
 URL	http://wycliffe-services.net/email/email_processor.php
-EXPECTS	
+EXPECTS	malformed email
+
+URL	http://wycliffe-services.net/email/email_processor.php
+testFile	bounceBack.eml
+EXPECTS	bounce email discarded
 
 URL	http://wycliffe-services.net/email/email_processor.php
 testFile	forwardedAttachment.eml

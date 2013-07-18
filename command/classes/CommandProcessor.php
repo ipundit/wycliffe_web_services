@@ -224,13 +224,18 @@ class CommandProcessor {
 				continue;
 			}
 			if ($inMultiLine) {
-				$inMultiLine = false;
-				continue;
+				if ($str[$pos + 1] == '"') {
+					$pos++;
+				} else {
+					$inMultiLine = false;
+					continue;
+				}
 			}
 			$str = substr($str, 0, $pos) . '"' . substr($str, $pos);
 			$pos++;
 			$end++;
 		} while ($pos < $end);
+		
 		return $str;
 	}
 	

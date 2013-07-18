@@ -308,29 +308,30 @@ class Email
 			return false;
 		}
 		
-		if ($row['simulate'] != 1 || $row['fromName'] == 'Free Viagra') {
-			$spamChecker = new Akismet('http://wycliffe-services.net/email/webservice.php', '9b41b2cabb36', 
-				array(
-						'author'     => $row['fromName'],
-						'email'      => $row["from"],
-						'website'    => 'http://wycliffe-services.net/',
-						'body'       => $row["body"],
-						'user_agent' => 'Wycliffe Web Services/1.0 | email/1.0',
-						'referrer'   => 'http://wycliffe-services.net/email/webservice.php',
-				));
-			
-			if ($spamChecker->errorsExist()) {
-				$msg = "cannot connect to spam server";
-				return false;
-			}
-			if( $spamChecker->isSpam()) {
-				$msg = "spam detected";
-				return false;
-			}
+		if (isSpam($row['fromName'], $row['from'], $row['body'], $row['simulate'] == 1)) {
+			$msg = "spam detected";
+			return false;
 		}
 		
 		$row['body'] .= PHP_EOL . PHP_EOL . '<span style="color:#BBBBBB">--' . PHP_EOL . 'Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>';
 		return $row;
+	}
+	
+	public static function isSpam($fromName, $fromEmail, $body, $simulate = false, $userAgent = 'Wycliffe Web Services/1.0 | email/1.0',
+			$referrer = 'http://wycliffe-services.net/email/webservice.php') {
+		if ($simulate) { return $fromName == 'Free Viagra'; } // Just put in one case for failure
+		
+		$spamChecker = new Akismet('http://wycliffe-services.net/email/webservice.php', '9b41b2cabb36', 
+			array(
+					'author'     => $fromName,
+					'email'      => $fromEmail,
+					'website'    => 'http://wycliffe-services.net/',
+					'body'       => $body,
+					'user_agent' => $userAgent,
+					'referrer'   => $referrer,
+			));
+		if ($spamChecker->errorsExist()) { return false; } // silently skip spam checking then
+		return $spamChecker->isSpam();
 	}
 	
 	public static function wycliffeServicesEmails() {

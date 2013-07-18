@@ -4,16 +4,12 @@
  * /home/mailboxes/wycliffe-services.net/webservice@wycliffe-services.net/.courier to be like this:  *
  * | /usr/bin/php5 /var/www/email/email_processor.php                                                *
  *****************************************************************************************************/
-require_once('classes/EmailParser.php');
+require_once('classes/EmailProcessor.php');
 
-$buffer = '';
-if (!receivedEmail($buffer)) {
-	echo $buffer;
+if (!EmailProcessor::readFromData(&$message)) { 
+	echo $message;
 	return;
 }
-
-$message = EmailParser::parse($buffer);
-if ($message === false) { return; }
 
 if (simulate()) {
 	deleteAttachments($message['attachments']);
@@ -32,7 +28,7 @@ events@wycliffe-services.net
 help@wycliffe-services.net
 webservice@wycliffe-services.net
 
-1) If email not recognized or is blank, send template.  Need template
+1) If email not recognized or is blank, send template.  Need template read from file
 2) If template, convert to web service call and handle it from there.  Need body parser and mapping to web service call
 
 file_put_contents('/var/www/email/output.html', '<pre>' .print_r($message, true) . '</pre>');
@@ -47,20 +43,7 @@ function deleteAttachments($attachments) {
 	}
 }
 
-function receivedEmail(&$buffer) {
-	if (!getFilePath($buffer)) { return false; }
-	
-	if ($buffer == '') { 
-		$handle = fopen('php://stdin', 'r');
-		while(!feof($handle)) {
-			$buffer .= fgets($handle);
-		}
-		fclose($handle);
-	} else {
-		$buffer = file_get_contents($buffer);
-	}
-	return true;
-}
+
 
 function simulate() {
 	$simulate = isset($_GET['simulate']) ? $_GET['simulate'] : (isset($_POST['simulate']) ? $_POST['simulate'] : 0);
@@ -68,20 +51,5 @@ function simulate() {
 	return $simulate == 1;
 }
 
-function getFilePath(&$path) {
-	$fileName = isset($_GET['testFile']) ? $_GET['testFile'] : (isset($_POST['testFile']) ? $_POST['testFile'] : '');
-	if ($fileName == '') { return true; }
-	
-	$fileName = filter_var($fileName, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES));
-	if ($fileName == '') {
-		$path = 'invalid fileName';
-		return false;
-	}
-	
-	$path = '/var/www/email/tests/' . $fileName;
-	if (file_exists($path)) { return true; }
 
-	$path = $path . ' does not exist';
-	return false;
-}
 ?>

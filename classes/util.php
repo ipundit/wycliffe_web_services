@@ -22,12 +22,35 @@ class util {
 		$oldPath = $_FILES[$paramName]['tmp_name'];
 
 		$arr = explode(DIRECTORY_SEPARATOR, $oldPath);
-		$arr[sizeof($arr) - 1] = $_FILES[$paramName]['name'];
+		$arr[sizeof($arr) - 1] = util::randomString();
+		
+		$arr[sizeof($arr)] = $_FILES[$paramName]['name'];
 		$newPath = implode(DIRECTORY_SEPARATOR, $arr);
 
 		move_uploaded_file($oldPath, $newPath);
 		$_FILES[$paramName]['tmp_name'] = $newPath;
 	}
+
+	public static function createTempDir() {
+		$dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . util::randomString();
+		if (!file_exists($dir)) { mkdir($dir, 0777, true); }
+		return $dir . DIRECTORY_SEPARATOR;
+	}
+	private static function randomString($length = 5) {
+		return substr(str_shuffle(MD5(microtime())), 0, $length);
+	}
+	public static function delTree($dir) {
+		if (!file_exists($dir)) { return true; }
+		if (!is_dir($dir) || is_link($dir)) { return unlink($dir); }
+		foreach (scandir($dir) as $item) {
+			if ($item == '.' || $item == '..') continue;
+			if (!util::delTree($dir . "/" . $item)) {
+				chmod($dir . "/" . $item, 0777);
+				if (!util::delTree($dir . "/" . $item)) return false;
+			};
+		}
+		return rmdir($dir);
+	} 
 	
 	static public function parseCSV($data, $delimiter = '\t', $enclosure = '"', $newline = "\n") {
 		$data = str_replace("\r\n", "\n", $data);

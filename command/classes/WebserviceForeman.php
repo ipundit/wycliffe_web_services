@@ -36,7 +36,7 @@ class WebserviceForeman {
 
 	public function run($onlyNeedBlockingTaskToFinish, &$msg) {
 		if ($this->simulate) { 
-			$msg = 'ok';
+			$msg = 'regression tests passed';
 			return true;
 		}
 		$ok = true;

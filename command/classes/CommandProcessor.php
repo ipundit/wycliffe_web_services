@@ -53,32 +53,42 @@ class CommandProcessor {
 	}
 
 	static private function processService($path, $simulate, &$msg) {
-		$dir = new DirectoryIterator($path);
-		foreach ($dir as $fileInfo) {
-			if ($fileInfo->isFile()) {
-				$file = $fileInfo->getFilename();
-				
-				if (preg_match('/^_file[1-4]_.+$/', $file)) {
-					$newFile = substr($file, 7); // remove 7 char _file1_ prefix
-					$newPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $newFile;
-					copy($path . $file, $newPath);
-					$_FILES[substr($file, 0, 6)] = array('name' => $newFile, 'tmp_name' => $newPath);
-				}
-			}
-		}
+		$baseDir = util::createTempDir();
+		$retValue = true;
 		
-		foreach ($dir as $fileInfo) {
-			if ($fileInfo->isFile()) {
-				$file = $fileInfo->getFilename();
-				
-				if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
-					if (!CommandProcessor::processFile($file, $path . $file, $simulate, $msg)) { return false; }
+		try {
+			$dir = new DirectoryIterator($path);
+			foreach ($dir as $fileInfo) {
+				if ($fileInfo->isFile()) {
+					$file = $fileInfo->getFilename();
+					
+					if (preg_match('/^_file[1-4]_.+$/', $file)) {
+						$newFile = substr($file, 7); // remove 7 char _file1_ prefix
+						$newPath = $baseDir . $newFile;
+						copy($path . $file, $newPath);
+						$_FILES[substr($file, 0, 6)] = array('name' => $newFile, 'tmp_name' => $newPath);
+					}
 				}
 			}
+			
+			foreach ($dir as $fileInfo) {
+				if ($fileInfo->isFile()) {
+					$file = $fileInfo->getFilename();
+					
+					if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
+						$retValue = CommandProcessor::processFile($file, $path . $file, $simulate, $msg);
+						if (!$retValue) { break; }
+					}
+				}
+			}
+			if ($retValue) { $msg = 'regression tests passed'; }
+		} catch (Exception $e) {
+			$retValue = false;
+			$msg = "exception caught";
 		}
 	
-		if ($simulate) { $msg = 'ok'; }
-		return true;
+		util::delTree($baseDir);
+		return $retValue;
 	}
 
 	static private function processFile($name, $path, $simulate, &$msg) {

@@ -9,32 +9,32 @@ EXPECTS	web service csvt does not exist
 URL	http://wycliffe-services.net/command/webservice.php	
 src	csv	
 simulate	1	
-EXPECTS	ok	
+EXPECTS	regression tests passed
 
 URL	http://wycliffe-services.net/command/webservice.php	
 src	command	
 simulate	1	
-EXPECTS	ok	
+EXPECTS	regression tests passed
 		
 URL	http://wycliffe-services.net/command/webservice.php	
 src	email	
 simulate	1	
-EXPECTS	ok	
+EXPECTS	regression tests passed
 		
 URL	http://wycliffe-services.net/command/webservice.php	
 src	payments	
 simulate	1	
-EXPECTS	ok	
+EXPECTS	regression tests passed	
 		
 URL	http://wycliffe-services.net/command/webservice.php	
 src	sms	
 simulate	1	
-EXPECTS	ok	
+EXPECTS	regression tests passed
 		
 URL	http://wycliffe-services.net/command/webservice.php	
 src	URL	http://wycliffe-services.net/command/webservice.php
 simulate	1	
-EXPECTS	ok	
+EXPECTS	regression tests passed
 
 # processCommands testing		
 URL	http://wycliffe-services.net/command/webservice.php	
@@ -91,7 +91,7 @@ src	"URL	http://wycliffe-services.net/command/webservice.php
 src	command
 _file2	readme.csv
 simulate	1"
-EXPECTS	ok
+EXPECTS	regression tests passed
 
 # multi-line quote parsing test
 URL	http://wycliffe-services.net/command/webservice.php	

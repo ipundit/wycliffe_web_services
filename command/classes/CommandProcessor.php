@@ -67,7 +67,7 @@ class CommandProcessor {
 				if (preg_match('/^_file[1-4]_.+$/', $file)) {
 					$newFile = substr($file, 7); // remove 7 char _file1_ prefix
 					$newPath = $baseDir . $newFile;
-					move_uploaded_file($path . $file, $newPath);
+					copy($path . $file, $newPath);
 					$_FILES[substr($file, 0, 6)] = array('name' => $newFile, 'tmp_name' => $newPath);
 				}
 			}

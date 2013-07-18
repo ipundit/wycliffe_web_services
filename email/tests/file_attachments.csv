@@ -25,16 +25,18 @@ EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wy
 	
 # mailing list testing	
 URL	http://wycliffe-services.net/email/webservice.php
+body	Dear Regression Tester, This is a test
 to	_file3
 EXPECTS	first line of to file must have $email column
 	
 URL	http://wycliffe-services.net/email/webservice.php
+body	Dear Regression Tester, This is a test
 to	_file4
 EXPECTS	mailing list line 6: invalid to
-RESULT	$blockToAvoidRaceCondition
 	
 URL	http://wycliffe-services.net/email/webservice.php
 from	$from
+body	Dear Regression Tester, This is a test
 to	_file4
 EXPECTS	mailing list line 3: invalid from email
 

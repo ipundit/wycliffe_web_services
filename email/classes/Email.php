@@ -379,9 +379,16 @@ class Email
 	}
 	
 	public static function wycliffeServicesEmails() {
-		return array(
-			'events@wycliffe-services.net', 'help@wycliffe-services.net',
-			'no-reply@wycliffe-services.net', 'webservice@wycliffe-services.net');
+		$retValue = array('no-reply@wycliffe-services.net', 'help@wycliffe-services.net');
+		$dir = new DirectoryIterator('/var/www/');
+		foreach ($dir as $fileinfo) {
+			if ($fileinfo->isDir() && !$fileinfo->isDot()) {
+				$subdir = $fileinfo->getFilename();
+				if (file_exists('/var/www/' . $subdir . '/email_template.html')) { array_push($retValue, $subdir); }
+			}
+		}
+		asort($retValue);
+		return $retValue;
 	}
 	
 	private static function validateEmailList($str) {

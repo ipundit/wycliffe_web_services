@@ -49,6 +49,9 @@ label.error {
 #fromEmailJAARS {
 	width: 417px;
 }
+#fromEmailWWS {
+	width: 92px;
+}
 #to {
 	width: 579px;
 }
@@ -65,12 +68,14 @@ label.error {
 @-moz-document url-prefix() { /* firefox */
 	#fromName { width: 132px; }
 	#fromEmailJAARS { width: 416px; }
+	#fromEmailWWS { width: 96px; }
 	#to { width: 585px; }
 	#body { width: 605px; }
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
 	#fromName { width: 155px; }
 	#fromEmailJAARS { width: 395px; }
+	#fromEmailWWS { width: 94px; }
 	#to { width: 585px; }
 }
 

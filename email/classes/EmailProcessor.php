@@ -38,20 +38,16 @@ class EmailProcessor
 		} catch (Exception $e) {}
 		if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); }
 		
-//		echo '<pre>' .print_r($body, true) . '</pre>';
-
-		
 		return $retValue;
 	}
 	
 	private static function processMessageImpl($to, $message, &$error, $deleteAttachments = false) {
-/*
-	if (EmailProcessor::simulate() == 1) {
+		if (EmailProcessor::simulate() == 3) {
 			if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); };
 			$error = trim(preg_replace('/\s+/', ' ', print_r($message, true)));
 			return false;
 		}
-*/
+		
 		if ($to == '') { $to = $message['to']; }
 		$templateName = EmailProcessor::getTemplateName($to, $error);
 		if ($templateName === false) { return false; }
@@ -436,7 +432,7 @@ class EmailProcessor
 	
 	private static function simulate() {
 		$simulate = isset($_GET['simulate']) ? $_GET['simulate'] : (isset($_POST['simulate']) ? $_POST['simulate'] : 0);
-		return filter_var($simulate, FILTER_VALIDATE_INT, array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)));
+		return filter_var($simulate, FILTER_VALIDATE_INT, array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>3)));
 	}
 	
 	private static function deleteAttachments($attachments) {

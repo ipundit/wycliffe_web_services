@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<head>
+<title>Perform a mail merge</title>
+<style>body { white-space: pre; }</style>
+<meta name="url" content="http://wycliffe-services.net/email/webservice.php" />
+<meta name="to" content="attachment_mailing_list.csv" />
+<meta name="fromName" content="Your name" />
+<meta name="from" content="Your email" />
+<meta name="subject" content="Subject" />
+<meta name="replyTo" content="Reply-to" />
+<meta name="cc" content="Cc" />
+<meta name="bcc" content="Bcc" />
+<meta name="tags" content="Tags" />
+<meta name="startRow" content="Starting row" />
+<meta name="maxRow" content="Maximum number of rows to process" />
+<meta name="simulate" content="Simulate" />
+<meta name="body" content="Body" />
+<meta name="attach1" content="attachment" />
+<meta name="attach2" content="attachment" />
+<meta name="attach3" content="attachment" />
+<meta name="attach4" content="attachment" />
+<meta name="attach5" content="attachment" />
+<meta name="attach6" content="attachment" />
+<meta name="attach7" content="attachment" />
+<meta name="attach8" content="attachment" />
+<meta name="attach9" content="attachment" />
+</head>
+<body>Dear $firstName,
+
+This mail merge program will send a personalized email to each person in your mailing list.  Reply to this email and attach a mailing list similar to this <a href="http://www.wycliffe-services.net/email/mailing_list.csv">sample</a> and name it <b>mailing_list.csv</b>. Then fill out the below template and click send.
+
+<b>Your name:</b> $fromName
+<b>Your email:</b> $fromEmail
+<b>Subject:</b> Subject of your email
+
+<b>Body->:</b>
+Dear $$firstName,
+
+I will call you at $phoneNumber which I read from the <b>mailing_list.csv</b> attachment. You can define any column starting with a $ in <b>mailing_list.csv</b>, and then have that $placeholder replaced here for each row in the <b>mailing_list.csv</b> file.
+
+Regards,
+$fromName
+<b>->Body:</b> # everything between the Body: tags will be counted as the body of your email
+
+<h4>Filling out the rest of the form is optional.</h4>
+<b>Simulate:</b> 0 # 0 to actually send the email, or 1 to run through all the checks but not actually send the email. simulate = 2 will output the email(s) to http://www.wycliffe-services.net/email/dryRun.html instead of emailing them out. This allows you to check the mass mailing before sending it out (recommended).
+
+<h4>Other receipients</h4>
+<b>Cc:</b> # A comma separated list of emails
+<b>Bcc:</b> # A comma separated list of emails
+<b>Reply-to:</b> # An email address where you want replies to your email to go to.  Otherwise, they will go to $fromEmail
+
+<h4>Mailing list filter settings</h4>
+<b>Tags:</b> # Tags will be compared to $tags in the mailing list.  If there is a match, the email will be sent. If tags is not set, then all rows will be sent.
+<b>Starting row:</b> 1 # Email processing will start on the Starting row you specify here.  Useful for long mailing scripts that may have timed out in the middle of processing, so you can start mailing again from Starting row.  Rows start from 1, so specifying 1 here will mean processing the whole mailing list file.
+<b>Maximum number of rows to process:</b> 0 # Email processing will process a maximum number of rows to process. 0 means that there is no limit to the number of rows that will be processed, and the mailing will only quit if there is an error or the script times out.
+</body>
+</html>

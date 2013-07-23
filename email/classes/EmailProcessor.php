@@ -1,12 +1,17 @@
 <?php 
 require_once 'util.php';
 require_once 'classes/Email.php';
+define('DUMP_TO_DRY_RUN', false);
 
 class EmailProcessor
 {
 	public static function readFromData(&$message, &$error) {
 		if (!EmailProcessor::receivedEmail($buffer, $error)) { return false; }
-		return EmailProcessor::parse($buffer, $message, $error, EmailProcessor::simulate());
+		if (DUMP_TO_DRY_RUN) {
+			file_put_contents('/var/www/email/dryRun.html', print_r($buffer, true));
+			return false;
+		}
+		return EmailProcessor::parse($buffer, $message, $error, EmailProcessor::simulate() == 1);
 	}
 	
 	public static function parse($buffer, &$message, &$error, $simulateSpamCheck = false) {
@@ -27,35 +32,250 @@ class EmailProcessor
 		return true;
 	}
 
-	public static function processMessage($message, &$error, $deleteAttachments = false) {
-		if (EmailProcessor::simulate()) {
-			if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); };
-			echo trim(preg_replace('/\s+/', ' ', print_r($message, true)));
-			return;
-		}
-
+	public static function processMessage($to, $message, &$error, $deleteAttachments = false) {
 		try {
-			/*
-				$handler = EmailResponder::factory($message['to']);
-				$handler->process($message);
-
-				events@wycliffe-services.net
-				help@wycliffe-services.net
-				webservice@wycliffe-services.net
-
-				1) If email not recognized or is blank, send template.  Need template read from file
-				2) If template, convert to web service call and handle it from there.  Need body parser and mapping to web service call
-
-				file_put_contents('/var/www/email/output.html', '<pre>' .print_r($message, true) . '</pre>');
-			*/
-		} catch (Exception $e) {
-		
-		}
-		
+			$retValue = EmailProcessor::processMessageImpl($to, $message, $error, $deleteAttachments);
+		} catch (Exception $e) {}
 		if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); }
-		echo '<pre>' .print_r($message, true) . '</pre>';
+		
+//		echo '<pre>' .print_r($body, true) . '</pre>';
+
+		
+		return $retValue;
+	}
+	
+	private static function processMessageImpl($to, $message, &$error, $deleteAttachments = false) {
+/*
+	if (EmailProcessor::simulate() == 1) {
+			if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); };
+			$error = trim(preg_replace('/\s+/', ' ', print_r($message, true)));
+			return false;
+		}
+*/
+		if ($to == '') { $to = $message['to']; }
+		$templateName = EmailProcessor::getTemplateName($to, $error);
+		if ($templateName === false) { return false; }
+		
+		$template = EmailProcessor::readTemplate($templateName, $error);
+		if ($template === false) { return false; }
+
+		// fixme: write regression tests for functions from here onwards
+		EmailProcessor::setDerivedVariables($message);
+
+		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
+		
+		EmailProcessor::fillInTemplate($template['body'], $message);
+
+		$originalTemplateParams = $template['params'];
+		if (EmailProcessor::extractParams($template['body'], $message, $template['params'], $url, $error)) {
+
+	//				$result = EmailProcessor::execute($params);
+	//				utils::sendEmail();
+		} else if ($error != '') { return false; }
+	
+	
+		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
+		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $template['title'], $template['body'], '', '', '', array(), EmailProcessor::simulate());
+	}
+	
+	private static function extractParams($body, $message, &$params, &$url, &$error) {
+		if (!isset($params['url'])) { return false; }
+		$url = $params['url'];
+		if (!filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+			$error = 'url not valid in template';
+			return false;
+		}
+		unset($params['url']);
+
+		$bodyVars = EmailProcessor::parseBody($body, $error);
+		if ($bodyVars === false) { return false; }
+		
+		$attachments = $message['attachments'];
+		
+		foreach ($params as $key => &$value) {
+			if ($value == 'attachment') {
+				if (empty($attachments)) {
+					unset($params[$key]);
+				} else {
+					$value = array_shift($attachments);
+				}
+			} else if (util::removeBefore($value, 'attachment_')) {
+				if (!isset($attachments[$value])) {
+					// $error = 'You must attach ' . $value; // Just resend the default template
+					$retValue = false;
+					continue;
+				}
+				$value = $attachments[$value];
+			} else if (isset($bodyVars[$value])) {
+				$value = $bodyVars[$value];
+			}
+		}
+		return $retValue;
 	}
 
+	private static function setDerivedVariables(&$message) {
+		if (preg_match('/^(.*) <(.+@.+\..+)>$/', $message['from'], $matches) == 1) {
+			$message['fromName'] = $matches[1];
+			$message['fromEmail'] = $matches[2];
+
+			$names = explode(' ', $message['fromName'], 2);
+			$message['firstName'] = $names[0];
+		} else {
+			$message['fromEmail'] = $message['from'];
+			
+			$names = explode('@', $message['fromEmail'], 2);
+			$message['fromName'] = $names[0];
+			$message['firstName'] = $names[0];
+		}
+	}
+	
+	private static function fillInTemplate(&$str, $message) {
+		$pos = -1;
+		do {
+			if (preg_match('/.*?\$(\w+).*/s', $str, $matches, PREG_OFFSET_CAPTURE, $pos + 1) != 1) { return; }
+			
+			$variable = $matches[1][0];
+			$pos = $matches[1][1] - 1;
+			$afterVariable = $pos + strlen($variable) + 1;
+			
+			if ($pos > 0 && substr($str, $pos - 1, 1) == '$') {
+				$str = substr($str, 0, $pos) . $variable . substr($str, $afterVariable);
+				$pos++;
+				continue;
+			}
+
+			if (isset($message[$variable])) {
+				$variable = $message[$variable];
+				$str = substr($str, 0, $pos) . $variable . substr($str, $afterVariable);
+			}
+			
+		} while (true);
+	}
+	
+	private static function parseBody($body, &$error) {
+		$body = str_replace("\r\n", "\n", $body);
+		$retValue = array();
+		
+		$lines = explode(PHP_EOL, $body);
+		for ($i = 0; $i < count($lines); $i++) { // ignore lines until you get the variables
+			if (preg_match('/^.+?:[ <]/', $lines[$i]) == 1) { break; }
+		}
+
+		$inMultiLineTag = false;
+		for (; $i < count($lines); $i++) { 
+			util::removeAfter($lines[$i], '#');
+			$colon = strpos($lines[$i], ':');
+			if ($colon === false || $colon == 0) { continue; }
+			
+			$key = substr($lines[$i], 0, $colon);
+			if (util::startsWith($key, '<')) { util::removeBefore($key, '>'); }
+			$key = rtrim($key);
+			
+			$value = substr($lines[$i], $colon + 1);
+			if (util::startsWith($value, '</')) { util::removeBefore($value, '>'); }
+			
+			if (util::endsWith($key, '->')) {
+				$inMultiLineTag = true;
+				$key = substr($key, 0, strlen($key) - 2); // remove ->
+				
+				$prefix = '->' . $key;
+				for ($i = $i + 1; $i < count($lines); $i++) {
+					$temp = $lines[$i];
+					if (util::startsWith($temp, '<')) { util::removeBefore($temp, '>'); }
+					if (util::startsWith($temp, $prefix)) {
+						$inMultiLineTag = false;
+						break;
+					} else {
+						$value.= PHP_EOL . $lines[$i];
+					}
+				}
+			}
+			
+			if ($inMultiLineTag) {
+				$error = $key . ' does not have an ending tag';
+				return false;
+			}
+			
+			if (isset($retValue[$key])) { 
+				$error = $key . ' already set in template';
+				return false;
+			}
+			$retValue[$key] = trim($value);
+		}
+		
+		return $retValue;
+	}
+	
+	private static function parseTemplate(&$template, &$error) {
+		if (!EmailProcessor::extractMeta($template, $title, $params, $error)) { return false; }
+
+		$body = EmailProcessor::extractBody($template, $error);
+		if ($body === false) { return false; }
+
+		$template = array('title'=>$title, 'params'=>$params, 'body'=>$body);
+		return true;
+	}
+	private static function extractMeta($template, &$title, &$params, &$error) {
+		$head = EmailProcessor::extractTag($template, 'head', $error);
+		if ($head === false) { return false; }
+
+		$title = EmailProcessor::extractTag($head, 'title',  $error);
+		if ($title === false) { return false; }
+		
+		$params = array();
+		$offset = 0;
+		while (preg_match('/.+?meta name="(.+)" content="(.+)".*/', $head, $matches, PREG_OFFSET_CAPTURE, $offset) == 1) {
+			$params[$matches[1][0]] = $matches[2][0];
+			$offset = $matches[2][1];
+		}
+		return true;
+	}
+	private static function extractBody($template, &$error) {
+		return EmailProcessor::extractTag($template, 'body', $error);
+	}
+	private static function extractTag($template, $tag, &$error) {
+		$startTag = '<' . $tag . '>';
+		$endTag = '</' . $tag . '>';
+		
+		$startIndex = strpos($template, $startTag);
+		if ($startIndex === false) { 
+			$error = 'could not find opening ' . $tag . ' tag';
+			return false;
+		}
+		$startIndex += strlen($startTag);
+
+		$endIndex = strpos($template, $endTag, $startIndex);
+		if ($endIndex === false) { 
+			$error = 'could not find closing ' . $tag . ' tag';
+			return false;
+		}
+		return substr($template, $startIndex, $endIndex - $startIndex);
+	}
+
+	private static function getTemplateName($to, &$error) {
+		util::removeBefore($to, "<");
+	
+		if (!util::removeAfter($to, '@wycliffe-services.net')) {
+			$error = "invalid wycliffe-services.net domain";
+			return false;
+		}
+		
+		if (strpos($to, '/') !== false || strpos($to, '..') !== false) {
+			$error = "invalid wycliffe-services.net address";
+			return false;
+		}
+		return $to;
+	}
+	
+	private static function readTemplate($templateName, &$error) {
+		$path = $templateName == 'help' ? '/var/www/email/help_template.html' : '/var/www/' . $templateName . '/email_template.html';
+		if (!file_exists($path)) { 
+			$error = "template does not exist";
+			return false;
+		}
+		return file_get_contents($path);
+	}
+	
 	private static function receivedEmail(&$buffer, &$error) {
 		if (!EmailProcessor::getFilePath($path, $error)) { return false; }
 		
@@ -90,8 +310,8 @@ class EmailProcessor
 	}
 	
 	private static function initHeaders($mail, &$struct, &$message, &$error) {
-		$info = EmailProcessor::getInfo($mail, array_shift($struct));
-		
+		$info = EmailProcessor::getInfo($mail, $struct[0]);
+
 		if (!isset($info['headers']['from'])) {
 			$error = "malformed email";
 			return false;
@@ -104,6 +324,14 @@ class EmailProcessor
 		$fields = 'from,to,cc,reply-to,subject,date';
 		foreach (explode(',', $fields) as $field) {
 			$message[$field] = isset($info['headers'][$field]) ? $info['headers'][$field] : '';
+		}
+
+		switch ($info['content-type']) {
+		case 'text/plain':
+		case 'text/html':
+			break;
+		default:
+			array_shift($struct);
 		}
 		return true;
 	}
@@ -188,8 +416,7 @@ class EmailProcessor
 	
 	private static function simulate() {
 		$simulate = isset($_GET['simulate']) ? $_GET['simulate'] : (isset($_POST['simulate']) ? $_POST['simulate'] : 0);
-		$simulate = filter_var($simulate, FILTER_VALIDATE_INT, array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)));
-		return $simulate == 1;
+		return filter_var($simulate, FILTER_VALIDATE_INT, array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)));
 	}
 	
 	private static function deleteAttachments($attachments) {

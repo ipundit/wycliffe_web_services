@@ -279,5 +279,11 @@ class util {
 	private static function jaarsDomains() {
 		return array('sil.org', 'wycliffe.net', 'wycliffe.org', 'jaars.org', 'kastanet.org');
 	}
+	
+	public static function dump($variable, $die = true) {
+		$str = '<pre>' . print_r($variable, true) . '</pre>';
+		if ($die) {	die($str); }
+		echo $str;
+	}
 }
 ?>

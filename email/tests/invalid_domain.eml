@@ -1,0 +1,33 @@
+Received: from smtp1.wsfo.org (smtp1.wsfo.org [::ffff:162.40.29.51])
+  (TLS: TLSv1/SSLv3,256bits,AES256-SHA)
+  by mail with ESMTPS; Fri, 19 Jul 2013 04:22:12 +0000
+  id 0000000001FC0874.0000000051E8BEF4.0000549E
+Received: from mail.link77.net (cgp2.mail.link77.net [172.22.65.14])
+	by smtp1.wsfo.org (8.14.4/8.14.4) with ESMTP id r6J4M8Ym001738
+	for <webservice@wycliffe-services.net>; Fri, 19 Jul 2013 00:22:10 -0400
+X-CGP-ClamAV-Result: CLEAN
+X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
+X-CGP-ClamAV-Result: CLEAN
+X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
+Received: from [175.140.207.48] (account michael_hu@wycliffe.net HELO [192.168.136.7])
+  by mail.jaars.org (CommuniGate Pro SMTP 6.0.5)
+  with ESMTPSA id 128703546 for webservice@wycliffe-services.net; Fri, 19 Jul 2013 00:22:08 -0400
+Message-ID: <51E8BEEF.50806@wycliffe.net>
+Date: Fri, 19 Jul 2013 12:22:07 +0800
+From: Michael Hu <michael_hu@wycliffe.net>
+User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20130620 Thunderbird/17.0.7
+MIME-Version: 1.0
+To: webservice@invaliddomain.net
+Subject: Webservices
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.73 on 172.22.65.23
+
+Normal email
+
+-- 
+Regards,
+Michael Hu
+Administrative Services Director
+Wycliffe Asia-Pacific
+

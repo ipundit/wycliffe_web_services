@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<head>
+<title>Wycliffe Web Services Command processor</title>
+<style>body { white-space: pre; }</style>
+<meta name="url" content="http://wycliffe-services.net/command/webservice.php" />
+<meta name="src" content="hr1" />
+<meta name="src" content="attachment_sample.csv" /> <!-- Being the last src, the sample.csv will take precedence over the hr contents for the src parameter. -->
+<meta name="_file1" content="attachment" />
+<meta name="_file2" content="attachment" />
+<meta name="_file3" content="attachment" />
+<meta name="_file4" content="attachment" />
+<meta name="simulate" content="simulate" />
+</head>
+<body>
+Dear $firstName,
+
+<p>Welcome to the Wycliffe Web Services Command processor. You can email a list of web service calls according to the 
+template between the horizontal lines, or attach a command file named <b>sample.csv</b> in a format similar to <a href="http://www.wycliffe-services.net/email/tests/sample.csv">this sample</a>.
+The result of the last web service call will be emailed back to you.  And because it's an email, you can forward the email from your sent box to perform the same command again.</p>
+<p>You can also try out the <a href="http://www.wycliffe-services.net/command">web interface</a>, or read the <a href="https://sharing.teamwork-global.net/content/command">full documentation</a>.</p>
+<p>The following sample web call will call the <a href="https://sharing.teamwork-global.net/content/email">email web service</a>.
+Just set the fromName and to parameters to your own email.  Text outside of the horizontal lines will be ignored by the email processor, except for the simulate parameter.</p>
+<hr />
+URL: http://wycliffe-services.net/email/webservice.php<br />
+fromName: Your name<br />
+from: webservice@wycliffe-services.net<br />
+to: your_email@email.com<br />
+subject: Sent from the Wycliffe Web Services Command web service<br />
+body:<br />
+Dear $fromName,<br />
+<br />
+You can put "anything" you like here.<br />
+<br />
+From,<br />
+Me<br />
+/body: # The text between body: and /body: will be taken as the body parameter.  The # sign is a comment, and will ignore everything after it.<br />
+# attach1: _file1 # The first file attached to this email will be sent to the Email web service as attach1 if you uncomment this line
+<hr />
+simulate: 0 # Set simulate = 1 to run through all the checks but not actually process the commands
+</body>
+</html>

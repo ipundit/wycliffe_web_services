@@ -61,24 +61,38 @@ class EmailProcessor
 
 		// fixme: write regression tests for functions from here onwards
 		EmailProcessor::setDerivedVariables($message);
-
 		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
+
+		if (EmailProcessor::processMessageStruct($message, $template, $error)) { return true; }
+		if ($error != '') { 
+	//				utils::sendEmail(); telling user of why form is malformed
+			return false;
+		}
 		
-		EmailProcessor::fillInTemplate($template['body'], $message);
-
-		$originalTemplateParams = $template['params'];
-		if (EmailProcessor::extractParams($template['body'], $message, $template['params'], $url, $error)) {
-
-	//				$result = EmailProcessor::execute($params);
-	//				utils::sendEmail();
-		} else if ($error != '') { return false; }
+		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error);
+	}
 	
+	private static function sendDefaultForm($template, $templateName, $message, &$error) {
+		EmailProcessor::fillInTemplate($template['body'], $message);
+		if (!EmailProcessor::extractParams($template['body'], $message, $template['params'], $error) && $error != '') { return false; }
 	
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
 		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $template['title'], $template['body'], '', '', '', array(), EmailProcessor::simulate());
 	}
+
+	private static function processMessageStruct($message, $template, &$error) {
+		$body = $message['body'] == '' ? $message['html'] : $message['body'];
+		$params = $template['params'];
+		
+		if (EmailProcessor::extractParams($body, $message, $params, $error)) {
+	//				$result = EmailProcessor::execute($template['url'], $params);
+	//				utils::sendEmail();
+			return true;
+		}
+		return false; // just send the default form
+	}
 	
-	private static function extractParams($body, $message, &$params, &$url, &$error) {
+	private static function extractURL(&$params, &$error) {
 		if (!isset($params['url'])) { return false; }
 		$url = $params['url'];
 		if (!filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
@@ -86,7 +100,10 @@ class EmailProcessor
 			return false;
 		}
 		unset($params['url']);
+		return $url;
+	}
 
+	private static function extractParams($body, $message, &$params, &$error) {
 		$bodyVars = EmailProcessor::parseBody($body, $error);
 		if ($bodyVars === false) { return false; }
 		
@@ -209,10 +226,13 @@ class EmailProcessor
 	private static function parseTemplate(&$template, &$error) {
 		if (!EmailProcessor::extractMeta($template, $title, $params, $error)) { return false; }
 
+		$url = EmailProcessor::extractURL($params, $error);
+		if ($url === false) { return false; }
+
 		$body = EmailProcessor::extractBody($template, $error);
 		if ($body === false) { return false; }
-
-		$template = array('title'=>$title, 'params'=>$params, 'body'=>$body);
+		
+		$template = array('title'=>$title, 'url'=>$url, 'params'=>$params, 'body'=>$body);
 		return true;
 	}
 	private static function extractMeta($template, &$title, &$params, &$error) {

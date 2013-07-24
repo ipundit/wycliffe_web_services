@@ -162,8 +162,8 @@ class util {
 		return true;
 	}
 	
-	static public function removeBefore(&$str, $prefix) {
-		$pos = strpos($str, $prefix);
+	static public function removeBefore(&$str, $prefix, $fromFront = true) {
+		$pos = $fromFront ? strpos($str, $prefix) : strrpos($str, $prefix);
 		if ($pos === false) { return false; }
 		
 		$str = ltrim(substr($str, $pos + strlen($prefix)));

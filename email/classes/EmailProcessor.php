@@ -59,33 +59,36 @@ class EmailProcessor
 		EmailProcessor::setDerivedVariables($message);
 		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
 
-		if (EmailProcessor::processMessageStruct($message, $template, $error)) { return true; }
-		if ($error != '') { 
-	//				utils::sendEmail(); telling user of why form is malformed
-			return false;
+		if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
+			// do the actual processing
+			return true;
 		}
-		
 		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error);
 	}
 	
 	private static function sendDefaultForm($template, $templateName, $message, &$error) {
-		EmailProcessor::fillInTemplate($template['body'], $message);
-		if (!EmailProcessor::extractParams($template['body'], $message, $template['params'], $error) && $error != '') { return false; }
-	
+		if ($error == '') {
+			EmailProcessor::fillInTemplate($template['body'], $message);
+			if (!EmailProcessor::extractParams($template['body'], $message, $template['params'], $error) && $error != '') { return false; }
+			
+			$subject = $template['title'];
+			$body = $template['body'];
+		
+		} else {
+			$subject = $message['subject'];
+			
+			$body = 'We found an error in your form and could not send the emails. Please reply to this email to correct the following error: <b>' . $error . '</b>.</br ></br />';
+			$body .= $message['html'] == '' ? $message['body'] : $message['html'];
+		}
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
-		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $template['title'], $template['body'], '', '', '', array(), EmailProcessor::simulate());
+		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), EmailProcessor::simulate());
 	}
 
-	private static function processMessageStruct($message, $template, &$error) {
+	private static function parseEmail($message, $template, &$params, &$error) {
 		$body = $message['body'] == '' ? $message['html'] : $message['body'];
 		$params = $template['params'];
 		
-		if (EmailProcessor::extractParams($body, $message, $params, $error)) {
-	//				$result = EmailProcessor::execute($template['url'], $params);
-	//				utils::sendEmail();
-			return true;
-		}
-		return false; // just send the default form
+		return EmailProcessor::extractParams($body, $message, $params, $error);
 	}
 	
 	private static function extractURL(&$params, &$error) {
@@ -100,6 +103,7 @@ class EmailProcessor
 	}
 
 	private static function extractParams($body, $message, &$params, &$error) {
+		$retValue = true;
 		$bodyVars = EmailProcessor::parseBody($body, $error);
 		if ($bodyVars === false) { return false; }
 		
@@ -113,12 +117,22 @@ class EmailProcessor
 					$value = array_shift($attachments);
 				}
 			} else if (util::removeBefore($value, 'attachment_')) {
-				if (!isset($attachments[$value])) {
-					// $error = 'You must attach ' . $value; // Just resend the default template
+				$gotAttachment = false;
+				foreach ($attachments as $attachment) {
+					$temp = $attachment;
+					util::removeBefore($temp, '/', false);
+					if ($value == $temp) {
+						$value = $attachment;
+						$gotAttachment = true;
+						break;
+					}
+				}
+				if (!$gotAttachment) {
+					// $error = 'You must attach ' . $value; // Just resend the default template without an error message
+					$value = 'NOT_FOUND';
 					$retValue = false;
 					continue;
 				}
-				$value = $attachments[$value];
 			} else if (isset($bodyVars[$value])) {
 				$value = $bodyVars[$value];
 			}
@@ -169,33 +183,35 @@ class EmailProcessor
 		$body = str_replace("\r\n", "\n", $body);
 		$retValue = array();
 		
-		$lines = explode(PHP_EOL, $body);
-		for ($i = 0; $i < count($lines); $i++) { // ignore lines until you get the variables
-			if (preg_match('/^.+?:[ <]/', $lines[$i]) == 1) { break; }
-		}
-
 		$inMultiLineTag = false;
-		for (; $i < count($lines); $i++) { 
+		$lines = explode(PHP_EOL, $body);
+		for ($i = 0; $i < count($lines); $i++) { 
+			if (preg_match('/^.+?(:)[ <]/', $lines[$i], $matches, PREG_OFFSET_CAPTURE) != 1) { continue; }
+
 			util::removeAfter($lines[$i], '#');
-			$colon = strpos($lines[$i], ':');
-			if ($colon === false || $colon == 0) { continue; }
+			$colon = $matches[1][1];
+			if ($colon >= strlen($lines[$i])) { continue; }
 			
-			$key = substr($lines[$i], 0, $colon);
+			$key = trim(substr($lines[$i], 0, $colon));
+			if (strpos($key, ':') > 0) { continue; }
 			if (util::startsWith($key, '<')) { util::removeBefore($key, '>'); }
-			$key = rtrim($key);
 			
 			$value = substr($lines[$i], $colon + 1);
 			if (util::startsWith($value, '</')) { util::removeBefore($value, '>'); }
 			
+			$prefix = '';
 			if (util::endsWith($key, '->')) {
+				$prefix = '->';
+			} else if (util::endsWith($key, '-&gt;')) {
+				$prefix = '-&gt;';
+			}
+			if ($prefix != '') {
 				$inMultiLineTag = true;
-				$key = substr($key, 0, strlen($key) - 2); // remove ->
+				$key = substr($key, 0, strlen($key) - strlen($prefix));
 				
-				$prefix = '->' . $key;
+				$prefix = $prefix . $key;
 				for ($i = $i + 1; $i < count($lines); $i++) {
-					$temp = $lines[$i];
-					if (util::startsWith($temp, '<')) { util::removeBefore($temp, '>'); }
-					if (util::startsWith($temp, $prefix)) {
+					if (strpos($lines[$i], $prefix) !== false) {
 						$inMultiLineTag = false;
 						break;
 					} else {
@@ -210,7 +226,7 @@ class EmailProcessor
 			}
 			
 			if (isset($retValue[$key])) { 
-				$error = $key . ' already set in template';
+				$error = $key . ' can only be set in the form once';
 				return false;
 			}
 			$retValue[$key] = trim($value);

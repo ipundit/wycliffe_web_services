@@ -59,26 +59,47 @@ class EmailProcessor
 		EmailProcessor::setDerivedVariables($message);
 		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
 
+		$parseError = true;
 		if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
-			// do the actual processing
-			return true;
+			$parseError = false;
+			
+			$ch = util::curl_init($template['url'], $params);
+			$result = curl_exec($ch);
+			if (curl_errno($ch)) {
+				$error = curl_error($ch);
+			} else {
+				curl_close($ch);
+				$error = $result;
+			}
 		}
-		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error);
+		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, $parseError);
 	}
 	
-	private static function sendDefaultForm($template, $templateName, $message, &$error) {
+	private static function sendDefaultForm($template, $templateName, $message, &$error, $parseError) {
 		if ($error == '') {
 			EmailProcessor::fillInTemplate($template['body'], $message);
 			if (!EmailProcessor::extractParams($template['body'], $message, $template['params'], $error) && $error != '') { return false; }
 			
 			$subject = $template['title'];
 			$body = $template['body'];
-		
 		} else {
-			$subject = $message['subject'];
+			$subject = 'Re: ' . $message['subject'];
 			
-			$body = 'We found an error in your form and could not send the emails. Please reply to this email to correct the following error: <b>' . $error . '</b>.</br ></br />';
-			$body .= $message['html'] == '' ? $message['body'] : $message['html'];
+			if ($parseError) {
+				$body = 'We found an error in your form and could execte your request. Please reply to this email to correct the following error: <b>' . $error . '</b>';
+			} elseif ($error == 'ok') {
+				$body = 'Your request was processed successfully';
+			} else {
+				$body = 'There was an error while running your request: <b>' . $error . '</b>';
+			}
+			$body .= '.<br><br>Regards,<br>Wycliffe Web Services<hr>' . PHP_EOL . PHP_EOL;
+			
+			if ($message['body'] == '') {
+				$body = preg_replace('/^.*?<body.*?>/s', $body, $message['html']);
+				$body = preg_replace('/<\/body>.*/s', '', $body);
+			} else {
+				$body .= $message['body'];
+			}
 		}
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
 		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), EmailProcessor::simulate());
@@ -93,7 +114,7 @@ class EmailProcessor
 	
 	private static function extractURL(&$params, &$error) {
 		if (!isset($params['url'])) { return false; }
-		$url = $params['url'];
+		$url = $params['url'][0];
 		if (!filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
 			$error = 'url not valid in template';
 			return false;
@@ -110,19 +131,21 @@ class EmailProcessor
 		$attachments = $message['attachments'];
 		
 		foreach ($params as $key => &$value) {
-			if ($value == 'attachment') {
+			if ($value[0] == 'attachment') {
 				if (empty($attachments)) {
 					unset($params[$key]);
-				} else {
-					$value = array_shift($attachments);
+					continue;
 				}
-			} else if (util::removeBefore($value, 'attachment_')) {
+				$value[1] = '@' . $value[1];
+			} else if (util::removeBefore($value[0], 'attachment_')) {
 				$gotAttachment = false;
-				foreach ($attachments as $attachment) {
+				foreach ($attachments as $key => $attachment) {
 					$temp = $attachment;
 					util::removeBefore($temp, '/', false);
-					if ($value == $temp) {
-						$value = $attachment;
+
+					if ($value[0] == $temp) {
+						$value = '@' . $attachment;
+						unset($attachments[$key]);
 						$gotAttachment = true;
 						break;
 					}
@@ -131,15 +154,38 @@ class EmailProcessor
 					// $error = 'You must attach ' . $value; // Just resend the default template without an error message
 					$value = 'NOT_FOUND';
 					$retValue = false;
-					continue;
 				}
-			} else if (isset($bodyVars[$value])) {
-				$value = $bodyVars[$value];
+				continue;
+			} else if (isset($bodyVars[$value[0]])) {
+				$value[0] = $bodyVars[$value[0]];
 			}
+			$value = EmailProcessor::processMetaCommand($value, $error);
+			if ($value === false) { return false; }
 		}
 		return $retValue;
 	}
 
+	private static function processMetaCommand($value, &$error) {
+		if ($value[1] == '') { return EmailProcessor::trimStartEndTags($value[0], 'br'); }
+		
+		if (util::removeBefore($value[1], 'trim_')) {
+			return EmailProcessor::trimStartEndTags($value[0], $value[1]);
+		} else if ($value[1] == 'format_for_pre') {
+			$retValue = EmailProcessor::trimStartEndTags($value[0], '(br|p|div)');
+			$retValue = preg_replace('/\n/', ' ', $retValue);
+			$retValue = preg_replace('/ <br> <br> /', PHP_EOL . PHP_EOL, $retValue);
+			return preg_replace('/ ?<br> /', PHP_EOL, $retValue);
+		}
+		
+		$error = $value[1] . ' is not a recognized command';
+		return false;
+	}
+
+	private static function trimStartEndTags($str, $tagName) {
+		$retValue = preg_replace('/(<\/?' . $tagName . '>\n?)+$/', '', $str);
+		return preg_replace('/^(<' . $tagName . '.*?>\n?)+/', '', $retValue);
+	}
+	
 	private static function setDerivedVariables(&$message) {
 		if (preg_match('/^(.*) <(.+@.+\..+)>$/', $message['from'], $matches) == 1) {
 			$message['fromName'] = $matches[1];
@@ -181,6 +227,8 @@ class EmailProcessor
 	
 	private static function parseBody($body, &$error) {
 		$body = str_replace("\r\n", "\n", $body);
+		$body = preg_replace('/(<\/?blockquote.*?>\n?)+/s', '', $body);
+		
 		$retValue = array();
 		
 		$inMultiLineTag = false;
@@ -205,7 +253,13 @@ class EmailProcessor
 			} else if (util::endsWith($key, '-&gt;')) {
 				$prefix = '-&gt;';
 			}
-			if ($prefix != '') {
+			if ($prefix == '') {
+				if (util::startsWith($value, '<')) {
+					while (!util::endsWith($value, '>')) {
+						$value .= ' ' . $lines[++$i];
+					}
+				}
+			} else {
 				$inMultiLineTag = true;
 				$key = substr($key, 0, strlen($key) - strlen($prefix));
 				
@@ -215,7 +269,7 @@ class EmailProcessor
 						$inMultiLineTag = false;
 						break;
 					} else {
-						$value.= PHP_EOL . $lines[$i];
+						$value.= PHP_EOL . ltrim($lines[$i]);
 					}
 				}
 			}
@@ -256,8 +310,9 @@ class EmailProcessor
 		
 		$params = array();
 		$offset = 0;
-		while (preg_match('/.+?meta name="(.+)" content="(.+)".*/', $head, $matches, PREG_OFFSET_CAPTURE, $offset) == 1) {
-			$params[$matches[1][0]] = $matches[2][0];
+		while (preg_match('/.+?meta name="(.+?)" content="(.+?)"( command="(.+?)")?.*/', $head, $matches, PREG_OFFSET_CAPTURE, $offset) == 1) {
+			$command = isset($matches[4]) ? $matches[4][0] : '';
+			$params[$matches[1][0]] = array($matches[2][0], $command);
 			$offset = $matches[2][1];
 		}
 		return true;
@@ -310,7 +365,7 @@ class EmailProcessor
 	
 	private static function receivedEmail(&$buffer, &$error) {
 		if (!EmailProcessor::getFilePath($path, $error)) { return false; }
-		
+
 		if ($path == '') { 
 			$buffer = '';
 			$handle = fopen('php://stdin', 'r');

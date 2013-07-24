@@ -1,25 +1,25 @@
 Received: from smtp1.wsfo.org (smtp1.wsfo.org [::ffff:162.40.29.51])
   (TLS: TLSv1/SSLv3,256bits,AES256-SHA)
-  by mail with ESMTPS; Tue, 23 Jul 2013 09:40:08 +0000
-  id 0000000001FC054F.0000000051EE4F79.0000202F
+  by mail with ESMTPS; Wed, 24 Jul 2013 08:20:09 +0000
+  id 0000000001FC0545.0000000051EF8E39.00007D50
 Received: from mail.link77.net (cgp2.mail.link77.net [172.22.65.14])
-	by smtp1.wsfo.org (8.14.4/8.14.4) with ESMTP id r6N9bhYr006210
-	for <email@wycliffe-services.net>; Tue, 23 Jul 2013 05:37:43 -0400
+	by smtp1.wsfo.org (8.14.4/8.14.4) with ESMTP id r6O8Aii7010548
+	for <email@wycliffe-services.net>; Wed, 24 Jul 2013 04:10:44 -0400
 X-CGP-ClamAV-Result: CLEAN
 X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
 X-CGP-ClamAV-Result: CLEAN
 X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
 Received: from [124.13.146.233] (account michael_hu@wycliffe.net HELO [192.168.136.2])
   by mail.jaars.org (CommuniGate Pro SMTP 6.0.5)
-  with ESMTPSA id 129073208 for email@wycliffe-services.net; Tue, 23 Jul 2013 05:37:42 -0400
-Message-ID: <51EE4EE1.7030807@wycliffe.net>
-Date: Tue, 23 Jul 2013 17:37:37 +0800
+  with ESMTPSA id 129198142 for email@wycliffe-services.net; Wed, 24 Jul 2013 04:10:44 -0400
+Message-ID: <51EF8BFF.1070106@wycliffe.net>
+Date: Wed, 24 Jul 2013 16:10:39 +0800
 From: Michael Hu <michael_hu@wycliffe.net>
 User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20130620 Thunderbird/17.0.7
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="=_wypay-8239-1374572409-0001-2"
+Content-Type: multipart/mixed; boundary="=_wypay-32080-1374654010-0001-2"
 To: email via Wycliffe Web Services <email@wycliffe-services.net>
-Subject: Re: Perform a mail merge
+Subject: Sent again
 References: <auto-000343474390@cgp1.mail.link77.net>
 In-Reply-To: <auto-000343474390@cgp1.mail.link77.net>
 X-Scanned-By: MIMEDefang 2.73 on 172.22.65.23
@@ -27,7 +27,7 @@ X-Scanned-By: MIMEDefang 2.73 on 172.22.65.23
 This is a MIME-formatted message.  If you see this text it means that your
 E-mail software does not support MIME-formatted messages.
 
---=_wypay-8239-1374572409-0001-2
+--=_wypay-32080-1374654010-0001-2
 Content-Type: text/html; charset=iso-8859-1
 Content-Transfer-Encoding: 7bit
 
@@ -45,104 +45,97 @@ Wycliffe Asia-Pacific</pre>
       On 7/23/2013 5:31 PM, email via Wycliffe Web Services wrote:<br>
     </div>
     <blockquote cite="mid:auto-000343474390@cgp1.mail.link77.net"
-      type="cite">Dear Michael,
-      <br>
+      type="cite">Dear Michael, <br>
       <br>
       This mail merge program will send a personalized email to each
       person in your mailing list. Reply to this email and attach a
       mailing list similar to this <a moz-do-not-send="true"
         href="http://www.wycliffe-services.net/email/mailing_list.csv">sample</a>
       and name it <b>mailing_list.csv</b>. Then fill out the below
-      template and click send.
+      template and click send. <br>
       <br>
+      <b>Your name:</b> Michael Hu <br>
+      <b>Your email:</b> <a class="moz-txt-link-abbreviated"
+        href="mailto:michael_hu@wycliffe.net">michael_hu@wycliffe.net</a>
       <br>
-      <b>Your name:</b> Michael Hu
+      <b>Subject:</b> $subject <br>
       <br>
-      <b>Your email:</b> <a class="moz-txt-link-abbreviated" href="mailto:michael_hu@wycliffe.net">michael_hu@wycliffe.net</a>
-      <br>
-      <b>Subject:</b> $subject
-      <br>
-      <br>
-      <b>Body-&gt;:</b>
-      <br>
-      Dear $firstName,
-      <br>
+      <b>Body-&gt;:</b> <br>
+      Dear $firstName, <br>
       <br>
       I will call you at $phoneNumber which I read from the <b>mailing_list.csv</b>
       attachment. You can define any column starting with a $ in <b>mailing_list.csv</b>,
       and then have that $placeholder replaced here for each row in the
-      <b>mailing_list.csv</b> file.
-      <br>
-      <br>
-      Regards,
-      <br>
+      <b>mailing_list.csv</b> file. <br>
+    </blockquote>
+    Then I could type another paragraph.<br>
+    <br>
+    Followed by two new lines.<br>
+    <blockquote cite="mid:auto-000343474390@cgp1.mail.link77.net"
+      type="cite"> <br>
+      Regards, <br>
       Michael<br>
     </blockquote>
-    $tagline<br>
+    $tagLine<br>
     <blockquote cite="mid:auto-000343474390@cgp1.mail.link77.net"
       type="cite"><b>-&gt;Body:</b> # everything between the Body: tags
-      will be counted as the body of your email
-      <br>
+      will be counted as the body of your email <br>
       <br>
       <h4>Filling out the rest of the form is optional.</h4>
       <br>
       <b>Simulate:</b> 2 # 0 to actually send the email, or 1 to run
       through all the checks but not actually send the email. simulate =
-      2 will output the email(s) to
-      <a class="moz-txt-link-freetext" href="http://www.wycliffe-services.net/email/dryRun.html">http://www.wycliffe-services.net/email/dryRun.html</a> instead of
-      emailing them out. This allows you to check the mass mailing
-      before sending it out (recommended).
-      <br>
+      2 will output the email(s) to <a class="moz-txt-link-freetext"
+        href="http://www.wycliffe-services.net/email/dryRun.html">http://www.wycliffe-services.net/email/dryRun.html</a>
+      instead of emailing them out. This allows you to check the mass
+      mailing before sending it out (recommended). <br>
       <br>
       <h4>Other receipients</h4>
       <br>
-      <b>Cc:</b> # A comma separated list of emails
-      <br>
-      <b>Bcc:</b> # A comma separated list of emails
-      <br>
+      <b>Cc:</b> # A comma separated list of emails <br>
+      <b>Bcc:</b> # A comma separated list of emails <br>
       <b>Reply-to:</b> # An email address where you want replies to your
-      email to go to. Otherwise, they will go to <a class="moz-txt-link-abbreviated" href="mailto:michael_hu@wycliffe.net">michael_hu@wycliffe.net</a>
+      email to go to. Otherwise, they will go to <a
+        class="moz-txt-link-abbreviated"
+        href="mailto:michael_hu@wycliffe.net">michael_hu@wycliffe.net</a>
       <br>
       <br>
       <h4>Mailing list filter settings</h4>
       <br>
       <b>Tags:</b> # Tags will be compared to $tags in the mailing list.
       If there is a match, the email will be sent. If tags is not set,
-      then all rows will be sent.
-      <br>
+      then all rows will be sent. <br>
       <b>Starting row:</b> 1 # Email processing will start on the
       Starting row you specify here. Useful for long mailing scripts
       that may have timed out in the middle of processing, so you can
       start mailing again from Starting row. Rows start from 1, so
       specifying 1 here will mean processing the whole mailing list
-      file.
-      <br>
+      file. <br>
       <b>Maximum number of rows to process:</b> 0 # Email processing
       will process a maximum number of rows to process. 0 means that
       there is no limit to the number of rows that will be processed,
       and the mailing will only quit if there is an error or the script
-      times out.
-      <br>
+      times out. <br>
     </blockquote>
     <br>
   </body>
 </html>
 
---=_wypay-8239-1374572409-0001-2
+--=_wypay-32080-1374654010-0001-2
 Content-Type: application/vnd.ms-excel; name="mailing_list.csv"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
  filename="mailing_list.csv"
 
 JHRhZ3MJJGZpcnN0TmFtZQkkbGFzdE5hbWUJJGVtYWlsCSRvcmcJJHBob25lTnVtYmVyCSR0
-YWdMaW5lCUNvbW1lbnQNCnBlcnNvbmFsLHdvcmsJT25lCVRlc3QJbWljaGFlbF9odUB3eWNs
-aWZmZS5uZXQJT3JnYW5pemF0aW9uIDEJMSg2MTMpMzIzLTIzMjMJIlByZXNzIEFsdCtFbnRl
-ciB0byBlbnRlciBhIG5ldyBsaW5lIGluIEV4Y2VsCkFub3RoZXIgbGluZSIJQW55IGNvbHVt
-biBoZWFkZXIgdGhhdCBzdGFydHMgd2l0aCBhICQgaXMgYSB2YXJpYWJsZSB1c2VhYmxlIGJ5
-IHRoZSB0ZW1wbGF0ZSBmaWxlLiBDb21tZW50IGRvZXMgbm90IHN0YXJ0IHdpdGggYSAkLCBz
-byBpdCdzIGlnbm9yZWQNCnBlcnNvbmFsLGZhbWlseQlUd28JVGVzdAltaWNoYWVsX2h1QGdt
-eC5jb20JT3JnYW5pemF0aW9uIDIJCSJQcmVzcyBDdHJsK0VudGVyIHRvIGVudGVyIGEgbmV3
-IGxpbmUgaW4gTGlicmVPZmZpY2UKQW5vdGhlciBsaW5lIglZb3UgY2FuIGFkZCBhcyBtYW55
-ICRjb2x1bW5zIGFzIHlvdSBsaWtlLCBhbmQgdGhlbiB1c2UgJGNvbHVtbnMgZm9yIGEgbWFp
-bCBtZXJnZQ0K
---=_wypay-8239-1374572409-0001-2--
+YWdMaW5lCSRzdWJqZWN0CUNvbW1lbnQNCnBlcnNvbmFsLHdvcmsJT25lCVRlc3QJbWljaGFl
+bF9odUB3eWNsaWZmZS5uZXQJT3JnYW5pemF0aW9uIDEJMSg2MTMpMzIzLTIzMjMJIlByZXNz
+IEFsdCtFbnRlciB0byBlbnRlciBhIG5ldyBsaW5lIGluIEV4Y2VsCkFub3RoZXIgbGluZSIJ
+Rmlyc3QgZW1haWwJQW55IGNvbHVtbiBoZWFkZXIgdGhhdCBzdGFydHMgd2l0aCBhICQgaXMg
+YSB2YXJpYWJsZSB1c2VhYmxlIGJ5IHRoZSB0ZW1wbGF0ZSBmaWxlLiBDb21tZW50IGRvZXMg
+bm90IHN0YXJ0IHdpdGggYSAkLCBzbyBpdCdzIGlnbm9yZWQNCnBlcnNvbmFsLGZhbWlseQlU
+d28JVGVzdAltaWNoYWVsX2h1QGdteC5jb20JT3JnYW5pemF0aW9uIDIJCSJQcmVzcyBDdHJs
+K0VudGVyIHRvIGVudGVyIGEgbmV3IGxpbmUgaW4gTGlicmVPZmZpY2UKQW5vdGhlciBsaW5l
+IglTZWNvbmQgRW1haWwJWW91IGNhbiBhZGQgYXMgbWFueSAkY29sdW1ucyBhcyB5b3UgbGlr
+ZSwgYW5kIHRoZW4gdXNlICRjb2x1bW5zIGZvciBhIG1haWwgbWVyZ2UNCg==
+--=_wypay-32080-1374654010-0001-2--

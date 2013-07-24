@@ -221,14 +221,14 @@ class util {
 				$value = '<div><div class="col1">' . $key . ':</div><div class="col2">' . htmlentities($value, ENT_NOQUOTES) . '</div></div>';
 			}
 			$headers[] = '';
-			$headers[] = '<pre>' . $body . '</pre>';
+			$headers[] = $body;
 			$msg = implode('<br />', $headers);
 			return true;
 		}
 				
         $mime = new Mail_mime('');
         $mime->setTXTBody($body);
-        $mime->setHTMLBody('<html><body>'.str_replace(PHP_EOL, '<br />', $body).'</body></html>');
+        $mime->setHTMLBody('<html><body>'.$body.'</body></html>');
 
 		foreach ($attachments as $file) {
 			$mime->addAttachment($file);

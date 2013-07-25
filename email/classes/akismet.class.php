@@ -343,7 +343,12 @@ class Akismet extends AkismetObject {
 	 */
 	function _fillCommentValues() {
 		if(!isset($this->comment['user_ip'])) {
-			$this->comment['user_ip'] = ($_SERVER['REMOTE_ADDR'] != getenv('SERVER_ADDR')) ? $_SERVER['REMOTE_ADDR'] : getenv('HTTP_X_FORWARDED_FOR');
+			$serverAddress = getenv('SERVER_ADDR');
+			$forwardedFor = getenv('HTTP_X_FORWARDED_FOR');
+			if ($forwardedFor === false) { $forwardedFor = $serverAddress; }
+			$remoteAddress = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : $forwardedFor;
+						
+			$this->comment['user_ip'] = ($remoteAddress == $serverAddress) ? $forwardedFor : $remoteAddress;
 		}
 		if(!isset($this->comment['user_agent'])) {
 			$this->comment['user_agent'] = $_SERVER['HTTP_USER_AGENT'];

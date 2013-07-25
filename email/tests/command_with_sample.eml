@@ -1,0 +1,88 @@
+Received: from smtp2.wsfo.org (smtp2.wsfo.org [::ffff:162.40.29.52])
+  (TLS: TLSv1/SSLv3,256bits,AES256-SHA)
+  by mail with ESMTPS; Thu, 25 Jul 2013 08:58:17 +0000
+  id 0000000001FC054F.0000000051F0E8AA.000074CD
+Received: from mail.link77.net (cgp1.mail.link77.net [172.22.65.13])
+	by smtp2.wsfo.org (8.14.4/8.14.4) with ESMTP id r6P8wFMQ027663
+	for <command@wycliffe-services.net>; Thu, 25 Jul 2013 04:58:15 -0400
+X-CGP-ClamAV-Result: CLEAN
+X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
+X-CGP-ClamAV-Result: CLEAN
+X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
+Received: from [118.101.221.50] (account michael_hu@wycliffe.net HELO [192.168.136.2])
+  by mail.jaars.org (CommuniGate Pro SMTP 6.0.5)
+  with ESMTPSA id 343714306 for command@wycliffe-services.net; Thu, 25 Jul 2013 04:58:11 -0400
+Message-ID: <51F0E89D.4040606@wycliffe.net>
+Date: Thu, 25 Jul 2013 16:58:05 +0800
+From: Michael Hu <michael_hu@wycliffe.net>
+User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20130620 Thunderbird/17.0.7
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary="=_wypay-29901-1374742698-0001-2"
+To: command via Wycliffe Web Services <command@wycliffe-services.net>
+Subject: Re: Wycliffe Web Services Command processor
+References: <auto-000343713010@cgp1.mail.link77.net>
+In-Reply-To: <auto-000343713010@cgp1.mail.link77.net>
+X-Scanned-By: MIMEDefang 2.73 on 172.22.65.24
+
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
+
+--=_wypay-29901-1374742698-0001-2
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <div class="moz-cite-prefix">This should send out the results.<br>
+      <pre class="moz-signature" cols="72">Regards,
+Michael Hu
+Administrative Services Director
+Wycliffe Asia-Pacific</pre>
+      On 7/25/2013 4:42 PM, command via Wycliffe Web Services wrote:<br>
+    </div>
+    <blockquote cite="mid:auto-000343713010@cgp1.mail.link77.net"
+      type="cite"> Dear Michael,<br>
+      <br>
+      Welcome to the Wycliffe Web Services Command processor. Reply to
+      this email and attach <a moz-do-not-send="true"
+        href="http://www.wycliffe-services.net/email/tests/sample.csv">sample.csv</a>,
+      along with any files to be forwarded to perform those web service
+      calls. Then click send. Because it's an email, you can forward the
+      email from your sent box to perform the same command again.<br>
+      <br>
+      You can also try out the <a moz-do-not-send="true"
+        href="http://www.wycliffe-services.net/command">web interface</a>,
+      or read the <a moz-do-not-send="true"
+        href="https://sharing.teamwork-global.net/content/command">full
+        documentation</a>.<br>
+      <br>
+      Other than the attached files, there is only one other parameter
+      to configure:<br>
+      <b>simulate:</b> 0 # Set simulate = 1 to run through all the
+      checks but not actually process the commands </blockquote>
+    <br>
+  </body>
+</html>
+
+--=_wypay-29901-1374742698-0001-2
+Content-Type: application/vnd.ms-excel; name="sample.csv"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="sample.csv"
+
+IyBMb2dpbiB0byBnbWFpbC5jb20gd2l0aCB0aGVzZSBjcmVkZW50aWFscyB0byBzZWUgaWYg
+dGhlIGVtYWlscyB3ZXJlIHNlbnQJDQojIGVtYWlsID0gd3ljbGlmZmUud2ViLnNlcnZpY2Vz
+LnRlc3QuMUBnbWFpbC5jb20gcGFzc3dvcmQgPSBhc2RmcXdlcjEyCQ0KCQ0KVVJMCWh0dHA6
+Ly93eWNsaWZmZS1zZXJ2aWNlcy5uZXQvZW1haWwvd2Vic2VydmljZS5waHANCnRvCW1pY2hh
+ZWxfaHVAd3ljbGlmZmUubmV0DQpmcm9tTmFtZQlNaWNoYWVsDQpzdWJqZWN0CVRlc3Rpbmcg
+b3V0IHRoZSBjb21tYW5kIHByb2Nlc3Nvcg0KYm9keQlZb3UganVzdCBzZW50IGFuIGVtYWls
+IGZyb20gdGhlIGVtYWlsIHdlYiBzZXJ2aWNlDQpFWFBFQ1RTCW9rDQpSRVNVTFQJJHJlc3Vs
+dA0KDQpVUkwJaHR0cDovL3d5Y2xpZmZlLXNlcnZpY2VzLm5ldC9lbWFpbC93ZWJzZXJ2aWNl
+LnBocA0KdG8JbWljaGFlbF9odUB3eWNsaWZmZS5uZXQNCmZyb21OYW1lCU1pY2hhZWwNCnN1
+YmplY3QJVGhlIHJlc3VsdCBvZiB0aGUgbGFzdCB3ZWIgc2VydmljZSBjYWxsDQpib2R5CUFu
+ZCB0aGUgcmVzdWx0IGlzOiA8Yj4kcmVzdWx0PC9iPg==
+--=_wypay-29901-1374742698-0001-2--

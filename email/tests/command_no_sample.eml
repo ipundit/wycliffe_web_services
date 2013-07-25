@@ -1,0 +1,32 @@
+Received: from smtp1.wsfo.org (smtp1.wsfo.org [::ffff:162.40.29.51])
+  (TLS: TLSv1/SSLv3,256bits,AES256-SHA)
+  by mail with ESMTPS; Thu, 25 Jul 2013 08:53:14 +0000
+  id 0000000001FC054F.0000000051F0E77B.00006EC2
+Received: from mail.link77.net (cgp2.mail.link77.net [172.22.65.14])
+	by smtp1.wsfo.org (8.14.4/8.14.4) with ESMTP id r6P8rD8H008074
+	for <command@wycliffe-services.net>; Thu, 25 Jul 2013 04:53:13 -0400
+X-CGP-ClamAV-Result: CLEAN
+X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
+X-CGP-ClamAV-Result: CLEAN
+X-VirusScanner: Niversoft's CGPClamav Helper v1.15 (ClamAV engine v0.96.5)
+Received: from [118.101.221.50] (account michael_hu@wycliffe.net HELO [192.168.136.2])
+  by mail.jaars.org (CommuniGate Pro SMTP 6.0.5)
+  with ESMTPSA id 129326651 for command@wycliffe-services.net; Thu, 25 Jul 2013 04:53:12 -0400
+Message-ID: <51F0E773.2020309@wycliffe.net>
+Date: Thu, 25 Jul 2013 16:53:07 +0800
+From: Michael Hu <michael_hu@wycliffe.net>
+User-Agent: Mozilla/5.0 (Windows NT 6.2; WOW64; rv:17.0) Gecko/20130620 Thunderbird/17.0.7
+MIME-Version: 1.0
+To: command via Wycliffe Web Services <command@wycliffe-services.net>
+Subject: Get Latest command file
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.73 on 172.22.65.23
+
+
+-- 
+Regards,
+Michael Hu
+Administrative Services Director
+Wycliffe Asia-Pacific
+

@@ -16,4 +16,4 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	enter_your_email_here@test.com
 fromName	Your name
 subject	The result of the last web service call
-body	And the result is... $result
+body	And the result is: <b>$result</b>

@@ -60,6 +60,7 @@ class EmailProcessor
 		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
 
 		$parseError = true;
+		
 		if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
 			$parseError = false;
 			
@@ -92,7 +93,7 @@ class EmailProcessor
 			} else {
 				$body = 'There was an error while running your request: <b>' . $error . '</b>';
 			}
-			$body .= '.<br><br>Regards,<br>Wycliffe Web Services<hr>' . PHP_EOL . PHP_EOL;
+			$body .= '.<br><br>Regards,<br>Wycliffe Web Services<br><hr>';
 			
 			if ($message['body'] == '') {
 				$body = preg_replace('/^.*?<body.*?>/s', $body, $message['html']);
@@ -169,14 +170,12 @@ class EmailProcessor
 		if ($value[1] == '') { return EmailProcessor::trimStartEndTags($value[0], 'br'); }
 		
 		if (util::removeBefore($value[1], 'trim_')) {
-			return EmailProcessor::trimStartEndTags($value[0], $value[1]);
-		} else if ($value[1] == 'format_for_pre') {
 			$retValue = EmailProcessor::trimStartEndTags($value[0], '(br|p|div)');
-			$retValue = preg_replace('/\n/', ' ', $retValue);
-			$retValue = preg_replace('/ <br> <br> /', PHP_EOL . PHP_EOL, $retValue);
-			return preg_replace('/ ?<br> /', PHP_EOL, $retValue);
+			if ($value[1] != 'whitepsace') {
+				$retValue =  EmailProcessor::trimStartEndTags($retValue, $value[1]);
+			}
+			return $retValue;
 		}
-		
 		$error = $value[1] . ' is not a recognized command';
 		return false;
 	}

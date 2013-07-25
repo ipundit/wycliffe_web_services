@@ -227,7 +227,7 @@ class util {
 		}
 				
         $mime = new Mail_mime('');
-        $mime->setTXTBody($body);
+//        $mime->setTXTBody($body); // only support sending html emails
         $mime->setHTMLBody('<html><body>'.$body.'</body></html>');
 
 		foreach ($attachments as $file) {

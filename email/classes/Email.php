@@ -90,7 +90,7 @@ class Email
 		'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">',
 		'<head>',
 		'<title>Dry run output</title>',
-		'<style type="text/css">div { display: inline-block; } .col1 { width: 100px; } .col2 { display:inline; } body { white-space: pre; } </style>',
+		'<style type="text/css">div { display: inline-block; } .col1 { width: 100px; } .col2 { display:inline; } </style>',
 		'</head>',
 		'<body>',
 		$body,
@@ -356,7 +356,7 @@ class Email
 
 		$footer = 'Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>';
 		if (!util::endsWith($row['body'], $footer)) {
-			$row['body'] .= PHP_EOL . PHP_EOL . '<span style="color:#BBBBBB">--' . PHP_EOL . $footer;
+			$row['body'] .= '<br><br><span style="color:#BBBBBB">--<br>' . $footer;
 		}
 		return $row;
 	}

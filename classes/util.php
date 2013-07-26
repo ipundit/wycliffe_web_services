@@ -151,14 +151,20 @@ class util {
 		return $return;
 	}
 	
-	static public function removeAfter(&$str, $postFix) {
-		$index = strpos($str, $postFix);
-		if ($index === false) { return false; }
-		if ($index == 0) {
+	public static function absURL($fileName) {
+		$path = $_SERVER['SCRIPT_NAME'];
+		util::removeAfter($path, '/', false);
+		return 'http://www.wycliffe-services.net' . $path . '/' . $fileName;
+	}
+
+	static public function removeAfter(&$str, $postFix, $fromFront = true) {
+		$pos = $fromFront ? strpos($str, $postFix) : strrpos($str, $postFix);
+		if ($pos === false) { return false; }
+		if ($pos == 0) {
 			$str = '';
 			return true;
 		}
-		$str = rtrim(substr($str, 0, $index));
+		$str = rtrim(substr($str, 0, $pos));
 		return true;
 	}
 	

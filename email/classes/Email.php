@@ -73,11 +73,11 @@ class Email
 
 		if ($row['simulate'] == 2) {
 			$dryRun = Email::dryRunHTML($dryRun);
-			if (FALSE  === file_put_contents('/var/www/email/dryRun.html', implode(PHP_EOL, $dryRun))) { 
+			if (FALSE  === file_put_contents('./dryRun.html', implode(PHP_EOL, $dryRun))) { 
 				$msg = 'could not write to dryRun file';
 				return false;
 			}
-			$msg = 'ok, see <a href="http://www.wycliffe-services.net/email/dryRun.html">dry run page</a>';
+			$msg = 'ok, see <a href="' . util::absURL('dryRun.html') . '">dry run page</a>';
 		} else {
 			$msg = 'ok';
 		}
@@ -380,11 +380,11 @@ class Email
 	
 	public static function wycliffeServicesEmails() {
 		$retValue = array('no-reply@wycliffe-services.net', 'help@wycliffe-services.net');
-		$dir = new DirectoryIterator('/var/www/');
+		$dir = new DirectoryIterator('../');
 		foreach ($dir as $fileinfo) {
 			if ($fileinfo->isDir() && !$fileinfo->isDot()) {
 				$subdir = $fileinfo->getFilename();
-				if (file_exists('/var/www/' . $subdir . '/email_template.html')) { array_push($retValue, $subdir); }
+				if (file_exists('../' . $subdir . '/email_template.html')) { array_push($retValue, $subdir); }
 			}
 		}
 		asort($retValue);

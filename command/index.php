@@ -109,11 +109,11 @@ label.error {
 function getOptions() {
 	$retValue = array();
 	
-	$dir = new DirectoryIterator('/var/www/');
+	$dir = new DirectoryIterator('../');
 	foreach ($dir as $fileinfo) {
 		if ($fileinfo->isDir() && !$fileinfo->isDot()) {
 			$subdir = $fileinfo->getFilename();
-			if (file_exists('/var/www/' . $subdir . '/tests/')) { array_push($retValue, $subdir); }
+			if (file_exists('../' . $subdir . '/tests/')) { array_push($retValue, $subdir); }
 		}
 	}
 	asort($retValue);

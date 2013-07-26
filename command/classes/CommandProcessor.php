@@ -44,7 +44,7 @@ class CommandProcessor {
 				return CommandProcessor::processCommands($src, $baseDir, $simulate, $msg);
 			}
 
-			$dir = '/var/www/' . $src . '/tests/';
+			$dir = '../' . $src . '/tests/';
 			if (!file_exists($dir)) {
 				$msg = 'web service ' . $src . ' does not exist';
 				return false;

@@ -8,7 +8,7 @@ class EmailProcessor
 	public static function readFromData(&$message, &$error) {
 		if (!EmailProcessor::receivedEmail($buffer, $error)) { return false; }
 		if (DUMP_TO_DRY_RUN) {
-			file_put_contents('/var/www/email/dryRun.html', print_r($buffer, true));
+			file_put_contents('./dryRun.html', print_r($buffer, true));
 			return false;
 		}
 		return EmailProcessor::parse($buffer, $message, $error, EmailProcessor::simulate() == 1);
@@ -55,8 +55,8 @@ class EmailProcessor
 		$template = EmailProcessor::readTemplate($templateName, $error);
 		if ($template === false) { return false; }
 
-		// fixme: write regression tests for functions from here onwards
 		EmailProcessor::setDerivedVariables($message);
+		// fixme: write regression tests for functions from here onwards
 		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
 
 		$parseError = true;
@@ -354,7 +354,7 @@ class EmailProcessor
 	}
 	
 	private static function readTemplate($templateName, &$error) {
-		$path = $templateName == 'help' ? '/var/www/email/help_template.html' : '/var/www/' . $templateName . '/email_template.html';
+		$path = $templateName == 'help' ? './help_template.html' : '../' . $templateName . '/email_template.html';
 		if (!file_exists($path)) { 
 			$error = "template does not exist";
 			return false;
@@ -387,7 +387,7 @@ class EmailProcessor
 			return false;
 		}
 		
-		$path = '/var/www/email/tests/' . $fileName;
+		$path = './tests/' . $fileName;
 		if (file_exists($path)) { return true; }
 
 		$error = $path . ' does not exist';

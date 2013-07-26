@@ -384,7 +384,7 @@ class Email
 		foreach ($dir as $fileinfo) {
 			if ($fileinfo->isDir() && !$fileinfo->isDot()) {
 				$subdir = $fileinfo->getFilename();
-				if (file_exists('../' . $subdir . '/email_template.html')) { array_push($retValue, $subdir); }
+				if (file_exists('../' . $subdir . '/email_template.html')) { array_push($retValue, $subdir . '@wycliffe-services.net'); }
 			}
 		}
 		asort($retValue);

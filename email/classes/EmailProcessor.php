@@ -390,7 +390,7 @@ class EmailProcessor
 		$path = './tests/' . $fileName;
 		if (file_exists($path)) { return true; }
 
-		$error = $path . ' does not exist';
+		$error = util::absURL('tests/' . $fileName) . ' does not exist';
 		$path = '';
 		return false;
 	}

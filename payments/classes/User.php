@@ -99,7 +99,7 @@ class User extends Record
 		$body[] = '';
 		$body[] = 'Regards,';
 		$body[] = 'Wycliffe payment services';
-		$body = implode(PHP_EOL, $body);
+		$body = implode('<br />', $body);
 		
 		$subject = $org->test() ? "TESTING: " : "";
 		$subject = $subject . $org->name() . " donation receipt";

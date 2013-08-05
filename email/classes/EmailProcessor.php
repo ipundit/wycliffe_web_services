@@ -58,19 +58,22 @@ class EmailProcessor
 		EmailProcessor::setDerivedVariables($message);
 		// fixme: write regression tests for functions from here onwards
 		if (!EmailProcessor::parseTemplate($template, $error)) { return false; }
-
-		$parseError = true;
-		
-		if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
+		if ($template['url'] === false) { // should only happen for emails sent to help@wycliffe-services.net
 			$parseError = false;
+		} else {
+			$parseError = true;
 			
-			$ch = util::curl_init($template['url'], $params);
-			$result = curl_exec($ch);
-			if (curl_errno($ch)) {
-				$error = curl_error($ch);
-			} else {
-				curl_close($ch);
-				$error = $result;
+			if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
+				$parseError = false;
+				
+				$ch = util::curl_init($template['url'], $params);
+				$result = curl_exec($ch);
+				if (curl_errno($ch)) {
+					$error = curl_error($ch);
+				} else {
+					curl_close($ch);
+					$error = $result;
+				}
 			}
 		}
 		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, $parseError);
@@ -292,8 +295,6 @@ class EmailProcessor
 		if (!EmailProcessor::extractMeta($template, $title, $params, $error)) { return false; }
 
 		$url = EmailProcessor::extractURL($params, $error);
-		if ($url === false) { return false; }
-
 		$body = EmailProcessor::extractBody($template, $error);
 		if ($body === false) { return false; }
 		

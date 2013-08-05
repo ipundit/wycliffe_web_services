@@ -1,0 +1,381 @@
+body {
+	font-family: Calibri, Helvetica; font-size: 14px;
+}
+td {
+	vertical-align: top;
+}
+th {
+	text-align: left;
+}
+p {
+	color: rgb(34, 34, 34);
+}
+label {
+	font-size: 13px; font-weight: bold;
+}
+a {
+	color: rgb(72, 116, 138);
+}
+a.faded:link {
+	color: rgb(170, 170, 170);
+}
+a.faded:visited {
+	color: rgb(170, 170, 170);
+}
+ins {
+	text-decoration: none; background-color: rgb(204, 255, 153) !important;
+}
+ins * {
+	text-decoration: none; background-color: rgb(204, 255, 153) !important;
+}
+del {
+	text-decoration: none; background-color: pink !important;
+}
+del * {
+	text-decoration: none; background-color: pink !important;
+}
+@media print
+{
+ins {
+	text-decoration: underline; background-color: rgb(204, 255, 153) !important;
+}
+ins * {
+	text-decoration: underline; background-color: rgb(204, 255, 153) !important;
+}
+del {
+	text-decoration: line-through; background-color: pink !important;
+}
+del * {
+	text-decoration: line-through; background-color: pink !important;
+}
+}
+blockquote {
+	font-weight: normal;
+}
+.currency {
+	text-align: right;
+}
+.currency-note {
+	background: rgb(255, 250, 217); text-align: right;
+}
+.currency-note::before {
+	color: orange; content: "*";
+}
+.note-endpoint::before {
+	color: orange; content: "*";
+}
+@media print
+{
+.currency-note::before {
+	color: black; content: "*";
+}
+.note-endpoint::before {
+	color: black; content: "*";
+}
+}
+.minor {
+	font-size: 0.8em;
+}
+div.minor {
+	line-height: 16px;
+}
+.secondary {
+	color: rgb(102, 102, 102);
+}
+.has_micromenu {
+	margin-bottom: 0px;
+}
+.micromenu {
+	margin-top: 0px; margin-bottom: 24px;
+}
+.not_implemented {
+	background: rgb(224, 213, 235); color: rgb(73, 50, 89); font-style: italic;
+}
+.need_clue {
+	background: rgb(227, 202, 202); color: rgb(89, 50, 50); font-style: italic;
+}
+.nobreak {
+	white-space: nowrap;
+}
+.search_group {
+	margin: 8px 0px 0px; padding: 5px 7px 6px; border: 1px solid rgb(204, 204, 204); width: 450px;
+}
+.suboptions {
+	font-size: 0.9em; margin-left: 2em;
+}
+.suboptions td {
+	font-size: 0.9em;
+}
+.small {
+	font-size: 0.9em;
+}
+.suboptions th {
+	font-size: 0.9em; font-weight: normal; border-bottom-color: rgb(238, 238, 238); border-bottom-width: 2px; border-bottom-style: solid;
+}
+th.small {
+	font-size: 0.9em; font-weight: normal; border-bottom-color: rgb(238, 238, 238); border-bottom-width: 2px; border-bottom-style: solid;
+}
+.subcontent {
+	margin-left: 2em;
+}
+.help {
+	color: rgb(85, 85, 85); font-size: 10px;
+}
+span.warn {
+	color: rgb(238, 51, 0);
+}
+.failure {
+	color: rgb(238, 51, 0);
+}
+.success {
+	color: green;
+}
+#content {
+	margin-right: 40px; margin-left: 40px;
+}
+#header {
+	margin-right: 40px; margin-left: 40px;
+}
+#insitebar {
+	margin-right: 40px; margin-left: 40px;
+}
+#footer {
+	margin-right: 40px; margin-left: 40px;
+}
+#footer {
+	text-align: center; color: rgb(102, 102, 102); padding-top: 0.3em; font-size: 12px; margin-top: 2em; border-top-color: rgb(221, 221, 221); border-top-width: 1px; border-top-style: solid;
+}
+.top_title {
+	font-size: 40px;
+}
+.sensitivity {
+	font-size: 12px;
+}
+.sen_unknown {
+	color: green;
+}
+.sen_unrestricted {
+	color: green;
+}
+.sen_restricted {
+	color: rgb(214, 100, 0); font-weight: bold;
+}
+.sen_confidential {
+	color: rgb(238, 0, 0); font-weight: bold;
+}
+span.sensitive {
+	color: rgb(238, 0, 0); font-weight: bold;
+}
+.journal {
+	margin-bottom: 10px; border-bottom-color: rgb(204, 204, 204); border-bottom-width: 1px; border-bottom-style: solid;
+}
+:last-child.journal {
+	border-top-color: currentColor; border-top-width: medium; border-top-style: none;
+}
+.journal h4 {
+	margin-top: 0px;
+}
+.report .journal td {
+	padding: 7px; width: auto; text-align: left; color: rgb(0, 0, 0); border-top-color: rgb(204, 204, 204); border-right-color: rgb(204, 204, 204); border-bottom-color: rgb(204, 204, 204); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-right-style: solid; border-bottom-style: solid;
+}
+.report .journal th {
+	padding: 7px; width: auto; text-align: left; color: rgb(0, 0, 0); border-top-color: rgb(204, 204, 204); border-right-color: rgb(204, 204, 204); border-bottom-color: rgb(204, 204, 204); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-right-style: solid; border-bottom-style: solid;
+}
+.budget_list h1 {
+	font-size: 24px; margin-top: 30px; margin-bottom: 0px;
+}
+.budget_list h2 {
+	font-size: 16px; margin-top: 6px;
+}
+table.budget {
+	font-size: 12px; border-collapse: collapse;
+}
+.budget td {
+	padding: 3px 9px;
+}
+.budget th {
+	padding: 3px 9px;
+}
+.budget h3 {
+	font-size: 1.4em; margin-top: 1.2em; margin-bottom: 0.3em;
+}
+.budget .end {
+	border-right-color: rgb(204, 204, 204); border-right-width: 1px; border-right-style: solid;
+}
+.xheader {
+	border-bottom-color: rgb(0, 0, 0); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.xfooter {
+	border-top-color: rgb(128, 128, 128); border-bottom-color: rgb(128, 128, 128); border-top-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-bottom-style: solid;
+}
+.xfootercurrency {
+	text-align: right; border-top-color: rgb(128, 128, 128); border-bottom-color: rgb(128, 128, 128); border-top-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-bottom-style: solid;
+}
+.xfootercurrencyend {
+	text-align: right; border-top-color: rgb(128, 128, 128); border-right-color: rgb(204, 204, 204); border-bottom-color: rgb(128, 128, 128); border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-right-style: solid; border-bottom-style: solid;
+}
+.currencyend {
+	text-align: right; border-right-color: rgb(204, 204, 204); border-right-width: 1px; border-right-style: solid;
+}
+.changenotice {
+	padding: 10px; border: 1px solid rgb(255, 200, 163);
+}
+.changebox {
+	border: 1px solid rgb(221, 221, 221); margin-bottom: 1em; max-width: 500px;
+}
+.changebox .header {
+	text-align: right; color: rgb(102, 102, 102); border-bottom-color: rgb(221, 221, 221); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.changebox .contents {
+	padding: 2px 10px;
+}
+.field_comparison.report th {
+	text-align: left; padding-top: 10px; border-right-color: currentColor; border-right-width: medium; border-right-style: none;
+}
+#insitebar {
+	height: 40px; font-size: 10pt !important; margin-top: -1px; border-bottom-color: rgb(255, 102, 0); border-bottom-width: 2px; border-bottom-style: solid;
+}
+#insitelinks {
+	padding-top: 2px; padding-right: 2px; font-size: 12px; float: right;
+}
+#insitelogos {
+	float: left;
+}
+#insitelinks a:link {
+	color: black; font-family: "Trebuchet MS",Arial,san-serif;
+}
+#insitelinks a:visited {
+	color: black; font-family: "Trebuchet MS",Arial,san-serif;
+}
+#insitelinks a:active {
+	color: black; font-family: "Trebuchet MS",Arial,san-serif;
+}
+body #insitelinks a:hover {
+	color: white; background-color: rgb(175, 175, 175);
+}
+#insitebar a img {
+	border: 0px currentColor;
+}
+@media print
+{
+#insitelinks {
+	display: none;
+}
+}
+#menu span {
+	padding: 0px 1px; color: rgb(204, 204, 204);
+}
+.report_container {
+	width: 500px; line-height: 20px;
+}
+@media screen
+{
+.report_container {
+	width: 40em;
+}
+}
+.report_container h1 {
+	line-height: 32px; margin-bottom: -2px;
+}
+.report_container h2 {
+	margin-top: 1.5em; border-bottom-color: rgb(128, 128, 128); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.report_container h4 {
+	padding-bottom: 0px; font-size: 14px; margin-bottom: 0px;
+}
+.report table {
+	width: 100%; font-size: 13px; border-collapse: collapse;
+}
+.report th {
+	width: 100px; text-align: right; color: rgb(102, 102, 102); font-weight: normal; vertical-align: top; border-right-color: rgb(204, 204, 204); border-right-width: 1px; border-right-style: solid;
+}
+.report th {
+	padding: 4px 3px; vertical-align: top;
+}
+.report td {
+	padding: 4px 3px; vertical-align: top;
+}
+#search_results th {
+	text-align: left; color: rgb(0, 0, 0); font-size: 13px; font-weight: bold; border-right-color: currentColor; border-bottom-color: rgb(204, 204, 204); border-right-width: medium; border-bottom-width: 1px; border-right-style: none; border-bottom-style: solid;
+}
+#search_results td {
+	padding: 1px 3px; font-size: 13px; vertical-align: top;
+}
+.selection_actions a {
+	font-size: 11px;
+}
+.indicator {
+	margin-top: 0px; margin-left: 0px;
+}
+.indicator_description {
+	margin-bottom: 0px; margin-left: 60px;
+}
+.report td.indicator {
+	color: rgb(51, 51, 51); border-top-color: rgb(170, 170, 170); border-top-width: 1px; border-top-style: solid;
+}
+.report td.result {
+	border-top-color: rgb(51, 51, 51); border-top-width: 1px; border-top-style: solid;
+}
+.report .photo {
+	position: relative;
+}
+th.photo .preview {
+	background: white; left: 50%; top: 12%; height: 0px; margin-left: -250px; display: none; position: fixed; -webkit-transform: scale(0.96); -moz-transform: scale(0.96);
+}
+th.photo:hover .preview {
+	border: 1px solid grey; height: inherit; display: block; -webkit-transform: scale(1.0); -moz-transform: scale(1.0); -webkit-transition: -webkit-transform 0.2s ease-in; -moz-transition: -moz-transform 0.2s ease-in;
+}
+.headlinetag {
+	color: rgb(102, 102, 102); font-size: 12px; font-weight: normal;
+}
+.isexport .headlinetag {
+	display: none;
+}
+.isnotexport .hiddenbudget {
+	display: none;
+}
+.hide {
+	display: none;
+}
+.autosuggest {
+	background: rgb(238, 238, 238); padding: 4px; border: 1px solid grey; font-size: 0.8em; position: absolute;
+}
+.autosuggest a {
+	color: black; text-decoration: none;
+}
+.autosuggest em {
+	font-style: normal;
+}
+#as_ul {
+	margin: 0px; padding: 0px;
+}
+#as_ul li {
+	list-style: none; margin: 0px; padding: 4px 0px;
+}
+.yearly_plans table td:nth-child(2n+1) {
+	width: 48% !important;
+}
+.yearly_plans table td {
+	border-width: 1px; border-style: solid; border-color: rgb(170, 170, 170) rgb(238, 238, 238);
+}
+.yearly_plans tr:nth-child(1) td {
+	border: currentColor; font-weight: bold;
+}
+.meta {
+	font-size: 11px;
+}
+table.tbl {
+	padding: 0px; border-collapse: collapse;
+}
+table.tbl td {
+	margin: 0px; padding: 4px; border-top-color: rgb(238, 238, 238); border-bottom-color: rgb(238, 238, 238); border-top-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-bottom-style: solid;
+}
+table.tbl th {
+	margin: 0px; padding: 4px; border-top-color: rgb(238, 238, 238); border-bottom-color: rgb(238, 238, 238); border-top-width: 1px; border-bottom-width: 1px; border-top-style: solid; border-bottom-style: solid;
+}
+div.flash {
+	margin: 10px 0px; padding: 4px; width: 400px; background-color: rgb(243, 243, 157);
+}
+a.toggle-link {
+	margin-top: 2em; display: block;
+}

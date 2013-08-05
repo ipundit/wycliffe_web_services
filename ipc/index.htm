@@ -1,0 +1,267 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0036)https://www.view.ipc.insitehome.org/ -->
+<HTML><HEAD><META content="IE=5.0000" http-equiv="X-UA-Compatible">
+   <TITLE>IPC Reporting</TITLE>   
+<META http-equiv="Content-Type" content="text/html; charset=utf-8">   
+<STYLE></STYLE>
+       <LINK href="style.css" rel="stylesheet">       
+<META name="GENERATOR" content="MSHTML 10.00.9200.16635"></HEAD> 
+<BODY class="isnotexport"><!-- michael_hu  0 -->               
+<DIV id="insitebar">
+<DIV id="insitelogos"><A 
+href="https://www.insitehome.org/pls/apex/f?p=119:1"><IMG width="64" height="40" 
+alt="Home" src="insite3_small.png" border="0"></A>           
+<A href="https://www.view.ipc.insitehome.org/"><IMG width="160" height="40" alt="Home" 
+src="project-funding.png" border="0"></A>       </DIV>
+<DIV id="insitelinks">          Michael Hu          (<A href="https://www.view.ipc.insitehome.org/cas/logout">Logout</A>) 
+         &nbsp;&nbsp;&nbsp;           <A href="https://www.insitehome.org/pls/apex/f?p=119:1">Home</A> 
+         &nbsp;|&nbsp;           <A 
+href="https://www.search.insitehome.org/">Search</A>          &nbsp;|&nbsp;      
+     
+<SCRIPT language="JavaScript">
+          document.write('<a href="https://www.insitehome.org/pls/apex/f?p=121:440:::NO::P440_ACTION,P440_URL:ADD,' + document.URL.replace(/:/gi, "*COLON*").replace(/,/gi, "*COMMA*") + '"target="_blank">');
+          document.write('Add to Quicklinks');
+          document.write('</a>');
+          </SCRIPT>
+          &nbsp;|&nbsp;           <A href="https://www.help.insitehome.org/ipc/reference-manuals/access-project-reports-reporter" 
+target="_blank">Help&nbsp;Site</A>          &nbsp;|&nbsp;           <A href="https://www.teamhelp.org/" 
+target="_blank">Help&nbsp;Desk</A>       </DIV></DIV>
+<DIV id="header">
+<DIV id="menu" 
+style="padding-top: 6px; font-size: 0.9em; margin-bottom: 20px;"><B>IPC 
+Reporting</B>       <SPAN></SPAN>       <A href="https://www.view.ipc.insitehome.org/">Reports</A> 
+      <SPAN>|</SPAN>                         <A href="https://www.view.ipc.insitehome.org/search/">Search</A> 
+      <SPAN>|</SPAN>       <A href="https://www.view.ipc.insitehome.org/projects/">Projects</A> 
+      <SPAN>|</SPAN>       <A href="https://www.view.ipc.insitehome.org/portfolios/">My 
+Portfolios</A>       <SPAN>|</SPAN>       <A href="https://www.view.ipc.insitehome.org/journals/">Journals</A> 
+    </DIV></DIV>
+<DIV id="content">
+<H1 style="margin-bottom: 0.4em;">Report Builder</H1>
+<FORM id="report_form" action="/projects/report/results/" method="GET">
+<TABLE cellspacing="0" cellpadding="0">
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE class="search_group" style="padding-bottom: 0px;">
+        <TBODY>
+        <TR>
+          <TD style="width: 147px;"><LABEL>Project code</LABEL><BR><INPUT 
+            name="project_id" id="project_id" style="width: 145px;">           
+            <BR><INPUT name="closed_projects" type="checkbox" value="y">         
+              <SPAN class="small">Include Closed</SPAN>         </TD>
+          <TD style="width: 25px; text-align: center;"><LABEL>or</LABEL></TD>
+          <TD><LABEL>Portfolio</LABEL><BR><SELECT name="portfolio_id" id="portfolio_id" 
+            style="width: 100%;"><OPTION value="">--Choose 
+              Portfolio--</OPTION>                       </SELECT>           
+            <DIV class="suboptions" style="margin-left: 0em;"><INPUT name="rollup_portfolio_financials" 
+            id="some_name" type="checkbox" value="y">Rollup portfolio financials 
+                      </DIV></TD></TR>
+        <TR>
+          <TD colspan="3">
+            <DIV style="width: 100px;"><LABEL>Subprojects</LABEL>           
+            </DIV><SELECT name="subprojects" style="width: 100%;"><OPTION 
+              value="n_n">Don't show subprojects</OPTION>             <OPTION 
+              value="n_y">Don't show subprojects. Roll up subproject financials 
+              into parent</OPTION>             <OPTION value="y_n">Show 
+              subprojects</OPTION>             <OPTION value="y_y">Show 
+              subprojects. Roll up subproject financials into parent</OPTION>    
+                     </SELECT>         </TD></TR></TBODY></TABLE>
+      <TABLE class="search_group">
+        <TBODY>
+        <TR>
+          <TD class="custom_report" 
+            style="width: 260px;"><LABEL>Contents</LABEL><BR><INPUT name="show_basic" 
+            type="checkbox" checked="" value="y">     Section 1. Project 
+            Description<BR><INPUT name="show_details" type="checkbox" value="y"> 
+                      Section 2. Project Details<BR><INPUT name="show_rbm" type="checkbox" 
+            value="y">               Section 3. RBM<BR><INPUT name="show_budget" 
+            id="show_budget" type="checkbox" value="y">            Section 4. 
+            Financials<BR>
+            <DIV class="suboptions" id="show_budget_options" style="display: none;">
+            <TABLE width="100%" cellpadding="0">
+              <TBODY>
+              <TR>
+                <TH class="small">Budget Categories</TH>
+                <TH class="small">Detail</TH></TR>
+              <TR class="small">
+                <TD style="width: 138px;"><INPUT name="combined_budget" type="radio" 
+                  checked="" value=""> IPC Categories         </TD>
+                <TD><INPUT name="financials_multiyear" type="radio" checked="" 
+                  value=""> One Year         </TD></TR>
+              <TR>
+                <TD><INPUT name="combined_budget" type="radio" value="americas_area"> 
+                  AMA Categories         </TD>
+                <TD><INPUT name="financials_multiyear" type="radio" value="multiyear"> 
+                  Multi Year         </TD></TR></TBODY></TABLE></DIV><INPUT name="show_journals" 
+            type="checkbox" value="y">          Section 5. Journal 
+            Updates<BR><INPUT name="show_subproject_index" type="checkbox" 
+            value="y">  Section 6. Index of Subprojects<BR><INPUT name="show_photos" 
+            type="checkbox" value="y">            Section 7. Photos<BR><INPUT 
+            name="show_documents" type="checkbox" value="y">            Section 
+            8. Documents<BR><INPUT name="show_changes" type="checkbox" 
+            value="y">           Section 9. Changes<BR></TD>
+          <TD class="prebuilt_report"><LABEL>Prepared 
+            Reports</LABEL><BR><INPUT name="prebuilt_report" id="some_name" 
+            type="radio" value="project_registration"> Project 
+            Registration<BR><INPUT name="prebuilt_report" id="continuing_project" 
+            type="radio" value="yearly_recap"> Continuing Project<BR>
+            <DIV class="suboptions" id="continuing_project_options" style="display: none;"><INPUT 
+            name="continuing_budget" type="radio" checked="" value="">Current 
+            Financials<BR><INPUT name="continuing_budget" type="radio" value="multiyear">Multi-Year 
+            Financials<BR></DIV><INPUT name="prebuilt_report" id="some_name" 
+            type="radio" value="quarterly_progress"> Quarterly 
+        Progress<BR></TD></TR></TBODY></TABLE>
+      <TABLE class="search_group" style="padding-bottom: 7px;">
+        <TBODY>
+        <TR>
+          <TD style="width: 80px;"><LABEL>Fiscal Year</LABEL><BR><SELECT name="fiscal_year"><OPTION>1994</OPTION> 
+                                <OPTION>1995</OPTION>                   
+              <OPTION>1996</OPTION>                   <OPTION>1997</OPTION>      
+                           <OPTION>1998</OPTION>                   
+              <OPTION>1999</OPTION>                   <OPTION>2000</OPTION>      
+                           <OPTION>2001</OPTION>                   
+              <OPTION>2002</OPTION>                   <OPTION>2003</OPTION>      
+                           <OPTION>2004</OPTION>                   
+              <OPTION>2005</OPTION>                   <OPTION>2006</OPTION>      
+                           <OPTION>2007</OPTION>                   
+              <OPTION>2008</OPTION>                   <OPTION>2009</OPTION>      
+                           <OPTION>2010</OPTION>                   
+              <OPTION>2011</OPTION>                   <OPTION>2012</OPTION>      
+                           <OPTION selected="true">2013</OPTION>                 
+                <OPTION>2014</OPTION>                   <OPTION>2015</OPTION>    
+                             <OPTION>2016</OPTION>                   
+              <OPTION>2017</OPTION>                   <OPTION>2018</OPTION>      
+                           <OPTION>2019</OPTION>                   
+              <OPTION>2020</OPTION>                   <OPTION>2021</OPTION>      
+                           <OPTION>2022</OPTION>               </SELECT>     </TD>
+          <TD><LABEL>Up Through</LABEL><BR><SELECT name="up_to"><OPTGROUP 
+              label="Quarter"><OPTION value="quarterly-2">Q1</OPTION>         
+                <OPTION value="quarterly-5">Q2</OPTION>         <OPTION value="quarterly-8">Q3</OPTION> 
+                        <OPTION value="quarterly-" selected="">Q4</OPTION>       
+                  </OPTGROUP>         <OPTGROUP label="Month"><OPTION value="accounting-0">October</OPTION> 
+                        <OPTION value="accounting-1">November</OPTION>         
+                <OPTION value="accounting-2">December</OPTION>         <OPTION 
+                value="accounting-3">January</OPTION>         <OPTION value="accounting-4">February</OPTION> 
+                        <OPTION value="accounting-5">March</OPTION>         
+                <OPTION value="accounting-6">April</OPTION>         <OPTION 
+                value="accounting-7">May</OPTION>         <OPTION value="accounting-8">June</OPTION> 
+                        <OPTION value="accounting-9">July</OPTION>         
+                <OPTION value="accounting-10">August</OPTION>         <OPTION 
+                value="accounting-">September</OPTION>         </OPTGROUP>     
+            </SELECT>     </TD>
+          <TD style="padding-left: 8px;"><LABEL>Format</LABEL><BR><SPAN style="top: 1px; position: relative;"><INPUT 
+            name="output_format" id="output_format" type="radio" checked="" 
+            value="html"> HTML&nbsp;&nbsp;         <INPUT name="output_format" 
+            id="output_format" type="radio" value="msword"> Word&nbsp;&nbsp;     
+                <INPUT name="output_format" id="output_format" type="radio" 
+            value="msexcel"> Excel         </SPAN>       </TD></TR></TBODY></TABLE>
+      <DIV 
+style="text-align: center; margin-top: 12px; margin-bottom: 1em;"><INPUT type="submit" value="Show Report"> 
+          </DIV></TD></TR></TBODY></TABLE><INPUT name="format" id="some_name" type="hidden" 
+value="minimal">     <INPUT name="timestamp" type="hidden" value="Aug. 3, 2013, 10:13 a.m."> 
+  </FORM></DIV>
+<DIV id="footer">	Current as of 15 hours ago </DIV>
+<SCRIPT src="jquery-1.6.1.min.js"></SCRIPT>
+ 
+<SCRIPT src="ipc.js"></SCRIPT>
+ 
+<SCRIPT>
+
+  $('#show_budget').suboptionsOnCheck()
+  $('#continuing_project').suboptionsOnCheck()
+  // $('#portfolio_id').suboptionsOnCheck()
+  $('input[name=prebuilt_report]').change(function(){
+      $('input[name=prebuilt_report]').not(this).trigger('update')
+  })
+  
+  // Select project code box on pageload
+  $('#project_id').focus()
+  
+  // Check that you have something to report on, before you run a report
+  $('#report_form').submit(function(){
+    var both_empty = $('#project_id').val()=='' && $('#portfolio_id').val()==''
+    if(both_empty){
+      document.getElementById('project_id').focus();
+      alert('You must enter a project number or choose a portfolio.'); 
+      return false
+    }
+    if($('#project_id').val().match(/[^.0-9, ]/)){
+      document.getElementById('project_id').focus();
+      alert('A project code is a decimal number. There are invalid characters in the project code'); 
+      return false
+    }
+    
+  })
+
+  
+  $('#report_form')
+      // Switch to POST if too many projects
+      .submit(function(){
+          var form = $(this)
+          if(form.find('#project_id').val().length>1000){
+              form.attr('method','POST')
+          }
+          return true
+      })
+      // Firefox allows display:none form fields to submit, disable these
+      .submit(function(){   
+          var disabledElements = $(this).find('.suboptions:hidden').find('select, input, textarea')
+            .attr('disabled',true)
+          setTimeout(function(){
+            disabledElements.attr('disabled',false)
+          })
+          return true
+      })
+  
+
+
+  
+  // Repopulate form with last selection, since SSL kills the browser's 
+  // built in ability to do this.
+  var last_search_data = {"backtoken": "EJBMKPDNAG"}
+  var is_back_button = 'Aug. 3, 2013, 10:13 a.m.' == last_search_data.timestamp
+  if((!is_back_button)&&window.location.search!=''){
+    delete last_search_data.project_id
+  }
+  if(window.name != 'EJBMKPDNAG' && last_search_data.backtoken != window.name){
+    $.each(last_search_data,function(k,v){
+      $('input[name='+k+'], select[name='+k+'], select[name='+k+']').each(function(){
+        var type = $(this).attr('type')
+        if(type=='text' || type=='select-one'){
+          $(this).val(v)
+        }else{
+          if($(this).attr('value')==v){
+            $(this).attr('checked',true)
+            $(this).change()
+          }
+        }
+      })
+    })
+    $(document).trigger('update')
+  }
+  window.name = last_search_data.backtoken
+
+
+  // Clear project id when portfolio selected
+  $('#project_id').bind("keypress change",function(){
+    if($(this).val()!=''){
+      $('#portfolio_id').get(0).selectedIndex=0
+    }
+  })
+
+  $('#portfolio_id').bind("keypress change",function(){
+    if($(this).val()!=''){
+      $('#project_id').val("")
+    }
+  })
+  
+  
+  // Clear Prepared reports when custom report section selected
+  $('.custom_report input[type=checkbox]').change(function(){$('input[name=prebuilt_report]').attr('checked',false).trigger('update')})
+  // and vice versa
+  $('input[name=prebuilt_report]').change(function(){$('.custom_report input[type=checkbox]').attr('checked',false).trigger('update')})
+  
+  
+
+</SCRIPT>
+ </BODY></HTML>

@@ -90,7 +90,7 @@ class EmailProcessor
 			$subject = 'Re: ' . $message['subject'];
 			
 			if ($parseError) {
-				$body = 'We found an error in your form and could execte your request. Please reply to this email to correct the following error: <b>' . $error . '</b>';
+				$body = 'We found an error in your form and could not execute your request. Please reply to this email to correct the following error: <b>' . $error . '</b>';
 			} elseif ($error == 'ok') {
 				$body = 'Your request was processed successfully';
 			} else {
@@ -136,11 +136,13 @@ class EmailProcessor
 		
 		foreach ($params as $key => &$value) {
 			if ($value[0] == 'attachment') {
-				if (empty($attachments)) {
+				if (empty($attachments)) { // get attachment
 					unset($params[$key]);
 					continue;
+				} else {
+					$value = '@' . array_shift($attachments);
+					continue;
 				}
-				$value[1] = '@' . $value[1];
 			} else if (util::removeBefore($value[0], 'attachment_')) {
 				$gotAttachment = false;
 				foreach ($attachments as $key => $attachment) {

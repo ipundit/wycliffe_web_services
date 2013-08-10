@@ -66,23 +66,37 @@ class EmailProcessor
 			$parseError = true;
 			
 			if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
-				$parseError = false;
-				
-				$ch = util::curl_init($template['url'], $params, 0);
+				$params['emailProcessor'] = EmailProcessor::serialize($template, $templateName, $message, '');
+				$ch = util::curl_init($template['url'], $params, true);
 				$result = curl_exec($ch);
-
-				if (curl_errno($ch)) {
-					$error = curl_error($ch);
-				} else {
-					curl_close($ch);
-					$error = $result;
-				}
+				return true;
 			}
 		}
-		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, $parseError);
+		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, $parseError, EmailProcessor::simulate());
+	}
+
+	private static function serialize(&$template, &$templateName, &$message, $str) {
+		$tokenizer = "\036";
+		if ($str == '') {
+			return serialize($template) . $tokenizer . $templateName . $tokenizer . serialize($message);
+		}
+		$arr = explode($tokenizer, $str);
+		$template = unserialize($arr[0]);
+		$templateName = $arr[1];
+		$message = unserialize($arr[2]);
 	}
 	
-	private static function sendDefaultForm($template, $templateName, $message, &$error, $parseError) {
+	public static function notifyEmailProcessingComplete($str, $error) {
+		if ($str == '') { return true; }
+		
+		$template = '';
+		$templateName = '';
+		$message = array();
+		EmailProcessor::serialize($template, $templateName, $message, $str);
+		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, false, 0);
+	}
+		
+	private static function sendDefaultForm($template, $templateName, $message, &$error, $parseError, $simulate) {
 		if ($error == '') {
 			EmailProcessor::fillInTemplate($template['body'], $message);
 			if (!EmailProcessor::extractParams($template['body'], $message, $template['params'], $error) && $error != '') { return false; }
@@ -109,7 +123,7 @@ class EmailProcessor
 			}
 		}
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
-		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), EmailProcessor::simulate());
+		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), $simulate);
 	}
 
 	private static function parseEmail($message, $template, &$params, &$error) {

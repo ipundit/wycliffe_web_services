@@ -4,15 +4,22 @@ require_once 'Mail/mime.php';
 define("_parseCSV_ASCII_TAB", 9);
 
 class util {
-	static public function curl_init($url, $params, $timeout = 40) {
+	static public function curl_init($url, $params, $isAsync = false) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_HEADER, false);     // Don't return the header, just the html
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // return into a variable
-		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); // times out after 40s, use 0 for indefinite waiting
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);  // Follow the redirects (needed for mod_rewrite)
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // return into a variable
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_CAINFO, "/etc/ssl/certs/mozilla.pem"); // http://davidwalsh.name/php-ssl-curl-error
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+
+		if ($isAsync) {
+			curl_setopt($ch, CURLOPT_TIMEOUT, 1);          // superfast timeout to go into async
+			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true); // Don't used a cached connection handle
+		} else {
+			curl_setopt($ch, CURLOPT_TIMEOUT, 40); // times out after 40s, use 0 for indefinite waiting
+		}
 		return $ch;
 	}
 	

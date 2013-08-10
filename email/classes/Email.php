@@ -1,6 +1,7 @@
 <?php 
 require_once 'util.php';
 require_once 'classes/akismet.class.php';
+require_once 'classes/EmailProcessor.php';
 define("_EMAIL_ASCII_TAB_", 9);
 define('_EMAIL_TIMEOUT_', 300);
 
@@ -18,13 +19,14 @@ class Email
 		Email::$baseDir = $baseDir;
 		
 		try {
-			$retValue = Email::sendFromPostImpl($baseDir, $msg);
+			$retValue = Email::sendFromPostImpl($baseDir, $emailProcessor, $msg);
+			EmailProcessor::notifyEmailProcessingComplete($emailProcessor, $msg);
 		} catch (Exception $ignore) {}
 		util::delTree($baseDir);
 		return $retValue;
 	}
 	
-	private static function sendFromPostImpl($baseDir, &$msg) {
+	private static function sendFromPostImpl($baseDir, &$emailProcessor, &$msg) {
 		ini_set('display_errors', '0'); 
 		register_shutdown_function('Email::shutdown'); 
 
@@ -32,8 +34,9 @@ class Email
 		$msg = '';
 		
 		$row = Email::validateInput($_POST, $msg);
+		$emailProcessor = $row['emailProcessor'];
 		if ($msg != '') { return false;	}
-		
+
 		$files = Email::getPathToAttachments($baseDir);
 		if ($row["to"] == '') {
 			$lines = Email::fillTemplateFromCSV($row, $msg);
@@ -111,6 +114,7 @@ class Email
 	public static function shutdown() { // has to be public for register_shutdown_function to work
 		$err = error_get_last();
 		util::delTree(Email::$baseDir);
+
 		if ($err == null) { return; }
 		if ($err['message'] == "Non-static method PEAR::isError() should not be called statically") { return; } // work-around known PEAR bug
 
@@ -277,6 +281,7 @@ class Email
 		if (!isset($arr['startRow'])) { $arr['startRow'] = 1; }
 		if (!isset($arr['maxRows'])) { $arr['maxRows'] = 0; }
 		if (!isset($arr['simulate'])) { $arr['simulate'] = 0; }
+		if (!isset($arr['emailProcessor'])) { $arr['emailProcessor'] = ''; }
 
 		$filters = array(
 		  "to"=>FILTER_UNSAFE_RAW,
@@ -291,6 +296,7 @@ class Email
 		  "maxRows"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0)),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
 		  "body"=>FILTER_UNSAFE_RAW,
+		  "emailProcessor"=>FILTER_UNSAFE_RAW,
 		);
 
 		$row = filter_var_array($arr, $filters);

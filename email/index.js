@@ -144,7 +144,7 @@ function fieldsToUpload() {
 	retValue['bcc'] = $('#bcc').val();
 	retValue['subject'] = $('#subject').val();
 	retValue['body'] = $('#body').val();
-	if ($('#simulate').prop('checked')) { retValue['simulate'] = 1; }
+	retValue['simulate'] = $('input[name=choiceSimulate]:checked', '#theForm').val();
 
 	for (i = 1; i <= 9; i++) {
 		if ($('#file' + i).val() != '') { retValue['attach' + i] = document.getElementById('file' + i).files[0]; }
@@ -182,7 +182,6 @@ function formDefaultValues() {
 		'bcc': '',
 		'subject': '',
 		'body': '',
-		'simulate': '0',
 	};
 
 	var from = urlParam("from");

@@ -61,6 +61,12 @@ label.error {
 #replyTo, #tags {
 	width: 212px;
 }
+.radioSimulate {
+	margin-left: 13px;
+}
+#choiceSend {
+	margin-left: 4px;
+}
 #body {
 	width: 603px;
 	height: 500px;
@@ -70,6 +76,7 @@ label.error {
 	#fromEmailJAARS { width: 416px; }
 	#fromEmailWWS { width: 96px; }
 	#to { width: 585px; }
+	#choiceSend { margin-left: 15px; }
 	#body { width: 605px; }
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) { /* chrome */
@@ -77,6 +84,7 @@ label.error {
 	#fromEmailJAARS { width: 395px; }
 	#fromEmailWWS { width: 94px; }
 	#to { width: 585px; }
+	#choiceSend { margin-left: 26px; }
 }
 
 #startMaxRow {
@@ -163,7 +171,9 @@ button {
 	<div class="header"><?php echo t("Cc") ?>:</div>
 	<div class="cell"><input type="text" name="cc" id="cc" /></div>
 	<div class="cell rightCell">
-		<input type="checkbox" name="simulate" id="simulate" /> <label for="simulate"><?php echo t("Simulate") ?></label>
+		<input type="radio" class="radioSimulate" name="choiceSimulate" id="choiceSend" value="0" checked /><label for="choiceSend"> <?php echo t("Send") ?></label>
+		<input type="radio" class="radioSimulate" name="choiceSimulate" id="choiceSimulate" value="2" /><label for="choiceSimulate"> <?php echo t("Simulate") ?></label>
+		<input type="radio" class="radioSimulate" name="choiceSimulate" id="choiceRegression" value="1" /><label for="choiceRegression"> <?php echo t("Regression test") ?></label>
 	</div>
 </div>
 <div class="row">

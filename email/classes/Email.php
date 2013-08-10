@@ -50,7 +50,7 @@ class Email
 									 $line['simulate'])) {
 					if ($line['simulate'] == 1) { return false;	}
 					
-					Emai::sendErrorMessage($msg);
+					Email::sendErrorMessage($msg);
 					return false;
 				}
 				if ($line['simulate'] == 2) {

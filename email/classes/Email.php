@@ -63,7 +63,9 @@ class Email
 					continue;
 				}
 			}
-			$dryRun = implode('<hr />', $lines);
+			if ($row['simulate'] == 2) {
+				$dryRun = implode('<hr />', $lines);
+			}
 		} else {
 			if (!util::sendEmail($msg, $row["fromName"], $row["from"], $row["to"], $row['subject'], 
 										$row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, $row['simulate'])) {
@@ -110,6 +112,7 @@ class Email
 		$err = error_get_last();
 		util::delTree(Email::$baseDir);
 		if ($err == null) { return; }
+		if ($err['message'] == "Non-static method PEAR::isError() should not be called statically") { return; } // work-around known PEAR bug
 
 		if (connection_aborted()) {
 			Email::sendErrorMessage('you pressed the stop button');

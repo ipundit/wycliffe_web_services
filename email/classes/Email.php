@@ -2,17 +2,18 @@
 require_once 'util.php';
 require_once 'classes/akismet.class.php';
 define("_EMAIL_ASCII_TAB_", 9);
-define('_EMAIL_TIMEOUT_', 30);
+define('_EMAIL_TIMEOUT_', 300);
 
 class Email
 {
 	private static $currentLineNumber = 0;
 	private static $currentLine = array();
 	private static $baseDir;
+	private static $lastBody = '';
 	
 	public static function sendFromPost(&$msg) {
 		set_time_limit(_EMAIL_TIMEOUT_);
-	
+
 		$baseDir = util::saveAllFiles();
 		Email::$baseDir = $baseDir;
 		
@@ -24,8 +25,12 @@ class Email
 	}
 	
 	private static function sendFromPostImpl($baseDir, &$msg) {
+		ini_set('display_errors', '0'); 
+		register_shutdown_function('Email::shutdown'); 
+
 		$dryRun = '';
 		$msg = '';
+		
 		$row = Email::validateInput($_POST, $msg);
 		if ($msg != '') { return false;	}
 		
@@ -40,9 +45,6 @@ class Email
 				return false;
 			}
 
-			ini_set('display_errors', '0'); 
-			register_shutdown_function('Email::shutdown'); 
-			
 			foreach ($lines as $lineNumber => &$line) {
 				self::$currentLineNumber = $lineNumber;
 				self::$currentLine = $line;
@@ -104,7 +106,7 @@ class Email
 		);
 	}
 	
-	private static function shutdown() {
+	public static function shutdown() { // has to be public for register_shutdown_function to work
 		$err = error_get_last();
 		util::delTree(Email::$baseDir);
 		if ($err == null) { return; }
@@ -120,19 +122,24 @@ class Email
 			echo $msg;
 			return;
 		}
-		
 		echo '<b>Fatal error:</b> ' . $err['message'] . ' in <b>' . $err['file'] . '</b> on line <b>' . $err['line'] .'</b>';
 	}
 
 	private static function sendErrorMessage($msg) {
 		$ignore = '';
-		$body = 'Sending email failed on <b>line ' . self::$currentLineNumber . 
-				'</b> of the mailing list file with message: <b>' . $msg . '</b>. Restart sending emails from line ' . 
-				self::$currentLineNumber . ' onwards.';
+
+		if (self::$currentLine['to'] == 'spam') {
+			$body = "Timed out on checking if email is spam on <b>line " . self::$currentLineNumber . "</b> of the mailing list file. You are only allowed to use " . _EMAIL_TIMEOUT_ . " seconds of server time. Contact developer_support@wycliffe-services.net to fix this problem, with the number of emails you are trying to send.";
+			$subject = "Checking for spam timed out";
+		} else {
+			$body = 'Sending email failed on <b>line ' . self::$currentLineNumber . 
+					'</b> of the mailing list file with message: <b>' . $msg . '</b>. Restart sending emails from line ' . 
+					self::$currentLineNumber . ' onwards.';
+			$subject = 'Email to ' . self::$currentLine['to'] . ' failed with subject: ' .	self::$currentLine['subject'];
+		}
 		
 		util::sendEmail($ignore, 'Wycliffe Web Services mailier', 'no-reply@wycliffe-services.net', 
-						self::$currentLine['from'], 'Email to ' . self::$currentLine['to'] . ' failed with subject: ' .
-						self::$currentLine['subject'], $body);
+						self::$currentLine['from'], $subject, $body);
 	}
 	
 	private static function fillTemplateFromCSV($row, &$msg) {
@@ -167,7 +174,8 @@ class Email
 					}
 				}
 			}
-			
+
+			self::$currentLineNumber = $lineCount;
 			$lines[$lineCount] = Email::validateInput($lines[$lineCount], $msg);
 			if ($msg != '') { 
 				$msg = 'mailing list line ' . $lineCount . ': ' . $msg;
@@ -367,17 +375,37 @@ class Email
 			$referrer = 'http://wycliffe-services.net/email/webservice.php') {
 		if ($simulate) { return $fromName == 'Free Viagra'; } // Just put in one case for failure
 		
+		self::$currentLine = array(
+			'from' => $fromEmail,
+			'to' => 'spam',
+			'subject' => 'spam',
+		);
+
 		$spamChecker = new Akismet('http://wycliffe-services.net/email/webservice.php', '9b41b2cabb36', 
 			array(
-					'author'     => $fromName,
-					'email'      => $fromEmail,
-					'website'    => 'http://wycliffe-services.net/',
-					'body'       => $body,
-					'user_agent' => $userAgent,
-					'referrer'   => $referrer,
+				'author'     => $fromName,
+				'email'      => $fromEmail,
+				'website'    => 'http://wycliffe-services.net/',
+				'body'       => $body,
+				'user_agent' => $userAgent,
+				'referrer'   => $referrer,
 			));
 		if ($spamChecker->errorsExist()) { return false; } // silently skip spam checking then
+		if (Email::similarToLastBody($body)) { return false; } // optimization: if body hasn't really changed between emails - assume this one is not a spam email either
+		
 		return $spamChecker->isSpam();
+	}
+	
+	private static function similarToLastBody($body) {
+		$retValue = false;
+		if (Email::$lastBody != '') {
+			$percent = 0;
+			similar_text($body, Email::$lastBody, $percent);
+			$retValue = $percent >= .95;
+			$retValue = true;
+		}
+		Email::$lastBody = $body;
+		return $retValue;
 	}
 	
 	public static function wycliffeServicesEmails() {
@@ -413,7 +441,7 @@ class Email
 	static private function containsNewLines($str) {
 		return preg_match("/(%0A|%0D|\\n+|\\r+)/i", $str) != 0;
 	}
-	function headerBlacklist($str) {
+	static private function headerBlacklist($str) {
 		$strs = array("content-type:","mime-version:","multipart\/mixed","Content-Transfer-Encoding:","bcc:","cc:","to:");
 		$str = strtolower($str);
 		

@@ -2,7 +2,7 @@
 require_once 'util.php';
 require_once 'classes/akismet.class.php';
 define("_EMAIL_ASCII_TAB_", 9);
-define('_EMAIL_TIMEOUT_', 2);
+define('_EMAIL_TIMEOUT_', 30);
 
 class Email
 {
@@ -11,6 +11,8 @@ class Email
 	private static $baseDir;
 	
 	public static function sendFromPost(&$msg) {
+		set_time_limit(_EMAIL_TIMEOUT_);
+	
 		$baseDir = util::saveAllFiles();
 		Email::$baseDir = $baseDir;
 		

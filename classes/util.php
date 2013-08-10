@@ -4,11 +4,11 @@ require_once 'Mail/mime.php';
 define("_parseCSV_ASCII_TAB", 9);
 
 class util {
-	static public function curl_init($url, $params) {
+	static public function curl_init($url, $params, $timeout = 40) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_HEADER, false);     // Don't return the header, just the html
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // return into a variable
-		curl_setopt($ch, CURLOPT_TIMEOUT, 40);       // times out after 40s
+		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); // times out after 40s, use 0 for indefinite waiting
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_CAINFO, "/etc/ssl/certs/mozilla.pem"); // http://davidwalsh.name/php-ssl-curl-error
 		curl_setopt($ch, CURLOPT_URL, $url);

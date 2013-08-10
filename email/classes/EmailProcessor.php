@@ -2,6 +2,7 @@
 require_once 'util.php';
 require_once 'classes/Email.php';
 define('DUMP_TO_DRY_RUN', false);
+define('_EMAIL_TIMEOUT_', 30);
 
 class EmailProcessor
 {
@@ -34,6 +35,7 @@ class EmailProcessor
 
 	public static function processMessage($to, $message, &$error, $deleteAttachments = false) {
 		try {
+			set_time_limit(_EMAIL_TIMEOUT_);
 			$retValue = EmailProcessor::processMessageImpl($to, $message, $error, $deleteAttachments);
 		} catch (Exception $e) {}
 		if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); }
@@ -66,8 +68,9 @@ class EmailProcessor
 			if (EmailProcessor::parseEmail($message, $template, $params, $error)) {
 				$parseError = false;
 				
-				$ch = util::curl_init($template['url'], $params);
+				$ch = util::curl_init($template['url'], $params, 0);
 				$result = curl_exec($ch);
+
 				if (curl_errno($ch)) {
 					$error = curl_error($ch);
 				} else {

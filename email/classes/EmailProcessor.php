@@ -2,7 +2,7 @@
 require_once 'util.php';
 require_once 'classes/Email.php';
 define('DUMP_TO_DRY_RUN', false);
-define('_EMAIL_TIMEOUT_', 30);
+define('_EMAIL_PROCESSOR_TIMEOUT_', 30);
 
 class EmailProcessor
 {
@@ -35,7 +35,7 @@ class EmailProcessor
 
 	public static function processMessage($to, $message, &$error, $deleteAttachments = false) {
 		try {
-			set_time_limit(_EMAIL_TIMEOUT_);
+			set_time_limit(_EMAIL_PROCESSOR_TIMEOUT_);
 			$retValue = EmailProcessor::processMessageImpl($to, $message, $error, $deleteAttachments);
 		} catch (Exception $e) {}
 		if ($deleteAttachments) { EmailProcessor::deleteAttachments($message['attachments']); }

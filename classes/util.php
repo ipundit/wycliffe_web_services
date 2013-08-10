@@ -253,6 +253,10 @@ class util {
 			$msg = $mail->getMessage();
 			return false;
 		}
+		
+		openlog('util::sendEmail', LOG_NDELAY, LOG_MAIL);
+		syslog(LOG_NOTICE, "From $from to $to $subject");
+		closelog();
 		return true;
 	}
 	

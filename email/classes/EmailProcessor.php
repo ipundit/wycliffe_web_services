@@ -10,6 +10,7 @@ class EmailProcessor
 		if (!EmailProcessor::receivedEmail($buffer, $error)) { return false; }
 		if (DUMP_TO_DRY_RUN) {
 			file_put_contents('./dryRun.html', print_r($buffer, true));
+			echo "Dumped to dryRun.html";
 			return false;
 		}
 		return EmailProcessor::parse($buffer, $message, $error, EmailProcessor::simulate() == 1);
@@ -86,13 +87,18 @@ class EmailProcessor
 		$message = unserialize($arr[2]);
 	}
 	
-	public static function notifyEmailProcessingComplete($str, $error) {
+	public static function notifyEmailProcessingComplete($error) {
+		$str = isset($_POST['emailProcessor']) ? $_POST['emailProcessor'] : '';
 		if ($str == '') { return true; }
 		
 		$template = '';
 		$templateName = '';
 		$message = array();
 		EmailProcessor::serialize($template, $templateName, $message, $str);
+		if (!filter_var($templateName, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
+			$error = "Invalid templateName";
+			return flase;
+		}
 		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, false, 0);
 	}
 		
@@ -108,8 +114,8 @@ class EmailProcessor
 			
 			if ($parseError) {
 				$body = 'We found an error in your form and could not execute your request. Please reply to this email to correct the following error: <b>' . $error . '</b>';
-			} elseif ($error == 'ok') {
-				$body = 'Your request was processed successfully';
+			} elseif (is_numeric($error)) {
+				$body = 'Your request was processed successfully; number of emails sent: ' . $error;
 			} else {
 				$body = 'There was an error while running your request: <b>' . $error . '</b>';
 			}
@@ -193,7 +199,12 @@ class EmailProcessor
 		
 		if (util::removeBefore($value[1], 'trim_')) {
 			$retValue = EmailProcessor::trimStartEndTags($value[0], '(br|p|div)');
-			if ($value[1] != 'whitepsace') {
+			switch ($value[1]) {
+			case 'all_tags':
+				$retValue = filter_var($retValue, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES));
+			case 'whitespace':
+				break;
+			default:
 				$retValue =  EmailProcessor::trimStartEndTags($retValue, $value[1]);
 			}
 			return $retValue;

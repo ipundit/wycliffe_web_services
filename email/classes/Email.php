@@ -14,19 +14,18 @@ class Email
 	
 	public static function sendFromPost(&$msg) {
 		set_time_limit(_EMAIL_TIMEOUT_);
-
 		$baseDir = util::saveAllFiles();
 		Email::$baseDir = $baseDir;
 		
 		try {
-			$retValue = Email::sendFromPostImpl($baseDir, $emailProcessor, $msg);
-			EmailProcessor::notifyEmailProcessingComplete($emailProcessor, $msg);
+			$retValue = Email::sendFromPostImpl($baseDir, $msg);
+			EmailProcessor::notifyEmailProcessingComplete($msg);
 		} catch (Exception $ignore) {}
 		util::delTree($baseDir);
 		return $retValue;
 	}
 	
-	private static function sendFromPostImpl($baseDir, &$emailProcessor, &$msg) {
+	private static function sendFromPostImpl($baseDir, &$msg) {
 		ini_set('display_errors', '0'); 
 		register_shutdown_function('Email::shutdown'); 
 
@@ -34,10 +33,10 @@ class Email
 		$msg = '';
 		
 		$row = Email::validateInput($_POST, $msg);
-		$emailProcessor = $row['emailProcessor'];
 		if ($msg != '') { return false;	}
 
 		$files = Email::getPathToAttachments($baseDir);
+		$numSent = 1;
 		if ($row["to"] == '') {
 			$lines = Email::fillTemplateFromCSV($row, $msg);
 			if ($msg != '') { return false; }
@@ -69,6 +68,7 @@ class Email
 			if ($row['simulate'] == 2) {
 				$dryRun = implode('<hr />', $lines);
 			}
+			$numSent = count($lines);
 		} else {
 			if (!util::sendEmail($msg, $row["fromName"], $row["from"], $row["to"], $row['subject'], 
 										$row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, $row['simulate'])) {
@@ -86,9 +86,9 @@ class Email
 				$msg = 'could not write to dryRun file';
 				return false;
 			}
-			$msg = 'ok, see <a href="' . util::absURL('dryRun.html') . '">dry run page</a>';
+			$msg = $numSent . ' emails simulated; see <a href="' . util::absURL('dryRun.html') . '">dry run page</a>';
 		} else {
-			$msg = 'ok';
+			$msg = $numSent;
 		}
 		return true;
 	}
@@ -281,7 +281,6 @@ class Email
 		if (!isset($arr['startRow'])) { $arr['startRow'] = 1; }
 		if (!isset($arr['maxRows'])) { $arr['maxRows'] = 0; }
 		if (!isset($arr['simulate'])) { $arr['simulate'] = 0; }
-		if (!isset($arr['emailProcessor'])) { $arr['emailProcessor'] = ''; }
 
 		$filters = array(
 		  "to"=>FILTER_UNSAFE_RAW,
@@ -296,11 +295,9 @@ class Email
 		  "maxRows"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0)),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
 		  "body"=>FILTER_UNSAFE_RAW,
-		  "emailProcessor"=>FILTER_UNSAFE_RAW,
 		);
 
 		$row = filter_var_array($arr, $filters);
-
 		foreach ($row as &$value) {
 			$value = trim($value);
 		}
@@ -310,7 +307,6 @@ class Email
 				$msg = "to parameter must be set";
 				return false;
 			}
-			
 			if ($row['startRow'] == '') {
 				$msg = 'startRow must be an integer greater than or equal to 1';
 				return false;
@@ -333,7 +329,6 @@ class Email
 			unset($row['startRow']);
 			unset($row['maxRows']);
 		}
-
 		if ($row["from"] == '') {
 			$row["from"] = "no-reply@wycliffe-services.net";
 		} else if (!in_array($row['from'], Email::wycliffeServicesEmails()) && !util::isJaarsEmail($row['from'])) {

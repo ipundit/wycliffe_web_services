@@ -99,7 +99,7 @@ class Email
 		'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">',
 		'<head>',
 		'<title>Dry run output</title>',
-		'<style type="text/css">div { display: inline-block; } .col1 { width: 100px; } .col2 { display:inline; } </style>',
+		'<style type="text/css">div { body { white-space: pre; } display: inline-block; } .col1 { width: 100px; display: inline-block; } .col2 { display:inline-block; } </style>',
 		'</head>',
 		'<body>',
 		$body,

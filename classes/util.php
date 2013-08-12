@@ -233,9 +233,9 @@ class util {
 			foreach ($headers as $key => &$value) {
 				$value = '<div><div class="col1">' . $key . ':</div><div class="col2">' . htmlentities($value, ENT_NOQUOTES) . '</div></div>';
 			}
-			$headers[] = '';
+			$headers[] = '<br />';
 			$headers[] = $body;
-			$msg = implode('<br />', $headers);
+			$msg = implode('', $headers);
 			return true;
 		}
 				

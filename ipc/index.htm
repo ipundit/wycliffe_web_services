@@ -70,35 +70,28 @@ Portfolios</A>       <SPAN>|</SPAN>       <A href="https://www.view.ipc.insiteho
         <TBODY>
         <TR>
           <TD class="custom_report" 
-            style="width: 260px;"><LABEL>Contents</LABEL><BR><INPUT name="show_basic" 
+            style="width: 260px;"><LABEL>Contents</LABEL><BR><INPUT class="contentFilter" name="show_basic" 
             type="checkbox" checked="" value="y">     Section 1. Project 
-            Description<BR><INPUT name="show_details" type="checkbox" value="y"> 
-                      Section 2. Project Details<BR><INPUT name="show_rbm" type="checkbox" 
-            value="y">               Section 3. RBM<BR><INPUT name="show_budget" 
-            id="show_budget" type="checkbox" value="y">            Section 4. 
-            Financials<BR>
+            Description<BR><INPUT class="contentFilter" name="show_details" type="checkbox" value="y"> Section 2. Project Details<BR>
+			<INPUT class="contentFilter" name="show_rbm" type="checkbox" value="y"> Section 3. RBM<BR>
+			<INPUT class="contentFilter" name="show_budget" id="show_budget" type="checkbox" value="y"> Section 4. Financials<BR>
             <DIV class="suboptions" id="show_budget_options" style="display: none;">
             <TABLE width="100%" cellpadding="0">
               <TBODY>
               <TR>
                 <TH class="small">Budget Categories</TH>
-                <TH class="small">Detail</TH></TR>
               <TR class="small">
                 <TD style="width: 138px;"><INPUT name="combined_budget" type="radio" 
                   checked="" value=""> IPC Categories         </TD>
-                <TD><INPUT name="financials_multiyear" type="radio" checked="" 
-                  value=""> One Year         </TD></TR>
               <TR>
                 <TD><INPUT name="combined_budget" type="radio" value="americas_area"> 
                   AMA Categories         </TD>
-                <TD><INPUT name="financials_multiyear" type="radio" value="multiyear"> 
-                  Multi Year         </TD></TR></TBODY></TABLE></DIV><INPUT name="show_journals" 
-            type="checkbox" value="y">          Section 5. Journal 
-            Updates<BR><INPUT name="show_subproject_index" type="checkbox" 
-            value="y">  Section 6. Index of Subprojects<BR><INPUT name="show_photos" 
+                </TR></TBODY></TABLE></DIV>
+			<INPUT class="contentFilter" name="show_journals" id="show_journals" type="checkbox" value="y"> Section 5. Journal Updates<BR><INPUT class="contentFilter" name="show_subproject_index" type="checkbox" 
+            value="y">  Section 6. Index of Subprojects<BR><INPUT class="contentFilter" name="show_photos" 
             type="checkbox" value="y">            Section 7. Photos<BR><INPUT 
-            name="show_documents" type="checkbox" value="y">            Section 
-            8. Documents<BR><INPUT name="show_changes" type="checkbox" 
+            class="contentFilter" name="show_documents" type="checkbox" value="y">            Section 
+            8. Documents<BR><INPUT class="contentFilter" name="show_changes" type="checkbox" 
             value="y">           Section 9. Changes<BR></TD>
           <TD class="prebuilt_report"><LABEL>Prepared 
             Reports</LABEL><BR><INPUT name="prebuilt_report" id="some_name" 
@@ -114,49 +107,30 @@ Portfolios</A>       <SPAN>|</SPAN>       <A href="https://www.view.ipc.insiteho
       <TABLE class="search_group" style="padding-bottom: 7px;">
         <TBODY>
         <TR>
-          <TD style="width: 80px;"><LABEL>Fiscal Year</LABEL><BR><SELECT name="fiscal_year"><OPTION>1994</OPTION> 
-                                <OPTION>1995</OPTION>                   
-              <OPTION>1996</OPTION>                   <OPTION>1997</OPTION>      
-                           <OPTION>1998</OPTION>                   
-              <OPTION>1999</OPTION>                   <OPTION>2000</OPTION>      
-                           <OPTION>2001</OPTION>                   
-              <OPTION>2002</OPTION>                   <OPTION>2003</OPTION>      
-                           <OPTION>2004</OPTION>                   
-              <OPTION>2005</OPTION>                   <OPTION>2006</OPTION>      
-                           <OPTION>2007</OPTION>                   
-              <OPTION>2008</OPTION>                   <OPTION>2009</OPTION>      
-                           <OPTION>2010</OPTION>                   
-              <OPTION>2011</OPTION>                   <OPTION>2012</OPTION>      
-                           <OPTION selected="true">2013</OPTION>                 
-                <OPTION>2014</OPTION>                   <OPTION>2015</OPTION>    
-                             <OPTION>2016</OPTION>                   
-              <OPTION>2017</OPTION>                   <OPTION>2018</OPTION>      
-                           <OPTION>2019</OPTION>                   
-              <OPTION>2020</OPTION>                   <OPTION>2021</OPTION>      
-                           <OPTION>2022</OPTION>               </SELECT>     </TD>
-          <TD><LABEL>Up Through</LABEL><BR><SELECT name="up_to"><OPTGROUP 
-              label="Quarter"><OPTION value="quarterly-2">Q1</OPTION>         
-                <OPTION value="quarterly-5">Q2</OPTION>         <OPTION value="quarterly-8">Q3</OPTION> 
-                        <OPTION value="quarterly-" selected="">Q4</OPTION>       
-                  </OPTGROUP>         <OPTGROUP label="Month"><OPTION value="accounting-0">October</OPTION> 
-                        <OPTION value="accounting-1">November</OPTION>         
-                <OPTION value="accounting-2">December</OPTION>         <OPTION 
-                value="accounting-3">January</OPTION>         <OPTION value="accounting-4">February</OPTION> 
-                        <OPTION value="accounting-5">March</OPTION>         
-                <OPTION value="accounting-6">April</OPTION>         <OPTION 
-                value="accounting-7">May</OPTION>         <OPTION value="accounting-8">June</OPTION> 
-                        <OPTION value="accounting-9">July</OPTION>         
-                <OPTION value="accounting-10">August</OPTION>         <OPTION 
-                value="accounting-">September</OPTION>         </OPTGROUP>     
-            </SELECT>     </TD>
-          <TD style="padding-left: 8px;"><LABEL>Format</LABEL><BR><SPAN style="top: 1px; position: relative;"><INPUT 
-            name="output_format" id="output_format" type="radio" checked="" 
-            value="html"> HTML&nbsp;&nbsp;         <INPUT name="output_format" 
-            id="output_format" type="radio" value="msword"> Word&nbsp;&nbsp;     
-                <INPUT name="output_format" id="output_format" type="radio" 
-            value="msexcel"> Excel         </SPAN>       </TD></TR></TBODY></TABLE>
+          <TD class="dateColumn"><LABEL>Detail</LABEL><BR>
+			  <SELECT name="detail" id="detail">
+				  <OPTION selected>year</OPTION>                   
+				  <OPTION>quarter</OPTION>
+				  <OPTION>month</OPTION>
+			  </SELECT>
+		  </TD>
+          <TD class="dateColumn"><LABEL>Start date</LABEL><BR>
+			  <INPUT type="text" class="dateField" name="startDate" id="startDate" value="2013" />
+		  </TD class="dateColumn">
+          <TD><LABEL>End date</LABEL><BR>
+			  <INPUT type="text" class="dateField" name="endDate" id="endDate" value="2013" />
+		  </TD>
+          <TD><LABEL>Format</LABEL><BR>
+		    <INPUT name="output_format" id="output_format" type="radio" checked="" value="html"> HTML
+			<INPUT name="output_format" id="output_format" type="radio" value="msword"> Word
+            <INPUT name="output_format" id="output_format" type="radio" value="msexcel"> Excel</TD>
+		</TR>
+		<TR>
+			<td colspan="4"><div id="error"></div></td>
+		</TR>
+		</TBODY></TABLE>
       <DIV 
-style="text-align: center; margin-top: 12px; margin-bottom: 1em;"><INPUT type="submit" value="Show Report"> 
+style="text-align: center; margin-top: 12px; margin-bottom: 1em;"><INPUT type="submit" id="submit" value="Show Report"> 
           </DIV></TD></TR></TBODY></TABLE><INPUT name="format" id="some_name" type="hidden" 
 value="minimal">     <INPUT name="timestamp" type="hidden" value="Aug. 3, 2013, 10:13 a.m."> 
   </FORM></DIV>

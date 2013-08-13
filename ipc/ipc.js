@@ -1,3 +1,61 @@
+$(document).ready(function() {
+	$('.contentFilter').click(function(evt) { fireContentFilterChange(); });
+	$('#detail').change(function(evt) { fireDetailChange(); });
+	fireDetailChange();
+});
+
+function fireDetailChange() {
+	if (!fireContentFilterChange()) { return; }
+
+	var startDate = "2013";
+	var endDate = "2013";
+	
+	switch ($('#detail').val()) {
+	case 'year':
+		break;
+	case 'quarter':
+		startDate = "Q4/2013";
+		endDate = "Q4/2013";
+		break;
+	case 'month':
+		startDate = "08/2013";
+		endDate = "08/2013";
+		break;
+	}
+	
+	$('#startDate').val(startDate);
+	$('#endDate').val(endDate);
+}
+
+function fireContentFilterChange() {
+	var error = '';
+	if (supportedFilter()) {
+		var checkboxes = $('.contentFilter:checked');
+		if (checkboxes.length == 0) {
+			$('#submit').attr('disabled','disabled');
+		} else {
+			$('#submit').removeAttr('disabled');
+		}
+		$('#error').html('');
+		return true;
+	}
+
+	$('#submit').attr('disabled','disabled');
+	$('#error').html('The quarter and month filters are only supported for Sections 4 and 5.');
+	return false;
+}
+
+function supportedFilter() {
+	var checkboxes = $('.contentFilter:checked');
+	if (checkboxes.length == 0) {
+		$('#submit').attr('disabled','disabled');
+		return true;
+	}
+
+	if ($('#detail').val() == 'year') { return true; }
+	return $('#show_budget').is(':checked') || $('#show_journals').is(':checked');
+}
+
 $('span.budgetenablelink a').click(function(evt){
   var budget_id = $(this).attr('href').replace('#','')
 

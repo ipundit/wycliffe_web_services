@@ -379,3 +379,14 @@ div.flash {
 a.toggle-link {
 	margin-top: 2em; display: block;
 }
+
+#error {
+	color: red;
+	font-size: 11pt;
+}
+.dateColumn {
+	width: 75px;
+}
+.dateField {
+	width: 68px;
+}

@@ -166,6 +166,9 @@ class EmailProcessor
 					$value = '@' . array_shift($attachments);
 					continue;
 				}
+			} else if (util::removeBefore($value[0], 'email_')) {
+				$value = $message[$value[0]];
+				continue;
 			} else if (util::removeBefore($value[0], 'attachment_')) {
 				$gotAttachment = false;
 				foreach ($attachments as $key => $attachment) {

@@ -1,0 +1,19 @@
+# Login to gmail.com with these credentials to see if the emails were sent	
+# email = wycliffe.web.services.test.1@gmail.com password = asdfqwer12	
+	
+URL	http://wycliffe-services.net/email/webservice.php
+to	enter_your_email_here@test.com
+cc	wycliffe.web.services.test.1@gmail.com
+bcc	wycliffe.web.services.test.2@gmail.com
+replyTo	works_for_non_jaars_email@test.com
+fromName	Your name
+subject	A sample of how to send an email
+body	You just sent an email from the email web service
+EXPECTS	ok
+RESULT	$result
+
+URL	http://wycliffe-services.net/email/webservice.php
+to	enter_your_email_here@test.com
+fromName	Your name
+subject	The result of the last web service call
+body	And the result is: <b>$result</b>

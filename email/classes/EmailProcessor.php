@@ -190,6 +190,8 @@ class EmailProcessor
 				continue;
 			} else if (isset($bodyVars[$value[0]])) {
 				$value[0] = $bodyVars[$value[0]];
+			} else {
+				$value[0] = '';
 			}
 			$value = EmailProcessor::processMetaCommand($value, $error);
 			if ($value === false) { return false; }
@@ -198,6 +200,7 @@ class EmailProcessor
 	}
 
 	private static function processMetaCommand($value, &$error) {
+		if ($value[2] == 1 && $value[0] == '') { return false; }
 		if ($value[1] == '') { return EmailProcessor::trimStartEndTags($value[0], 'br'); }
 		
 		if (util::removeBefore($value[1], 'trim_')) {
@@ -343,9 +346,11 @@ class EmailProcessor
 		
 		$params = array();
 		$offset = 0;
-		while (preg_match('/.+?meta name="(.+?)" content="(.+?)"( command="(.+?)")?.*/', $head, $matches, PREG_OFFSET_CAPTURE, $offset) == 1) {
+		
+		while (preg_match('/.+?meta name="(.+?)" content="(.+?)"( command="(.+?)")?( required="(.+?)")?.*/', $head, $matches, PREG_OFFSET_CAPTURE, $offset) == 1) {
 			$command = isset($matches[4]) ? $matches[4][0] : '';
-			$params[$matches[1][0]] = array($matches[2][0], $command);
+			$required = isset($matches[6]) ? $matches[6][0] : '';
+			$params[$matches[1][0]] = array($matches[2][0], $command, $required);
 			$offset = $matches[2][1];
 		}
 		return true;

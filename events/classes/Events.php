@@ -44,8 +44,11 @@ class Events
 		
 		$name = $row['name'];
 		$fromEmail = $row['fromEmail'];
-		$eventName = $row['eventName'];
+		$eventName = trim($row['eventName']);
 		$forwardingEmail = $row['forwardingEmail'];
+		
+		$createdEmail = strtolower(str_replace(' ', '_', $eventName)) . '@wycliffe-services.net';
+		$shortName = Events::generateAcronym($eventName);
 		
 		$body = <<<BODY
 We received an events account creation request.<br>
@@ -55,11 +58,11 @@ We received an events account creation request.<br>
 <b>Event name:</b> $eventName<br>
 <b>Forwarding email:</b> $forwardingEmail<br>
 <br>
-1. Run /home/sysadmin/add_events_account.sh event_name_with_no_spaces_less_than_17_chars<br>
-2. Manually create the email account, possibly forwarding it in courier
-3. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Name: $name%0D%0AEmail: $fromEmail%0D%0AEvent name: $eventName%0D%0AForwarding email: $forwardingEmail%0D%0AMySQL user name: %0D%0AMySQL password:">configuration email</a> to user
+1. Run /home/sysadmin/add_events_account.sh $shortName<br>
+2. Manually create the $createdEmail account, possibly forwarding it in courier<br>
+3. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Name: $name%0D%0AEmail: $fromEmail%0D%0AEvent name: $eventName%0D%0ACreated email: $createdEmail%0D%0AForwarding email: $forwardingEmail%0D%0AMySQL user name: $shortName%0D%0AMySQL password: ">configuration email</a> to user
 BODY;
-		util::sendEmail($msg, "", "no-reply@wycliffe-services.net", "developer_support@wycliffe-services.net", 
+		util::sendEmail($err1, "", "no-reply@wycliffe-services.net", "developer_support@wycliffe-services.net", 
 			"Events account creation request", $body, '', '', '', array(), $row['simulate']);
 
 		$body = <<<BODY
@@ -67,11 +70,22 @@ Dear $name,<br>
 <br>
 Your request to create an events account for <b>$eventName</b> has been received and will be processed shortly.
 BODY;
-		util::sendEmail($msg, "", "no-reply@wycliffe-services.net", $fromEmail, 
+		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", $fromEmail, 
 			"Received events account creation request", $body, '', '', '', array(), $row['simulate']);
 		
-		$msg = 'ok';
+		$msg = $err1 . $err2;
+		if ($msg == '') { $msg = 'ok'; }
 		return true;
+	}
+
+	private static function generateAcronym($str) {
+		$arr = explode(' ', $str);
+		foreach($arr as &$value) {
+			if (!is_numeric($value)) {
+				$value = substr($value, 0, 1);
+			}
+		}
+		return implode('', $arr);
 	}
 }
 ?>

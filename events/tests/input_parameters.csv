@@ -13,7 +13,7 @@ eventName	Event name
 name	Liz Hu
 fromEmail	developer_support@wycliffe-services.net
 simulate	1
-EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe.services.net [Subject] => Events account creation request ) We received an events account creation request. Name: Liz Hu Email: developer_support@wycliffe-services.net Event name: Event name Forwarding email: 
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Events account creation request ) We received an events account creation request.<br> <br> <b>Name:</b> Liz Hu<br> <b>Email:</b> developer_support@wycliffe-services.net<br> <b>Event name:</b> Event name<br> <b>Forwarding email:</b> <br> <br> 1. Run /home/sysadmin/add_events_account.sh En<br> 2. Manually create the event_name@wycliffe-services.net account, possibly forwarding it in courier<br> 3. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Name: Liz Hu%0D%0AEmail: developer_support@wycliffe-services.net%0D%0AEvent name: Event name%0D%0ACreated email: event_name@wycliffe-services.net%0D%0AForwarding email: %0D%0AMySQL user name: En%0D%0AMySQL password: ">configuration email</a> to userArray ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Received events account creation request ) Dear Liz Hu,<br> <br> Your request to create an events account for <b>Event name</b> has been received and will be processed shortly.
 
 # to testing	
 URL	http://wycliffe-services.net/email/webservice.php

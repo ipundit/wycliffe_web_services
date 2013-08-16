@@ -11,9 +11,52 @@ EXPECTS	invalid fromEmail
 URL	http://wycliffe-services.net/events/webservice.php
 eventName	Event name
 name	Liz Hu
+fromEmail	asdf
+EXPECTS	invalid fromEmail
+
+URL	http://wycliffe-services.net/events/webservice.php
+eventName	Event name
+name	Liz Hu
 fromEmail	developer_support@wycliffe-services.net
 simulate	1
-EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Events account creation request ) We received an events account creation request.<br> <br> <b>Name:</b> Liz Hu<br> <b>Email:</b> developer_support@wycliffe-services.net<br> <b>Event name:</b> Event name<br> <b>Forwarding email:</b> <br> <br> 1. Run /home/sysadmin/add_events_account.sh En<br> 2. Manually create the event_name@wycliffe-services.net account, possibly forwarding it in courier<br> 3. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Name: Liz Hu%0D%0AEmail: developer_support@wycliffe-services.net%0D%0AEvent name: Event name%0D%0ACreated email: event_name@wycliffe-services.net%0D%0AForwarding email: %0D%0AMySQL user name: En%0D%0AMySQL password: ">configuration email</a> to userArray ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Received events account creation request ) Dear Liz Hu,<br> <br> Your request to create an events account for <b>Event name</b> has been received and will be processed shortly.
+EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Events account creation request ) We received an events account creation request.<br> <br> <b>Client name:</b> Liz Hu<br> <b>Client email:</b> developer_support@wycliffe-services.net<br> <b>Event name:</b> Event name<br> <br> 1. Run /home/sysadmin/add_events_account.sh En<br> 2. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Client name: Liz Hu%0D%0AClient email: developer_support@wycliffe-services.net%0D%0AEvent name: Event name%0D%0AUser name: En%0D%0APassword: ">configuration email</a> to userArray ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Received events account creation request ) Dear Liz Hu,<br> <br> Your request to create an events account for <b>Event name</b> has been received and will be processed shortly.
+
+URL	http://wycliffe-services.net/events/webservice.php
+eventName	Event name
+clientName	Liz Hu
+EXPECTS	invalid client email
+
+URL	http://wycliffe-services.net/events/webservice.php
+clientName	Liz Hu
+EXPECTS	eventName is missing
+
+URL	http://wycliffe-services.net/events/webservice.php
+eventName	Event name
+clientName	Liz Hu
+clientEmail	asdf
+EXPECTS	invalid client email
+
+URL	http://wycliffe-services.net/events/webservice.php
+eventName	Event name
+clientName	Liz Hu
+clientEmail	client@email.com
+EXPECTS	userName is missing
+
+URL	http://wycliffe-services.net/events/webservice.php
+eventName	Event name
+clientName	Liz Hu
+clientEmail	client@email.com
+userName	userName
+EXPECTS	password is missing
+
+URL	http://wycliffe-services.net/events/webservice.php
+eventName	Event name
+clientName	Liz Hu
+clientEmail	client@email.com
+userName	userName
+password	password
+simulate	1
+EXPECTS	Array ( [Sender] => events@wycliffe-services.net [From] => events@wycliffe-services.net [To] => client@email.com [Subject] => Logistics menu for Event name ) Dear Liz Hu,<br> <br> Your Wycliffe Web Services events account for the <b>Event name</b> has been created. You can now:<br> <br> 1. <a href="http://wycliffe-services.net/events/webservice.php?eventName=Event name&userName=userName&password=password&report=download">Download</a> the latest participant list. You can click this link at any time to get a real-time report of who has confirmed their attendance for your event. Alternatively, you can have the report <a href="mailto:events@wycliffe-services.net?subject=Get the latest participant list for Event name&body=Just click send to get the latest participant list.%0D%0A%0D%0AEvent name: Event name%0D%0AUser name: userName%0D%0APassword: password%0D%0Areport: email">emailed</a> to you.<br> 2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/index.php?eventName=Event name&userName=userName&password=password">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for Event name&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AEvent name: Event name%0D%0AUser name: userName%0D%0APassword: password%0D%0Areport: email">email</a> it.<br> 3. <a href="mailto:events@wycliffe-services.net?subject=Get the invitation email template&body=Just click send to get the invitation email template.%0D%0A%0D%0AEvent name: Event name%0D%0AUser name: userName%0D%0APassword: password%0D%0Areport: invitation">Send</a> out the invitation email.<br> 4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AEvent name: Event name%0D%0AUser name: userName%0D%0APassword: password%0D%0Areport: logistics">Send</a> out the logistics email.Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => developer_support@wycliffe-services.net [Subject] => Logistics menu email sent for Event name ) Email sent to user successfully
 
 # to testing	
 URL	http://wycliffe-services.net/email/webservice.php

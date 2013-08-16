@@ -1,5 +1,8 @@
 # createNewEvent testing
 URL	http://wycliffe-services.net/events/webservice.php
+EXPECTS	invalid eventName
+
+URL	http://wycliffe-services.net/events/webservice.php
 eventName	Event name
 EXPECTS	invalid name
 

@@ -9,8 +9,9 @@ class Events
 		$row = Events::validateInput($_POST, $msg);
 		if ($msg != '') { return; }
 
+		if (Events::processReport($row, $msg)) { return; }
 		if (Events::createNewAccount($row, $msg)) { return; }
-		if (Events::createNewEvent($row, $msg)) { return; }
+		Events::createNewEvent($row, $msg);
 	}
 
 	private static function validateInput($data, &$msg) {
@@ -33,6 +34,10 @@ class Events
 			$value = trim($value);
 		}
 		return $row;
+	}
+	
+	private static function processReport($row, &$msg) {
+		return false;
 	}
 	
 	private static function createNewAccount($row, &$msg) {
@@ -82,15 +87,17 @@ BODY;
 	}
 	
 	private static function createNewEvent($row, &$msg) {
-		if ($row['eventName'] == '') { return false; }
-
+		if ($row['eventName'] == '') { 
+			$msg = 'invalid eventName';
+			return false;
+		}
 		if ($row['name'] == '') {
 			$msg = 'invalid name';
-			return true;
+			return false;
 		}
 		if ($row['fromEmail'] == '') {
 			$msg = 'invalid fromEmail';
-			return true;
+			return false;
 		}
 		
 		$name = $row['name'];

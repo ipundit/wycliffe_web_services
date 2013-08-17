@@ -13,13 +13,17 @@ class Record
 	protected $row;
 	private $isChanged;
 	
-	protected function __construct($tableName, $columns, $keyField) {
+	protected function __construct($tableName, $columns, $keyField, $database = '', $userName = '', $password = '', &$msg = '') {
+		if ($database == '') { $database = DATABASE; }
+		if ($userName == '') { $userName = USERNAME; }
+		if ($password == '') { $password = PASSWORD; }
+		
 		$dsn = array(
 		    'phptype'  => 'mysqli',
 		    'hostspec' => 'localhost',
-		    'username' => USERNAME, // These constants are read from the DatabaseConstants.php 
-		    'password' => PASSWORD, // in the root of your workspace directory. Only the owner
-		    'database' => DATABASE, // of that directory (ie: you) can read this file and therefore
+		    'username' => $userName, // These constants are read from the DatabaseConstants.php 
+		    'password' => $password, // in the root of your workspace directory. Only the owner
+		    'database' => $database, // of that directory (ie: you) can read this file and therefore
 		); // read/write to your database. The exception is the production MySQL user - its
 		   // DatabaseConstants.php is public domain, but has only read privileges for the 
 		   // production database.
@@ -27,9 +31,19 @@ class Record
 		
 		$this->db = \MDB2::singleton($dsn, $options);
 		if (\PEAR::isError($this->db)) { die($this->db->getMessage()); }
-		
 		$this->db->setFetchMode(MDB2_FETCHMODE_ASSOC);
-		$this->db->setCharset('utf8');
+
+		mysqli_report(MYSQLI_REPORT_STRICT);
+		try {
+			$this->db->setCharset('utf8');
+		} catch (Exception $e) {
+			if (util::startsWith($e->getMessage(), "Access denied")) {
+				$msg = "Invalid username/password";
+				return;
+			}
+			$msg = $e->getMessage();
+			return;
+		}
 
 		$this->databaseName = $dsn['database'];
 		$this->tableName = $tableName;
@@ -176,6 +190,15 @@ class Record
 		$this->isChanged = false;
 		return '';
 	}
+
+	protected function columns() {
+		$retValue = array();
+		foreach ($this->columns as $key => $value) {
+			$retValue[] = $key;
+		}
+		return $retValue;
+	}
+	
 
 /*
 	Keep database connection open across a request

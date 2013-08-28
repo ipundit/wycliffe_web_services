@@ -89,7 +89,9 @@ class Purchase extends Record
 		}
 		
 		// fixme: localize this
-		$msg = "Your credit card was declined: " . $result;
+		require_once 'translation.php';
+		configureForLang();
+		$msg = t("Your credit card was declined:") . " " . $result;
 		return false;
 	}
 	
@@ -97,6 +99,8 @@ class Purchase extends Record
 		require_once 'classes/ChinaUnionPay.php';
 		require_once 'classes/JapanCreditBureau.php';
 		require_once 'classes/MerchantAccounts.php';
+		require_once 'translation.php';
+		configureForLang();
 
 		if ($this->isPayPal()) {
 			$paymentProcessor = new PayPal();
@@ -113,7 +117,7 @@ class Purchase extends Record
 				$paymentProcessor = new ChinaUnionPay();
 				break;
 			default:
-				$msg = "Only Visa, Mastercard, JCB and China Union Pay cards are accepted."; // fixme: localize this
+				$msg = t("Only Visa, Mastercard, JCB and China Union Pay cards are accepted."); // fixme: localize this
 				return false;
 			}
  		}

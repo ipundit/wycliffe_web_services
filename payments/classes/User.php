@@ -2,6 +2,7 @@
 require_once 'Record.php';
 require_once 'classes/Organization.php';
 require_once 'classes/Purchase.php';
+require_once 'translation.php';
 
 class User extends Record
 {
@@ -79,30 +80,32 @@ class User extends Record
 
 	private function emailPurchaseReceipt($org, $amount, $orderNumber, $simulate, &$msg) {
 		// fixme: localize this
+		require_once 'translation.php';
+		configureForLang();
 		$body = array(
-			"Dear " . $this->name(),
+			t("Dear") . " " . $this->name(),
 			'',
-			'Thank you for donating to ' . $org->name() . '.<h1>Your donation information</h1>Name: ' . $this->name(),
-			'Email: ' . $this->emailAddress(),
-			'Donation tracking number: ' . $orderNumber,
+			t('Thank you for donating to') . ' ' . $org->name() . '.<h1>' . t('Your donation information') . '</h1>' . t('Name:') . ' ' . $this->name(),
+			'Email:' . ' ' . $this->emailAddress(),
+			'Donation tracking number:' . ' ' . $orderNumber,
 			'Amount: $' . $amount . ' ' . $org->currency(),
-			'Date: ' . date('F j, Y g:i a') . ' UTC<h1>Your contact information</h1>Phone number: ' . $this->phone(),
-			'Address: ' . $this->address(),
-			'Address line 2: ' . $this->address2(),
-			'Postal code: ' . $this->postalCode(),
+			'Date:' . ' ' . date('F j, Y g:i a') . ' UTC<h1>' . 'Your contact information' . '</h1>' . 'Phone number:' . ' ' . $this->phone(),
+			'Address:' . ' ' . $this->address(),
+			'Address line 2:' . ' ' . $this->address2(),
+			'Postal code:' . ' ' . $this->postalCode(),
 		);
 
-		if ($this->city() != '--') { $body[] = "City: " . $this->city(); }
-		if ($this->state() != '--') { $body[] = "State: " . $this->state(); }
+		if ($this->city() != '--') { $body[] = "City:" . ' ' . $this->city(); }
+		if ($this->state() != '--') { $body[] = "State:" . ' ' . $this->state(); }
 		
-		$body[] = 'Country: ' . $this->country();
+		$body[] = 'Country:' . ' ' . $this->country();
 		$body[] = '';
 		$body[] = 'Regards,';
 		$body[] = 'Wycliffe payment services';
 		$body = implode('<br />', $body);
 		
 		$subject = $org->test() ? "TESTING: " : "";
-		$subject = $subject . $org->name() . " donation receipt";
+		$subject = $subject . $org->name() . " " . "donation receipt";
 
 		$to = $this->name() . " <" . $this->emailAddress() .">";
 		

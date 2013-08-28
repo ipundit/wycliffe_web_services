@@ -88,26 +88,26 @@ class User extends Record
 			t("Dear") . " " . $this->name(),
 			'',
 			t('Thank you for donating to') . ' ' . $org->name() . '.<h1>' . t('Your donation information') . '</h1>' . t('Name:') . ' ' . $this->name(),
-			'Email:' . ' ' . $this->emailAddress(),
-			'Donation tracking number:' . ' ' . $orderNumber,
-			'Amount: $' . $amount . ' ' . $org->currency(),
-			'Date:' . ' ' . date('F j, Y g:i a') . ' UTC<h1>' . 'Your contact information' . '</h1>' . 'Phone number:' . ' ' . $this->phone(),
-			'Address:' . ' ' . $this->address(),
-			'Address line 2:' . ' ' . $this->address2(),
-			'Postal code:' . ' ' . $this->postalCode(),
+			t('Email:') . ' ' . $this->emailAddress(),
+			t('Donation tracking number:') . ' ' . $orderNumber,
+			t('Amount: $') . $amount . ' ' . $org->currency(),
+			t('Date:') . ' ' . date('F j, Y g:i a') . ' UTC<h1>' . t('Your contact information') . '</h1>' . t('Phone number:') . ' ' . $this->phone(),
+			t('Address:') . ' ' . $this->address(),
+			t('Address line 2:') . ' ' . $this->address2(),
+			t('Postal code:') . ' ' . $this->postalCode(),
 		);
 
-		if ($this->city() != '--') { $body[] = "City:" . ' ' . $this->city(); }
-		if ($this->state() != '--') { $body[] = "State:" . ' ' . $this->state(); }
+		if ($this->city() != '--') { $body[] = t("City:") . ' ' . $this->city(); }
+		if ($this->state() != '--') { $body[] = t("State:") . ' ' . $this->state(); }
 		
-		$body[] = 'Country:' . ' ' . $this->country();
+		$body[] = t('Country:') . ' ' . $this->country();
 		$body[] = '';
-		$body[] = 'Regards,';
-		$body[] = 'Wycliffe payment services';
+		$body[] = t('Regards,');
+		$body[] = t('Wycliffe payment services');
 		$body = implode('<br />', $body);
 		
 		$subject = $org->test() ? "TESTING: " : "";
-		$subject = $subject . $org->name() . " " . "donation receipt";
+		$subject = $subject . $org->name() . " " . t("donation receipt");
 
 		$to = $this->name() . " <" . $this->emailAddress() .">";
 		

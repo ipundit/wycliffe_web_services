@@ -142,7 +142,7 @@ class Record
 	
 	protected function containsColumns($row, $columns) {
 		foreach (explode(",", $columns) as $column) {
-			if (!isset($row[$column])) { return $column; }
+			if (!isset($row[$column]) || $row[$column] == '') { return $column; }
 		}
 		return '';
 	}

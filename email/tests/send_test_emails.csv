@@ -12,7 +12,7 @@ body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself i
 replyTo	help@wycliffe-services.net
 attach1	_file1
 attach2	_file2
-EXPECTS	ok
+EXPECTS	1
 	
 URL	http://wycliffe-services.net/email/webservice.php
 to	wycliffe.web.services.test.1@gmail.com
@@ -24,7 +24,7 @@ subject	Email regression test for Jaars based account
 body	Passes if wycliffe.web.services.test.1@gmail.com gets 1 email with itself in the to and cc lines, and wycliffe.web.services.test.2@gmail.com gets the bcc
 attach1	_file1
 attach2	_file2
-EXPECTS	ok
+EXPECTS	1
 	
 URL	http://wycliffe-services.net/email/webservice.php
 to	_file2
@@ -39,4 +39,4 @@ Phone number: $phoneNumber
 Not in mailingList: $youCouldDefineThisColumnInMailingListFile"
 tags	WMO wLP, WPO
 simulate	2
-EXPECTS	ok, see <a href="http://www.wycliffe-services.net/email/dryRun.html">dry run page</a>
+EXPECTS	3 emails simulated; see <a href="http://www.wycliffe-services.net/email/dryRun.html">dry run page</a>

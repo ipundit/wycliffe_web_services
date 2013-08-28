@@ -1,0 +1,27 @@
+# email testing
+URL	http://wycliffe-services.net/payments/webservice.php	
+EXPECTS	Invalid input for email
+
+URL	http://wycliffe-services.net/payments/webservice.php
+email	invalid_email
+EXPECTS	Invalid input for email
+
+# name testing
+URL	http://wycliffe-services.net/payments/webservice.php
+email	test@testing.com
+EXPECTS	Invalid input for name
+
+URL	http://wycliffe-services.net/payments/webservice.php
+email	test@testing.com
+name	<script></script>
+EXPECTS	Invalid input for name
+
+# country testing
+URL	http://wycliffe-services.net/payments/webservice.php
+email	test@testing.com
+name	Tester
+EXPECTS	Invalid input for country
+
+# fixme: finish tests of User line 41: $this->containsColumns($row, "email,name,country,state,city,address,address2,postalCode,phone,simulate");
+# for country, state, city, address, etc.
+# basically, we're doing input testing in this input_parameters.csv, passing in invalid data and ensuring that we get the appropriate error message

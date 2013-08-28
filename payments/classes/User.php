@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once 'util.php';
 require_once 'Record.php';
 require_once 'classes/Organization.php';
 require_once 'classes/Purchase.php';
@@ -22,6 +23,7 @@ class User extends Record
 	}
 
 	public function makePurchase($data, $onSecureServer, &$msg) {
+		if (!isset($data['address2'])) { $data['address2'] = ''; }
 		if (!isset($data['simulate'])) { $data['simulate'] = 0; }
 
 		$filters = array(
@@ -38,7 +40,7 @@ class User extends Record
 		);
 		$row = filter_var_array($data, $filters);
 
-		$msg = $this->containsColumns($row, "email,name,country,state,city,address,address2,postalCode,phone,simulate");
+		$msg = $this->containsColumns($row, "email,name,country,state,city,address,postalCode,phone,simulate");
 		if ($msg != '') {
 			$msg = "Invalid input for " . $msg;
 			return false;

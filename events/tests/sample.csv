@@ -9,7 +9,7 @@ replyTo	works_for_non_jaars_email@test.com
 fromName	Your name
 subject	A sample of how to send an email
 body	You just sent an email from the email web service
-EXPECTS	ok
+EXPECTS	1
 RESULT	$result
 
 URL	http://wycliffe-services.net/email/webservice.php

@@ -55,7 +55,19 @@ class util {
 			};
 		}
 		return rmdir($dir);
-	} 
+	}
+	
+	static public function generateCSV($rows) {
+		foreach ($rows as &$columns) {
+			foreach ($columns as &$column) {
+				if (strpos($column, ',') !== false || strpos($column, '"') !== false) {
+					$column = '"' . str_replace('"', '""', $column) . '"';
+				}
+			}
+			$columns = implode(',', $columns);
+		}
+		return implode(PHP_EOL, $rows);
+	}
 	
 	static public function parseCSV($data, $delimiter = '\t', $enclosure = '"', $newline = "\n") {
 		$data = str_replace("\r\n", "\n", $data);

@@ -129,7 +129,7 @@ class Donation extends Record
 		
 		$headers = array('name','email','phone','country','state','city','address','address2',
 					     'postalCode','purchaseId','amount','project','date');
-		$retValue = array(implode($asciiTab, $headers));
+		$retValue = array($headers);
 		$headers[count($headers) - 1] = 'createTimestamp';
 
 		$where = '`org` = "' . $org . '"';
@@ -151,9 +151,9 @@ class Donation extends Record
 			for ($i = 0; $i < count($headers); $i++) {
 				$csvRow[] = $row[$headers[$i]];
 			}
-			$retValue[] = implode($asciiTab, $csvRow);
+			$retValue[] = $csvRow;
 		}
-		return implode(PHP_EOL, $retValue);
+		return util::generateCSV($retValue);
 	}
 }
 ?>

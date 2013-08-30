@@ -33,18 +33,16 @@ class Participant extends Record
 		$columns = $this->columns();
 		$res = $this->selectAll($columns);
 
-		$asciiTab = chr(9);
-
 		foreach ($columns as &$column) {
 			$column = '$' . $column;
 		}
-		$retValue = array(implode($asciiTab, $columns));
+		$retValue = array($columns);
 		
         while (($row = $res->fetchRow())) {
-			$retValue[] = implode($asciiTab, $row);
+			$retValue[] = $row;
         }
-		$retValue = implode(PHP_EOL, $retValue);
-
+		$retValue = util::generateCSV($retValue);
+		
 		$path = util::createTempDir() . 'mailing_list.csv';
 		if (FALSE  === file_put_contents($path, $retValue)) {
 			$msg = 'could not write file';

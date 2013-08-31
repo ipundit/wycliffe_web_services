@@ -6,11 +6,19 @@ define('_EVENTS_TIMEOUT_', 300);
 class Events
 {
 	public static function main(&$msg) {
+		$tempDir = util::saveAllFiles();
+		try {
+			Events::mainImpl($tempDir, $msg);
+		} catch (Exception $e) {}
+		util::deltree($tempDir);
+	}
+	
+	private static function mainImpl($tempDir, &$msg) {
 		$arr = empty($_POST) ? $_GET : $_POST;
 		$row = Events::validateInput($arr, $msg);
 		if ($msg != '') { return; }
 
-		if (Events::processReport($row, $msg)) { return; }
+		if (Events::processReport($tempDir, $row, $msg)) { return; }
 		if (Events::createNewAccount($row, $msg)) { return; }
 		Events::createNewEvent($row, $msg);
 	}
@@ -39,7 +47,7 @@ class Events
 		return $row;
 	}
 	
-	private static function processReport($row, &$msg) {
+	private static function processReport($tempDir, $row, &$msg) {
 		switch ($row['report']) {
 		case '':
 			return false;
@@ -76,31 +84,17 @@ class Events
 		$participant = new Participant($row['userName'], $row['password'], $msg);
 		if ($msg != '') { return true; }
 		
-		$path = $participant->reportCSV($msg);
+		$path = $participant->reportCSV($tempDir, $msg);
 		if ($path === false) { return true;	}
 
 		switch ($report) {
 		case 'download':
-			if ($row['simulate'] == 1) {
-				$msg = file_get_contents($path);
-			} else {
-				header('Content-Description: File Transfer');
-				header('Content-Type: application/octet-stream');
-				header('Content-Disposition: attachment; filename='.basename($path));
-				header('Content-Transfer-Encoding: binary');
-				header('Expires: 0');
-				header('Cache-Control: must-revalidate');
-				header('Pragma: public');
-				header('Content-Length: ' . filesize($path));
-				ob_clean();
-				flush();
-				readfile($path);
-			}
+			Events::processDownload($path, $row['simulate'], $msg);
 			break;
 		case 'email':
 			if ($row['fromEmail'] == '') {
 				$msg = 'invalid fromEmail';
-				return true;
+				break;
 			}
 			
 			$files = array();
@@ -117,15 +111,73 @@ BODY;
 							$body, '', '', '', $files, $row['simulate']);
 			break;
 		case 'upload':
+			$str = Events::readFile($msg);
+
+			if ($str === false) { break; }
 			
+			if ($participant->overwriteDatabase($str, $row['simulate'], $msg)) {
+				if ($row['simulate'] == 1) {
+					Events::processDownload($path, $row['simulate'], $msg);
+				} else {
+					$msg = 'ok';
+				}
+				
+				if ($row['fromEmail'] != '' && $row['name'] != '') {
+					$name = $row['name'];
+					$body = <<<BODY
+Dear $name,<br>
+<br>
+Your mailing list upload for <b>$eventName</b> completed with this message: <b>$msg</b>
+BODY;
+					util::sendEmail($msg, "", "no-reply@wycliffe-services.net", $row['fromEmail'], 
+						"Mailing list upload completed for " . $eventName, $body, '', '', '', array(), $row['simulate']);				
+				}
+			}
+			break;
 		case 'invitation':
 		case 'logistics':
 		}
 		
-		util::deltree(dirname($path));
 		return true;
 	}
+
+	private static function processDownload($path, $simulate, &$msg) {
+		if ($simulate == 1) {
+			$msg = file_get_contents($path);
+		} else {
+			header('Content-Description: File Transfer');
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename='.basename($path));
+			header('Content-Transfer-Encoding: binary');
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($path));
+			ob_clean();
+			flush();
+			readfile($path);
+		}
+	}
+	
+	private static function readFile(&$msg) {
+		if (!array_key_exists('file', $_FILES)) {
+			$msg = 'missing file';
+			return false;
+		}
+		$file = $_FILES['file'];
 		
+		if (!util::endsWith($file['name'], '.csv') || !filter_var($file['name'], FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
+			$msg = "invalid file name";
+			return false;
+		}
+		if (!filter_var($file['tmp_name'], FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
+			$msg = "Invalid file path";
+			return false;
+		}	
+		
+		return file_get_contents($file['tmp_name']);
+	}
+	
 	private static function createNewAccount($row, &$msg) {
 		if ($row['clientName'] == '') { return false; }
 
@@ -157,9 +209,9 @@ Dear $clientName,<br>
 Your Wycliffe Web Services events account for the <b>$eventName</b> has been created. You can now:<br>
 <br>
 1. <a href="http://wycliffe-services.net/events/webservice.php?eventName=$eventName&userName=$userName&password=$password&report=download">Download</a> the latest participant list. You can click this link at any time to get a real-time report of who has confirmed their attendance for your event. Alternatively, you can have the report <a href="mailto:events@wycliffe-services.net?subject=Get the latest participant list for $eventName&body=Just click send to get the latest participant list.%0D%0A%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: email">emailed</a> to you.<br>
-2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version. However, the old contents of mailing_list.csv will be emailed to you, in case you need to revert.%0D%0A%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload">email</a> it.<br>
-3. <a href="mailto:events@wycliffe-services.net?subject=Get the invitation email template&body=Just click send to get the invitation email template.%0D%0A%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: invitation">Send</a> out the invitation email.<br>
-4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
+2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload%0D%0A">email</a> it.<br>
+3. <a href="mailto:events@wycliffe-services.net?subject=Get the invitation email template&body=Just click send to get the invitation email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: invitation">Send</a> out the invitation email.<br>
+4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
 BODY;
 		util::sendEmail($err1, "", "events@wycliffe-services.net", $row['clientEmail'], 
 			"Logistics menu for " . $row['eventName'], $body, '', '', '', array(), $row['simulate']);

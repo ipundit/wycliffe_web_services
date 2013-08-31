@@ -54,7 +54,9 @@ class Record
 	}
 	
 	public function delete($keyField) {
-		$sql = "DELETE FROM " . $this->databaseName . '.' . $this->tableName . ' WHERE ' . $this->keyField . '=' . $this->db->quote($keyField);
+		$sql = "DELETE FROM " . $this->databaseName . '.' . $this->tableName;
+		if ($keyField != '*') { $sql .= ' WHERE ' . $this->keyField . '=' . $this->db->quote($keyField); } 
+		 
 		$affected = $this->db->exec($sql);
 		if (\PEAR::isError($affected)) {
 		    die($affected->getMessage());

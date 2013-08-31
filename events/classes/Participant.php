@@ -1,5 +1,6 @@
 <?php 
 require_once 'Record.php';
+require_once 'util.php';
 
 class Participant extends Record
 {
@@ -29,7 +30,7 @@ class Participant extends Record
 		Record::__construct($userName, $columns, "id", 'events', $userName, $password, $msg);
 	}
 		
-	public function reportCSV(&$msg) {
+	public function reportCSV($dir, &$msg) {
 		$columns = $this->columns();
 		$res = $this->selectAll($columns);
 
@@ -43,12 +44,45 @@ class Participant extends Record
         }
 		$retValue = util::generateCSV($retValue);
 		
-		$path = util::createTempDir() . 'mailing_list.csv';
+		$path = $dir . 'mailing_list.csv';
 		if (FALSE  === file_put_contents($path, $retValue)) {
 			$msg = 'could not write file';
 			return false;
 		}
 		return $path;
+	}
+	
+	public function overwriteDatabase($str, $simulate, &$msg) {
+		$rows = util::parseCSV($str);
+		$header = array_shift($rows);
+		if (!$this->validateHeader($header, $msg)) { return false; }
+		
+		if ($simulate == 1) { return true; }
+
+		$this->delete('*');
+		
+		$columns = Record::columns();
+		foreach ($rows as $data) {
+			$row = array();
+			
+			$index = 0;
+			foreach ($columns as $column) {
+				$row[$column] = $data[$index++];
+			}
+			Record::initialize($row, false);
+			Record::serialize();
+		}		
+		
+		return true;
+	}
+	
+	private function validateHeader($header, &$msg) {
+		$expectedHeader = '$' . implode(",$", Record::columns());
+		if (implode(",", $header) != $expectedHeader) {
+			$msg = 'invalid file';
+			return false;
+		}
+		return true;
 	}
 }
 ?>

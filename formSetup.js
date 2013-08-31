@@ -37,6 +37,13 @@ function setupValidators(rules, messages, fieldsToUploadCallback, onSuccessCallb
 		return value.endsWith('.csv');
 	}, "Please choose a .csv file");
 
+	$.validator.addMethod("isTXT", function(value, element, params) {
+		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
+		value = value.trim();
+		if (value.length == 0) { return false; }
+		return value.endsWith('.txt');
+	}, "Please choose a .txt file");
+
 	var validator = $("#theForm").validate({
 		errorPlacement: function(error, element) {
 			error.insertAfter("#errorAnchor");

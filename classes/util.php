@@ -131,6 +131,7 @@ class util {
 						$index = strpos($temp, $enclosure . $delimiter);
 						if ($index === false) {
 							$temp = substr(trim($temp), 0, -1);
+							if (util::startsWith($temp, $enclosure . $enclosure)) { $temp = substr($temp, 1); }
 						} else {
 							$temp = substr($temp, 0, $index) . substr($temp, $index + 1);
 						}

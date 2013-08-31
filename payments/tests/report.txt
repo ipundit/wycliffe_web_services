@@ -1,128 +1,128 @@
-# org testing	
+# org testing
 URL	http://wycliffe-services.net/payments/report.php
 EXPECTS	invalid org
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	wycliffe_singapore2
 EXPECTS	invalid wycliffe_singapore2 is not an Organization.
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	wycliffe_singapore
 simulate	1
 EXPECTS	Your report has been sent to the Wycliffe Singapore notification email address.
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	wycliffe_hong_kong
 simulate	1
 EXPECTS	Your report has been sent to the Wycliffe Hong Kong notification email address.
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	tap
 simulate	1
 EXPECTS	Your report has been sent to the Translators Association of the Philippines notification email address.
-	
-# startDate testing	
+
+# startDate testing
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013/02/24
 EXPECTS	invalid startDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013-2-24
 EXPECTS	invalid startDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013-12-4
 EXPECTS	invalid startDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013-02-29
 EXPECTS	invalid startDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013-22-02
 EXPECTS	invalid startDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2004-02-29
 simulate	1
 EXPECTS	Your report has been sent to the Regression Test notification email address.
-	
-# endDate testing	
+
+# endDate testing
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013/02/24
 EXPECTS	invalid endDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013-2-24
 EXPECTS	invalid endDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013-12-4
 EXPECTS	invalid endDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013-02-29
 EXPECTS	invalid endDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013-24-02
 EXPECTS	invalid endDate
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2004-02-29
 simulate	1
 EXPECTS	Your report has been sent to the Regression Test notification email address.
-	
-# filter date testing	
+
+# filter date testing
 URL	http://wycliffe-services.net/payments/report.php
 org	wycliffe_singapore
 simulate	2
 EXPECTS	simulate=2 only works for org=regression_test
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2999-01-01
 simulate	2
 EXPECTS	name,email,phone,country,state,city,address,address2,postalCode,purchaseId,amount,project,date
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2000-01-01
 simulate	2
 EXPECTS	name,email,phone,country,state,city,address,address2,postalCode,purchaseId,amount,project,date
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013-07-11
 endDate	2013-07-12
 simulate	2
 EXPECTS	name,email,phone,country,state,city,address,address2,postalCode,purchaseId,amount,project,date TEST CARD1,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000808,11,,2013-07-11 05:09:22 TEST CARD1@@,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000809,11,,2013-07-12 05:09:38
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 startDate	2013-07-12
 simulate	2
 EXPECTS	name,email,phone,country,state,city,address,address2,postalCode,purchaseId,amount,project,date TEST CARD1@@,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000809,11,,2013-07-12 05:09:38 TEST CARD1,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000810,11,,2013-07-13 05:10:00
-	
+
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013-07-12
 simulate	2
 EXPECTS	name,email,phone,country,state,city,address,address2,postalCode,purchaseId,amount,project,date TEST CARD1,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000807,11,,2013-07-10 05:08:59 TEST CARD1,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000808,11,,2013-07-11 05:09:22 TEST CARD1@@,michael_hu@wycliffe.net,+60123456789,HK,Test state,Test city,123 Test Street,,11200,T001130713000809,11,,2013-07-12 05:09:38
-	
-# actually send the email	
+
+# actually send the email
 URL	http://wycliffe-services.net/payments/report.php
 org	regression_test
 endDate	2013-07-12

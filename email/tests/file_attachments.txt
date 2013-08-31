@@ -1,4 +1,4 @@
-# attach testing	
+# attach testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 attach1	_file1
@@ -16,24 +16,24 @@ attach7	_file1
 attach8	_file1
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> Number of attachments: 4
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 attach9	_file1
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> Number of attachments: 1
-	
-# mailing list testing	
+
+# mailing list testing
 URL	http://wycliffe-services.net/email/webservice.php
 body	Dear Regression Tester, This is a test
 to	_file3
 EXPECTS	first line of to file must have $email column
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 body	Dear Regression Tester, This is a test
 to	_file4
 EXPECTS	mailing list line 6: invalid to
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 from	$from
 body	Dear Regression Tester, This is a test
@@ -45,32 +45,32 @@ to	_file2
 simulate	1
 EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [simulate] => 1 [body] => <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> ) [3] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [simulate] => 1 [body] => <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> ) [4] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [simulate] => 1 [body] => <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> ) [5] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [simulate] => 1 [body] => <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> ) [7] => Array ( [to] => wycliffe.web.services.test.2@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [simulate] => 1 [body] => <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> ) )
 
-# mailing list startRow and maxRows testing	
+# mailing list startRow and maxRows testing
 URL	http://wycliffe-services.net/email/webservice.php
 startRow	0
 to	_file2
 EXPECTS	startRow must be an integer greater than or equal to 1
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 startRow	a
 to	_file2
 EXPECTS	startRow must be an integer greater than or equal to 1
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 startRow	2.1
 to	_file2
 EXPECTS	startRow must be an integer greater than or equal to 1
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 maxRows	-1
 to	_file2
 EXPECTS	maxRows must be an integer greater than or equal to 0
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 maxRows	a
 to	_file2
 EXPECTS	maxRows must be an integer greater than or equal to 0
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 maxRows	1.5
 to	_file2
@@ -83,7 +83,7 @@ to	_file2
 simulate	1
 EXPECTS	Array ( [2] => Array ( [to] => wycliffe.web.services.test.1@gmail.com [from] => no-reply@wycliffe-services.net [fromName] => [replyTo] => [subject] => [cc] => [bcc] => [simulate] => 1 [body] => <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span> ) )
 
-# mailing list tags testing	
+# mailing list tags testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	_file2
 tags	filter to null set

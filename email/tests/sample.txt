@@ -1,6 +1,6 @@
-# Login to gmail.com with these credentials to see if the emails were sent	
-# email = wycliffe.web.services.test.1@gmail.com password = asdfqwer12	
-	
+# Login to gmail.com with these credentials to see if the emails were sent
+# email = wycliffe.web.services.test.1@gmail.com password = asdfqwer12
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	enter_your_email_here@test.com
 cc	wycliffe.web.services.test.1@gmail.com

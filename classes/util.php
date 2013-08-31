@@ -136,16 +136,20 @@ class util {
 						}
 					}
 				}
-				if ($temp != '') { $return[$row][] = $temp; }
+				$return[$row][] = $temp;
 				
 				// And we're done
-				if ($done) { break; }
+				if ($done) {
+					if (util::isBlankRow($return[$row])) { $return[$row] = array(); }
+					break;
+				}
 
 				// Save the last position
 				$last_pos = $pos;
 
 				// Next row?
 				if ($char == $newline) {
+					if (util::isBlankRow($return[$row])) { $return[$row] = array(); }
 					++$row;
 					$return[$row] = array();
 				}
@@ -175,6 +179,10 @@ class util {
 			}
 		}
 		return $return;
+	}
+
+	private static function isBlankRow($row) {
+		return count($row) == 1 && $row[0] == '';
 	}
 	
 	public static function absURL($fileName) {

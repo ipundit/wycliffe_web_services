@@ -1,4 +1,4 @@
-# to testing	
+# to testing
 URL	http://wycliffe-services.net/email/webservice.php
 EXPECTS	to parameter must be set
 
@@ -9,15 +9,15 @@ EXPECTS	invalid to
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester test@test.com>
 EXPECTS	invalid to
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester <test@test.com
 EXPECTS	invalid to
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, <Tester test@test.com>
 EXPECTS	invalid to
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 simulate	1
@@ -27,8 +27,8 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com, Tester <test@test.com>
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com, Tester <test@test.com> ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
-# from testing	
+
+# from testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	test@test.com
@@ -44,13 +44,13 @@ to	test@test.com
 from	events@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => events@wycliffe-services.net [From] => events@wycliffe-services.net [To] => test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	help@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => help@wycliffe-services.net [From] => help@wycliffe-services.net [To] => test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	no-reply@wycliffe-services.net
@@ -62,7 +62,7 @@ to	test@test.com
 from	help@wycliffe-services.net
 simulate	1
 EXPECTS	Array ( [Sender] => help@wycliffe-services.net [From] => help@wycliffe-services.net [To] => test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	help@wycliffe-services.net
@@ -76,7 +76,7 @@ from	help@wycliffe-services.net
 replyTo	reply-to@test.com
 simulate	1
 EXPECTS	Array ( [Sender] => help@wycliffe-services.net [From] => help@wycliffe-services.net [To] => test@test.com [Reply-To] => reply-to@test.com [Return-Path] => reply-to@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 from	help@wycliffe-services.net
@@ -99,12 +99,12 @@ subject	Test
 simulate	1
 EXPECTS	Array ( [Sender] => wycliffe-services-smtp@wycliffe.net [From] => test@jaars.org [To] => test@test.com [Return-Path] => test@jaars.org [Subject] => Test ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
 
-# cc testing	
+# cc testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, Tester test@test.com>
 EXPECTS	invalid cc
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, Tester <test@test.com
@@ -119,20 +119,20 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, <Tester test@test.com>
 EXPECTS	invalid cc
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	Tester <test@test.com>, test@test.com
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com [Cc] => Tester <test@test.com>, test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 cc	test@test.com, Tester <test@test.com>
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com [Cc] => test@test.com, Tester <test@test.com> ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
-# bcc testing	
+
+# bcc testing
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester test@test.com>
@@ -147,18 +147,18 @@ URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester <test@test.com
 EXPECTS	invalid bcc
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, <Tester test@test.com>
 EXPECTS	invalid bcc
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	Tester <test@test.com>, test@test.com
 simulate	1
 EXPECTS	Array ( [Sender] => no-reply@wycliffe-services.net [From] => no-reply@wycliffe-services.net [To] => test@test.com ) <br><br><span style="color:#BBBBBB">--<br>Sent via <a href="http://www.wycliffe-services.net">Wycliffe Web Services</a>. Forward this email to spam@wycliffe-services.net if you think you received this email in error.</span>
-	
+
 URL	http://wycliffe-services.net/email/webservice.php
 to	test@test.com
 bcc	test@test.com, Tester <test@test.com>

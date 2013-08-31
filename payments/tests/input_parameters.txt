@@ -1,5 +1,5 @@
 # email testing
-URL	http://wycliffe-services.net/payments/webservice.php	
+URL	http://wycliffe-services.net/payments/webservice.php
 EXPECTS	Invalid input for email
 
 URL	http://wycliffe-services.net/payments/webservice.php

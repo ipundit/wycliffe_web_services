@@ -1,8 +1,8 @@
 $tags,$firstName,$lastName,$email,$from,$org,$phoneNumber,$tagLine,Comment
-WMO,WMOwLP,One,Test,wycliffe.web.services.test.1@gmail.com,help@wycliffe-services.net,Organization 1,1(613)323-2323,"Press Alt+Enter to enter a new line in Excel
-Another line",
-WMO,WMOwLP,Two,Test,wycliffe.web.services.test.2@gmail.com,invalid email,Organization 2,,"Press Ctrl+Enter to enter a new line in LibreOffice
-Another line",
+"WMO, WMOwLP",One,Test,wycliffe.web.services.test.1@gmail.com,help@wycliffe-services.net,Organization 1,1(613)323-2323,,"Press Alt+Enter to enter a new line in Excel
+Another line"
+"WMO, WMOwLP",Two,Test,wycliffe.web.services.test.2@gmail.com,invalid email,Organization 2,,,"Press Ctrl+Enter to enter a new line in LibreOffice
+Another line"
 WMO,John,Doe,wycliffe.web.services.test.1@gmail.com,help@wycliffe-services.net,Organization 2,,Tag line,
 ,Joe,Doe,wycliffe.web.services.test.1@gmail.com,no-reply@wycliffe-services.net,Organization 3,,,
 WPO,Jane,Doe,invalid email,help@wycliffe-services.net,Organization 2,,,This line should cause an error due to the invalid email

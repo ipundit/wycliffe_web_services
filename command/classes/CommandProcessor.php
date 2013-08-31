@@ -77,7 +77,7 @@ class CommandProcessor {
 			if ($fileInfo->isFile()) {
 				$file = $fileInfo->getFilename();
 				
-				if (util::endsWith($file, '.csv') && !preg_match('/^_file[1-4]_.+$/', $file)) {
+				if (util::endsWith($file, '.txt') && !preg_match('/^_file[1-4]_.+$/', $file)) {
 					$retValue = CommandProcessor::processFile($file, $path . $file, $baseDir, $simulate, $msg);
 					if (!$retValue) { break; }
 				}
@@ -114,7 +114,7 @@ class CommandProcessor {
 		}
 
 		$str = CommandProcessor::escapeDoubleQuotes($str);
-		$lines = util::parseCSV($str);
+		$lines = util::parseCSV($str, chr(ASCII_TAB));
 		$state = START;
 
 		$lineCount = 0;
@@ -128,23 +128,21 @@ class CommandProcessor {
 
 		foreach ($lines as $line) {
 			$lineCount++;
-			util::removeAfter($line, '# ');
 			
-			$line = trim($line);
+			if (empty($line)) { continue; }
 			
-			if ($line == '') { continue; }
-			if ($state == START && !CommandProcessor::startsWithURL($line)) {
+			$paramName = $line[0];
+			if ($state == START && $paramName != 'URL') {
 				$msg = "line " . $lineCount . ": must start with URL";
 				return false;
 			}
-			if (CommandProcessor::startsWithURL($line)) {
+			if ($paramName == 'URL') {
 				if ($state != START) { 
 					$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
 					if ($result != IGNORE && !$foreman->run(true, $msg)) { return false; }
 				}
 
-				$url = rtrim(substr($line, 4)); // 4 = length of URL\t
-				util::removeAfter($url, ASCII_TAB);
+				$url = $line[1];
 				
 				$params = array();
 				$expects = IGNORE;
@@ -153,31 +151,40 @@ class CommandProcessor {
 				continue;
 			}
 
-			$arr = explode(chr(ASCII_TAB), $line, 2);
-			if (!preg_match('/^[\w|\d]+$/', $arr[0])) {
-				$msg = "line " . $lineCount . ': ' . $arr[0] . ' is an invalid parameter';
+			if (!preg_match('/^[\w|\d]+$/', $paramName)) {
+				$msg = "line " . $lineCount . ': ' . $paramName . ' is an invalid parameter';
 				return false;
 			}
-			if (count($arr) == 1) { $arr[1] = ''; }
+			switch (count($line)) {
+			case 1:
+				$paramValue = '';
+				break;
+			case 2:
+				$paramValue = $line[1];
+				break;
+			default:
+				array_shift($line);
+				$paramValue = implode(chr(ASCII_TAB), $line);
+			}
 			
-			if ($arr[0] == "EXPECTS") {
+			if ($paramName == "EXPECTS") {
 				if ($state == RESULT) {
 					$msg = "line " . $lineCount . ': Cannot have EXPECTS after RESULT';
 					return false;
 				}
 				$state = EXPECTS;
-				$expects = $arr[1];
+				$expects = $paramValue;
 				
 				$expectsLineCount = $lineCount;
 				continue;
 			}
-			if ($arr[0] == "RESULT") {
-				if (substr($arr[1], 0, 1) != '$') {
+			if ($paramName == "RESULT") {
+				if (substr($paramValue, 0, 1) != '$') {
 					$msg = "line " . $lineCount . ': RESULT must start with a $';
 					return false;
 				}
 				$state = RESULT;
-				$result = $arr[1];
+				$result = $paramValue;
 				continue;
 			}
 			
@@ -191,20 +198,20 @@ class CommandProcessor {
 				return false;
 			}
 
-			if (array_key_exists($arr[0], $params)) {
-				$msg = "line " . $lineCount . ': ' . $arr[0] . ' already exists';
+			if (array_key_exists($paramName, $params)) {
+				$msg = "line " . $lineCount . ': ' . $paramName . ' already exists';
 				return false;
 			}
 			
-			if (in_array($arr[1], $fileNames)) {
-				if (array_key_exists($arr[1], $_FILES)) {
-					$arr[1] = '@' . $_FILES[$arr[1]]['tmp_name'];
+			if (in_array($paramValue, $fileNames)) {
+				if (array_key_exists($paramValue, $_FILES)) {
+					$paramValue = '@' . $_FILES[$paramValue]['tmp_name'];
 				} else {
-					$msg = "line " . $lineCount . ': ' . $arr[1] . ' was not uploaded';
+					$msg = "line " . $lineCount . ': ' . $paramValue . ' was not uploaded';
 					return false;
 				}
 			}
-			$params[$arr[0]] = $arr[1];
+			$params[$paramName] = $paramValue;
 		}
 		
 		$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
@@ -236,10 +243,6 @@ class CommandProcessor {
 			$end++;
 		} while ($pos < $end);
 		return $str;
-	}
-	
-	static private function startsWithURL($str) {
-		return preg_match("/^URL\t/", $str);
 	}
 }
 ?>

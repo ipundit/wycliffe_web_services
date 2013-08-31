@@ -1,7 +1,6 @@
 <?php
 require_once 'Mail.php';
 require_once 'Mail/mime.php';
-define("_parseCSV_ASCII_TAB", 9);
 
 class util {
 	static public function curl_init($url, $params, $isAsync = false) {
@@ -69,8 +68,15 @@ class util {
 		return implode(PHP_EOL, $rows);
 	}
 	
-	static public function parseCSV($data, $delimiter = '\t', $enclosure = '"', $newline = "\n") {
-		$data = str_replace("\r\n", "\n", $data);
+	static public function parseCSV($data, $delimiter = ',', $enclosure = '"', $newline = "\n", $comment = "# ") {
+		$data = trim(str_replace("\r\n", "\n", $data));
+		if ($comment != '') {
+			$arr = explode($newline, $data);
+			foreach ($arr as &$row) {
+				util::removeAfter($row, '# ');
+			}
+			$data = implode($newline, $arr);
+		}
 		
 		$pos = $last_pos = -1;
 		$end = strlen($data);
@@ -78,8 +84,8 @@ class util {
 		$quote_open = false;
 		$trim_quote = false;
 
-		$replace_char = $delimiter == '\t' ? chr(_parseCSV_ASCII_TAB) : $delimiter;
 		$return = array();
+		$return[$row] = array();
 
 		// Create a continuous loop
 		for ($i = -1;; ++$i){
@@ -115,22 +121,22 @@ class util {
 				$length = $pos - ++$last_pos;
 
 				// Get all the contents of this column
+				$temp = '';
 				if ($length > 0) {
-					$return[$row] = substr($data, $last_pos, $length);
-					$return[$row] = str_replace($enclosure . $enclosure, $enclosure, $return[$row]); // Remove double quotes
-					$return[$row] = str_replace($replace_char . $enclosure, $replace_char, $return[$row]); // Remove starting quote
+					$temp = substr($data, $last_pos, $length);
+					$temp = str_replace($enclosure . $enclosure, $enclosure, $temp); // Remove double quotes
+					$temp = str_replace($delimiter . $enclosure, $delimiter, $temp); // Remove starting quote
 
 					if ($trim_quote) { // Remove trailing quote
-						$index = strpos($return[$row], $enclosure . $replace_char);
+						$index = strpos($temp, $enclosure . $delimiter);
 						if ($index === false) {
-							$return[$row] = substr(trim($return[$row]), 0, -1);
+							$temp = substr(trim($temp), 0, -1);
 						} else {
-							$return[$row] = substr($return[$row], 0, $index) . substr($return[$row], $index + 1);
+							$temp = substr($temp, 0, $index) . substr($temp, $index + 1);
 						}
 					}
-				} else {
-					$return[$row] = '';
 				}
+				if ($temp != '') { $return[$row][] = $temp; }
 				
 				// And we're done
 				if ($done) { break; }
@@ -141,6 +147,7 @@ class util {
 				// Next row?
 				if ($char == $newline) {
 					++$row;
+					$return[$row] = array();
 				}
 
 				$trim_quote = false;

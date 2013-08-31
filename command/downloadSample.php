@@ -20,7 +20,7 @@ $simulate = $simulate == 1;
 
 $service = filter_var($service, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES));
 if ($service !== false && !preg_match('/^.*[\.|\/]/', $service)) {
-	$file = '../' . $service . '/tests/sample.csv';
+	$file = '../' . $service . '/tests/sample.txt';
 	if (file_exists($file)) {
 		if ($simulate) {
 			echo trim(preg_replace('/(\s+|")/', ' ', file_get_contents($file)));

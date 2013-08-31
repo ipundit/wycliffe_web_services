@@ -1,7 +1,6 @@
 <?php 
 require_once 'util.php';
 require_once 'classes/Participant.php';
-define("_EMAIL_ASCII_TAB_", 9);
 define('_EVENTS_TIMEOUT_', 300);
 
 class Events

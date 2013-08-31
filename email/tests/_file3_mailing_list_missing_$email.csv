@@ -1,9 +1,9 @@
-$tags	$firstName	$lastName	email	$org	$phoneNumber	$tagLine	Comment	should fail as first column is missing a $email column
-WMO,WMOwLP	One	Test	wycliffe.web.services.test.1@gmail.com	Organization 1	1(613)323-2323	"Press Alt+Enter to enter a new line in Excel
-Another line"		
-WMO,WMOwLP	Two	Test	wycliffe.web.services.test.2@gmail.com	Organization 2		"Press Ctrl+Enter to enter a new line in LibreOffice
-Another line"		
-WMO	John	Doe	wycliffe.web.services.test.1@gmail.com	Organization 2		Tag line		
-	Joe	Doe	wycliffe.web.services.test.1@gmail.com	Organization 3				
-WPO	Jane	Doe	invalid email	Organization 2				
-WPO	Three	Test	wycliffe.web.services.test.2@gmail.com	Organization 3				
+$tags,$firstName,$lastName,email,$org,$phoneNumber,$tagLine,Comment,should fail as first column is missing a $email column
+WMO,WMOwLP,One,Test,wycliffe.web.services.test.1@gmail.com,Organization 1,1(613)323-2323,"Press Alt+Enter to enter a new line in Excel
+Another line",,
+WMO,WMOwLP,Two,Test,wycliffe.web.services.test.2@gmail.com,Organization 2,,"Press Ctrl+Enter to enter a new line in LibreOffice
+Another line",,
+WMO,John,Doe,wycliffe.web.services.test.1@gmail.com,Organization 2,,Tag line,,
+,Joe,Doe,wycliffe.web.services.test.1@gmail.com,Organization 3,,,,
+WPO,Jane,Doe,invalid email,Organization 2,,,,
+WPO,Three,Test,wycliffe.web.services.test.2@gmail.com,Organization 3,,,,

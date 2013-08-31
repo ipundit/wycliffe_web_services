@@ -90,8 +90,8 @@ label.error {
 			}
 		?>
 	</select>
-	<label for="choiceService">/tests/*.csv</label><br />
-	<input type="radio" name="choice" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .csv file'); ?>:</label><button id="fromSample" type="button"><?php echo t('From sample') ?></button><button id="downloadSample" type="button"><?php echo t('Download') ?></button>
+	<label for="choiceService">/tests/*.txt</label><br />
+	<input type="radio" name="choice" id="choiceText" /><label for="choiceText"><?php echo t('Copy and paste a .txt file'); ?>:</label><button id="fromSample" type="button"><?php echo t('From sample') ?></button><button id="downloadSample" type="button"><?php echo t('Download') ?></button>
 	<div id="errorAnchor" class="error"></div>
 </div>
 <div id="uploadFiles">

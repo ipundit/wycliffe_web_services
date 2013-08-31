@@ -15,7 +15,7 @@ function index_js_init(translationMapping) {
 function validatorRules() {
 	return {
 		commandFile:{
-			isCSV: ['Command file', '#choiceFile']
+			isTXT: ['Command file', '#choiceFile']
 		},
 	};
 }

@@ -2,7 +2,6 @@
 require_once 'util.php';
 require_once 'classes/akismet.class.php';
 require_once 'classes/EmailProcessor.php';
-define("_EMAIL_ASCII_TAB_", 9);
 define('_EMAIL_TIMEOUT_', 300);
 
 class Email
@@ -218,10 +217,7 @@ class Email
 		$keys = '';
 		$i = 1;
 
-		foreach ($lines as $line) {
-			util::removeAfter($line, '# ');
-			
-			$columns = explode(chr(_EMAIL_ASCII_TAB_), $line);
+		foreach ($lines as $columns) {
 			if ($isFirstLine) {
 				if (!Email::getKeys($columns, $keys, $msg)) { return false; }
 				$isFirstLine = false;
@@ -229,7 +225,7 @@ class Email
 				continue;
 			}
 
-			if ($line == '' || $i < $startRow) { $i++; continue; }
+			if (empty($columns) || $i < $startRow) { $i++; continue; }
 			if ($maxRows != 0 && $startRow + $maxRows <= $i) { break; }
 			$variablesLookup[$i] = array('$email' => '');
 			

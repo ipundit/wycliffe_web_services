@@ -123,9 +123,8 @@ BODY;
 				}
 				
 				if ($row['fromEmail'] != '' && $row['name'] != '') {
-					$name = $row['name'];
 					$body = <<<BODY
-Dear $name,<br>
+Dear {$row['name']},<br>
 <br>
 Your mailing list upload for <b>$eventName</b> completed with this message: <b>$msg</b>
 BODY;
@@ -135,7 +134,44 @@ BODY;
 			}
 			break;
 		case 'invitation':
+			$name = $row['clientName'];
+			$fromEmail = $row['clientEmail'];
+			$body = <<<BODY
+Dear $name,<br>
+<br>
+This mail merge program will send a personalized invitation to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
+<br>
+<b>Your name:</b> $name<br>
+<b>Your email:</b> $fromEmail<br>
+<b>Subject:</b> Invitation to $eventName<br>
+<br>
+<b>Body->:</b><br>
+Dear \$honorific \$firstName,<br>
+<br>
+I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can make it, please click <a href="https://wycliffe-services.net/event/$userName/">here</a> to confirm your attendance.  It will bring you to a website where you can enter your registration information.<br>
+<br>
+Regards,<br>
+$name<br>
+<b>->Body:</b> # everything between <b>Body</b> will be counted as the body of your email
+<h4>Filling out the rest of the form is optional.</h4>
+<b>Simulate:</b> 0 # 0 to actually send the email, or 1 to run through all the checks but not actually send the email. simulate = 2 will output the email(s) to http://www.wycliffe-services.net/email/dryRun.html instead of emailing them out. This allows you to check the mass mailing before sending it out (recommended).
+<h4>Other receipients</h4>
+<b>Cc:</b> # A comma separated list of emails<br>
+<b>Bcc:</b> # A comma separated list of emails<br>
+<b>Reply-to:</b> # An email address where you want replies to your email to go to.  Otherwise, they will go to $fromEmail
+<h4>Mailing list filter settings</h4>
+<b>Tags:</b> # Tags will be compared to \$tags in the mailing list.  If there is a match, the email will be sent. If tags is not set, then all rows will be sent.<br>
+<b>Starting row:</b> 1 # Email processing will start on the Starting row you specify here.  Useful for long mailing scripts that may have timed out in the middle of processing, so you can start mailing again from Starting row.  Rows start from 1, so specifying 1 here will mean processing the whole mailing list file.<br>
+<b>Maximum number of rows to process:</b> 0 # Email processing will process a maximum number of rows to process. 0 means that there is no limit to the number of rows that will be processed, and the mailing will only quit if there is an error or the script times out.
+BODY;
+			$files = array();
+			$files['mailing_list.csv'] = $path;
+			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
+				"Invitation email template for " . $eventName, $body, '', '', '', array(), $row['simulate']);
+			if ($msg == '') { $msg = 'ok'; }
+			break;
 		case 'logistics':
+			$msg = 'ok';
 		}
 		
 		return true;
@@ -200,6 +236,7 @@ BODY;
 		
 		$eventName = $row['eventName'];
 		$clientName = $row['clientName'];
+		$clientEmail = $row['clientEmail'];
 		$userName = $row['userName'];
 		$password = $row['password'];
 		
@@ -209,7 +246,7 @@ Dear $clientName,<br>
 Your Wycliffe Web Services events account for the <b>$eventName</b> has been created. You can now:<br>
 <br>
 1. <a href="http://wycliffe-services.net/events/webservice.php?eventName=$eventName&userName=$userName&password=$password&report=download">Download</a> the latest participant list. You can click this link at any time to get a real-time report of who has confirmed their attendance for your event. Alternatively, you can have the report <a href="mailto:events@wycliffe-services.net?subject=Get the latest participant list for $eventName&body=Just click send to get the latest participant list.%0D%0A%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: email">emailed</a> to you.<br>
-2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload%0D%0A">email</a> it.<br>
+2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password&clientName=$clientName&clientEmail=$clientEmail">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload%0D%0A">email</a> it.<br>
 3. <a href="mailto:events@wycliffe-services.net?subject=Get the invitation email template&body=Just click send to get the invitation email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: invitation">Send</a> out the invitation email.<br>
 4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
 BODY;

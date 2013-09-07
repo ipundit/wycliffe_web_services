@@ -26,7 +26,7 @@ label.error {
 button {
 	margin-left: 10px;
 }
-#spinner {
+#spinner, #spinnerInvitation, #spinnerLogistics {
     background-image: url("../spinner.gif");
     background-repeat: no-repeat;
     display: none;
@@ -46,6 +46,9 @@ button {
 	$eventName = isset($_GET['eventName']) ? $_GET['eventName'] : '';
 	$userName = isset($_GET['userName']) ? $_GET['userName'] : '';
 	$password = isset($_GET['password']) ? $_GET['password'] : '';
+	$queryString = "eventName=".urlencode($eventName)."&amp;userName=".urlencode($userName).'&amp;password='.$password;
+	$clientEmail = isset($_GET['clientEmail']) ? $_GET['clientEmail'] : '';
+	$clientName = isset($_GET['clientName']) ? $_GET['clientName'] : '';
 ?>
 </script>
 </head>
@@ -53,17 +56,20 @@ button {
 <h1><?php echo t("Logistics menu for") . ' ' . $eventName ?></h1>
 <form id="theForm" action="#" method="post">
 <div id="errorAnchor" class="error"></div>
-Tasks:
+You can:
 <ol>
-  <li><a href="<?php echo "webservice.php?report=download&eventName=".$eventName."&userName=".$userName.'&password='.$password ?>" id="downloadLink">Download the current participant list</a> to get a real time report of who has confirmed their attendance for your event</li>
-  <li>Update that list in any spreadsheet program that can open .csv files, like Excel or LibreOffice Calc</li>
-  <li>Upload that updated list to the server to replace its contents<input type="file" name="file" id="file" /><button type="submit" id="upload"><?php echo t("Upload"); ?><div id="spinner"></div></button></li>
-  <li><a href="">Send out the invitation email</a> to those participants</li>
-  <li><a href="">Send out the logistics email</a> to those participants</li>
+  <li><a href="<?php echo "webservice.php?report=download&amp;" . $queryString ?>">Download the current participant list</a> to get a real time report of who has confirmed their attendance for your event</li>
+  <li>Update <a href="<?php echo "webservice.php?report=download&amp;" . $queryString ?>">that list</a> in any spreadsheet program that can open .csv files, like Excel or LibreOffice Calc</li>
+  <li>Upload your updated list to the server to replace its contents<input type="file" name="file" id="file" /><button type="submit" id="upload"><?php echo t("Upload"); ?><div id="spinner"></div></button></li>
+  <li><a href="javascript:void(0)" id="invitation">Send out the invitation email</a> to the participants in that list<div id="spinnerInvitation"></div></li>
+  <li><a href="javascript:void(0)" id="logistics">Send out the logistics email</a> to the participants in that list<div id="spinnerLogistics"></div></li>
 </ol>
 <input type="hidden" id="eventName" value="<?php echo $eventName; ?>" />
-<input type="hidden" id="userName" value="<?php echo $_GET['userName'] ?>" />
-<input type="hidden" id="password" value="<?php echo $_GET['password'] ?>" />
+<input type="hidden" id="userName" value="<?php echo $userName ?>" />
+<input type="hidden" id="password" value="<?php echo $password ?>" />
+<input type="hidden" id="report" value="upload" />
+<input type="hidden" id="clientEmail" value="<?php echo $clientEmail ?>" />
+<input type="hidden" id="clientName" value="<?php echo $clientName ?>" />
 </form>
 </body>
 </html>

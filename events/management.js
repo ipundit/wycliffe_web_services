@@ -32,20 +32,40 @@ function fieldsToUpload() {
 	retValue['eventName'] = $('#eventName').val();
 	retValue['userName'] = $('#userName').val();
 	retValue['password'] = $('#password').val();
-	retValue['report'] = 'upload';
-	retValue['file'] = document.getElementById('file').files[0];
+	retValue['report'] = $('#report').val();
+	if (retValue['report'] == 'upload') {
+		retValue['file'] = document.getElementById('file').files[0];
+	} else {
+		retValue['clientName'] = $('#clientName').val();
+		retValue['clientEmail'] = $('#clientEmail').val();
+	}
 	return retValue;
 }
 function onSuccess(retValue) {
+	if (retValue == 'ok') {
+		if ($('#report').val() == 'upload') {
+			retValue = 'You have updated the participant list database successfully.';
+		} else {
+			retValue = 'The <b>' + $('#report').val() + '</b> email template has been sent to <b>' + $('#clientEmail').val() + '</b>. Please check your email for further instructions.';
+		}
+	}
 	$('#errorAnchor').html('<span>' + retValue + '</span>');
+	$('#report').val('upload');
 }
 
 function eventHandlers() {
 	return {
-		'downloadLink': function() {
-			$('#downloadRadio').prop('checked', true);
+		'invitation': function() {
+			clickLink('Invitation');
+		},
+		'logistics': function() {
+			clickLink('Logistics');
 		},
 	};
+}
+function clickLink(linkName) {
+	$('#report').val(linkName.toLowerCase());
+	submitHandler(fieldsToUpload, onSuccess, 'spinner' + linkName);
 }
 
 function formDefaultValues() {

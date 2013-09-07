@@ -7,7 +7,7 @@ class Participant extends Record
 	public function __construct($userName, $password, &$msg) {
 		$columns = array(
 		    "id"=>"integer",
-		    "tag"=>"text",
+		    "tags"=>"text",
 		    "honorific"=>"text",
 			"firstName"=>"text",
 			"lastName"=>"text",

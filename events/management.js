@@ -36,8 +36,8 @@ function fieldsToUpload() {
 	if (retValue['report'] == 'upload') {
 		retValue['file'] = document.getElementById('file').files[0];
 	} else {
-		retValue['clientName'] = $('#clientName').val();
-		retValue['clientEmail'] = $('#clientEmail').val();
+		retValue['name'] = $('#name').val();
+		retValue['fromEmail'] = $('#fromEmail').val();
 	}
 	return retValue;
 }
@@ -46,7 +46,7 @@ function onSuccess(retValue) {
 		if ($('#report').val() == 'upload') {
 			retValue = 'You have updated the participant list database successfully.';
 		} else {
-			retValue = 'The <b>' + $('#report').val() + '</b> email template has been sent to <b>' + $('#clientEmail').val() + '</b>. Please check your email for further instructions.';
+			retValue = 'The <b>' + $('#report').val() + '</b> email template has been sent to <b>' + $('#fromEmail').val() + '</b>. Please check your email for further instructions.';
 		}
 	}
 	$('#errorAnchor').html('<span>' + retValue + '</span>');

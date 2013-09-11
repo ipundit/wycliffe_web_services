@@ -81,6 +81,11 @@ class Events
 		}
 		$password = $row['password'];
 		
+		if ($report == 'upload') {
+			$str = Events::readFile($msg);
+			if ($str === false) { break; }
+		}
+		
 		$participant = new Participant($row['userName'], $row['password'], $msg);
 		if ($msg != '') { return true; }
 		
@@ -111,10 +116,6 @@ BODY;
 							$body, '', '', '', $files, $row['simulate']);
 			break;
 		case 'upload':
-			$str = Events::readFile($msg);
-
-			if ($str === false) { break; }
-			
 			if ($participant->overwriteDatabase($str, $row['simulate'], $msg)) {
 				if ($row['simulate'] == 1) {
 					Events::processDownload($path, $row['simulate'], $msg);
@@ -134,15 +135,14 @@ BODY;
 			}
 			break;
 		case 'invitation':
-			$name = $row['clientName'];
-			$fromEmail = $row['clientEmail'];
+			$name = $row['name'];
+			$fromEmail = $row['fromEmail'];
 			$body = <<<BODY
 Dear $name,<br>
 <br>
 This mail merge program will send a personalized invitation to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
 <br>
 <b>Your name:</b> $name<br>
-<b>Your email:</b> $fromEmail<br>
 <b>Subject:</b> Invitation to $eventName<br>
 <br>
 <b>Body->:</b><br>
@@ -163,6 +163,9 @@ $name<br>
 <b>Tags:</b> # Tags will be compared to \$tags in the mailing list.  If there is a match, the email will be sent. If tags is not set, then all rows will be sent.<br>
 <b>Starting row:</b> 1 # Email processing will start on the Starting row you specify here.  Useful for long mailing scripts that may have timed out in the middle of processing, so you can start mailing again from Starting row.  Rows start from 1, so specifying 1 here will mean processing the whole mailing list file.<br>
 <b>Maximum number of rows to process:</b> 0 # Email processing will process a maximum number of rows to process. 0 means that there is no limit to the number of rows that will be processed, and the mailing will only quit if there is an error or the script times out.
+<h4>Mailing account settings (do not change this)</h4>
+userName: $userName<br>
+password: $password<br>
 BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
@@ -215,18 +218,18 @@ BODY;
 	}
 	
 	private static function createNewAccount($row, &$msg) {
-		if ($row['clientName'] == '') { return false; }
+		if ($row['userName'] == '') { return false; }
 
 		if ($row['eventName'] == '') {
-			$msg = 'eventName is missing';
+			$msg = 'invalid eventName';
+			return true;
+		}
+		if ($row['clientName'] == '') {
+			$msg = 'invalid clientName';
 			return true;
 		}
 		if ($row['clientEmail'] == '') {
-			$msg = 'invalid client email';
-			return true;
-		}
-		if ($row['userName'] == '') {
-			$msg = 'userName is missing';
+			$msg = 'invalid clientEmail';
 			return true;
 		}
 		if ($row['password'] == '') {
@@ -246,7 +249,7 @@ Dear $clientName,<br>
 Your Wycliffe Web Services events account for the <b>$eventName</b> has been created. You can now:<br>
 <br>
 1. <a href="http://wycliffe-services.net/events/webservice.php?eventName=$eventName&userName=$userName&password=$password&report=download">Download</a> the latest participant list. You can click this link at any time to get a real-time report of who has confirmed their attendance for your event. Alternatively, you can have the report <a href="mailto:events@wycliffe-services.net?subject=Get the latest participant list for $eventName&body=Just click send to get the latest participant list.%0D%0A%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: email">emailed</a> to you.<br>
-2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password&clientName=$clientName&clientEmail=$clientEmail">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload%0D%0A">email</a> it.<br>
+2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password&name=$clientName&fromEmail=$clientEmail">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload%0D%0A">email</a> it.<br>
 3. <a href="mailto:events@wycliffe-services.net?subject=Get the invitation email template&body=Just click send to get the invitation email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: invitation">Send</a> out the invitation email.<br>
 4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
 BODY;
@@ -275,8 +278,8 @@ BODY;
 			return false;
 		}
 		
-		$name = $row['name'];
-		$fromEmail = $row['fromEmail'];
+		$clientName = $row['name'];
+		$clientEmail = $row['fromEmail'];
 		$eventName = trim($row['eventName']);
 		$forwardingEmail = $row['forwardingEmail'];
 		
@@ -286,22 +289,22 @@ BODY;
 		$body = <<<BODY
 We received an events account creation request.<br>
 <br>
-<b>Client name:</b> $name<br>
-<b>Client email:</b> $fromEmail<br>
+<b>Client name:</b> $clientName<br>
+<b>Client email:</b> $clientEmail<br>
 <b>Event name:</b> $eventName<br>
 <br>
-1. Run /home/sysadmin/add_events_account.sh $shortName $name $fromEmail<br>
-2. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Client name: $name%0D%0AClient email: $fromEmail%0D%0AEvent name: $eventName%0D%0AUser name: $shortName%0D%0APassword: ">configuration email</a> to user
+1. Run /home/sysadmin/add_events_account.sh $shortName $clientName $clientEmail<br>
+2. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Client name: $clientName%0D%0AClient email: $clientEmail%0D%0AEvent name: $eventName%0D%0AUser name: $shortName%0D%0APassword: ">configuration email</a> to user
 BODY;
 		util::sendEmail($err1, "", "no-reply@wycliffe-services.net", "developer_support@wycliffe-services.net", 
 			"Events account creation request", $body, '', '', '', array(), $row['simulate']);
 
 		$body = <<<BODY
-Dear $name,<br>
+Dear $clientName,<br>
 <br>
 Your request to create an events account for <b>$eventName</b> has been received and will be processed shortly.
 BODY;
-		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", $fromEmail, 
+		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", $clientEmail, 
 			"Received events account creation request", $body, '', '', '', array(), $row['simulate']);
 		
 		$msg = $err1 . $err2;

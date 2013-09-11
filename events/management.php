@@ -47,8 +47,8 @@ button {
 	$userName = isset($_GET['userName']) ? $_GET['userName'] : '';
 	$password = isset($_GET['password']) ? $_GET['password'] : '';
 	$queryString = "eventName=".urlencode($eventName)."&amp;userName=".urlencode($userName).'&amp;password='.$password;
-	$clientEmail = isset($_GET['clientEmail']) ? $_GET['clientEmail'] : '';
-	$clientName = isset($_GET['clientName']) ? $_GET['clientName'] : '';
+	$fromEmail = isset($_GET['fromEmail']) ? $_GET['fromEmail'] : '';
+	$name = isset($_GET['name']) ? $_GET['name'] : '';
 ?>
 </script>
 </head>
@@ -68,8 +68,8 @@ You can:
 <input type="hidden" id="userName" value="<?php echo $userName ?>" />
 <input type="hidden" id="password" value="<?php echo $password ?>" />
 <input type="hidden" id="report" value="upload" />
-<input type="hidden" id="clientEmail" value="<?php echo $clientEmail ?>" />
-<input type="hidden" id="clientName" value="<?php echo $clientName ?>" />
+<input type="hidden" id="fromEmail" value="<?php echo $fromEmail ?>" />
+<input type="hidden" id="name" value="<?php echo $name ?>" />
 </form>
 </body>
 </html>

@@ -51,7 +51,7 @@ function setupValidators(rules, messages, fieldsToUploadCallback, onSuccessCallb
 		rules: rules,
 		messages: messages,
 		submitHandler: function(form) {
-			submitHandler(form, fieldsToUploadCallback, onSuccessCallback);
+			submitHandler(fieldsToUploadCallback, onSuccessCallback, "spinner");
 		}
 	});
 	translateErrorMessages(validator.settings);
@@ -147,10 +147,10 @@ function setupForm(fields) {
 	}
 }
 
-function submitHandler(form, fieldsToUploadCallback, onSuccessCallback) {
+function submitHandler(fieldsToUploadCallback, onSuccessCallback, spinnerName) {
 	if ($('#spinner').css('display') == 'block') { return; } // Prevent form from being submitted twice
 	$('#errorAnchor > span').html(''); // Clear error messages
-	$('#spinner').css('display', 'inline-block');
+	$('#' + spinnerName).css('display', 'inline-block');
 
 	fields = fieldsToUploadCallback();
 	if (fields['test'] === undefined) {
@@ -174,11 +174,11 @@ function submitHandler(form, fieldsToUploadCallback, onSuccessCallback) {
 		url: 'webservice.php',
 		data: data,
 		success: function(retValue, textStatus) {
-			$('#spinner').hide();
+			$('#' + spinnerName).hide();
 			onSuccessCallback(retValue);
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			$('#spinner').hide();
+			$('#' + spinnerName).hide();
 			$('#errorAnchor').html('<span>' + XMLHttpRequest.statusText.removeBefore('(0)') + '</span>');
 		},
 		// Required options for file uploading to work
@@ -196,7 +196,7 @@ function setupStringPrototypes() {
 	}
 	
 	if (typeof String.prototype.endsWith != 'function') {
-		String.prototype.startsWith = function (suffix) {
+		String.prototype.endsWith = function (suffix) {
 			return this.indexOf(suffix, this.length - suffix.length) !== -1;
 		};
 	}

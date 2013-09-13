@@ -73,7 +73,7 @@ class util {
 		if ($comment != '') {
 			$arr = explode($newline, $data);
 			foreach ($arr as &$row) {
-				util::removeAfter($row, '# ');
+				util::removeAfter($row, $comment);
 			}
 			$data = implode($newline, $arr);
 		}
@@ -193,7 +193,13 @@ class util {
 	}
 
 	static public function removeAfter(&$str, $postFix, $fromFront = true) {
-		$pos = $fromFront ? strpos($str, $postFix) : strrpos($str, $postFix);
+		if (util::startsWith($postFix, '/') && util::endsWith($postFix, '/') && strlen($postFix) > 2) {
+			if (false === preg_match($postFix, $str, $matches, PREG_OFFSET_CAPTURE)) { return false; }
+			if (count($matches) < 1) { return false; }
+			$pos = $matches[0][1];
+		} else {
+			$pos = $fromFront ? strpos($str, $postFix) : strrpos($str, $postFix);
+		}
 		if ($pos === false) { return false; }
 		if ($pos == 0) {
 			$str = '';

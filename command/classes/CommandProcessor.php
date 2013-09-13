@@ -114,7 +114,8 @@ class CommandProcessor {
 		}
 
 		$str = CommandProcessor::escapeDoubleQuotes($str);
-		$lines = util::parseCSV($str, chr(ASCII_TAB));
+		$lines = util::parseCSV($str, chr(ASCII_TAB), '"', "\n", "/^# .*/");
+		
 		$state = START;
 
 		$lineCount = 0;

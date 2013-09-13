@@ -83,7 +83,7 @@ class Events
 		
 		if ($report == 'upload') {
 			$str = Events::readFile($msg);
-			if ($str === false) { break; }
+			if ($str === false) { return true; }
 		}
 		
 		$participant = new Participant($row['userName'], $row['password'], $msg);
@@ -135,6 +135,15 @@ BODY;
 			}
 			break;
 		case 'invitation':
+			if ($row['name'] == '') {
+				$msg = 'name is missing';
+				break;
+			}
+			if ($row['fromEmail'] == '') {
+				$msg = 'invalid fromEmail';
+				break;
+			}
+
 			$name = $row['name'];
 			$fromEmail = $row['fromEmail'];
 			$body = <<<BODY
@@ -148,7 +157,7 @@ This mail merge program will send a personalized invitation to each person in yo
 <b>Body->:</b><br>
 Dear \$honorific \$firstName,<br>
 <br>
-I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can make it, please click <a href="https://wycliffe-services.net/event/$userName/">here</a> to confirm your attendance.  It will bring you to a website where you can enter your registration information.<br>
+I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?email=\$email&isComing=y">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?email=\$email&isComing=n">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?email=\$email">registration website</a> so that we can reserve the hotel room for you.<br>
 <br>
 Regards,<br>
 $name<br>
@@ -165,7 +174,7 @@ $name<br>
 <b>Maximum number of rows to process:</b> 0 # Email processing will process a maximum number of rows to process. 0 means that there is no limit to the number of rows that will be processed, and the mailing will only quit if there is an error or the script times out.
 <h4>Mailing account settings (do not change this)</h4>
 userName: $userName<br>
-password: $password<br>
+password: $password
 BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
@@ -174,7 +183,62 @@ BODY;
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		case 'logistics':
-			$msg = 'ok';
+			if ($row['name'] == '') {
+				$msg = 'name is missing';
+				break;
+			}
+			if ($row['fromEmail'] == '') {
+				$msg = 'invalid fromEmail';
+				break;
+			}
+
+			$name = $row['name'];
+			$fromEmail = $row['fromEmail'];
+			$body = <<<BODY
+Dear $name,<br>
+<br>
+This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person with isComing = Y in mailing_list.csv.<br>
+<br>
+<b>Your name:</b> $name<br>
+<b>Subject:</b> Logistics information for $eventName<br>
+<br>
+<b>Body->:</b><br>
+Dear \$honorific \$firstName,<br>
+<br>
+You are invited to the <b>$eventName</b>.  Here's the logistics information for the event:<br>
+<br>
+<b>Theme:</b> [Theme or purpose of the meeting]<br>
+<b>Where:</b> [hotel name in city] (Include a link to the hotel website, preferably its about page which usually has a map)<br>
+<b>When:</b> [start date] to [end date]<br>
+<b>Speaker:</b> [Biographical information for the special speaker, if applicable]<br>
+<b>Schedule:</b> [Enter link to Teamwork page, or attach a schedule to this email]<br>
+<b>Transportation:</b> Once we have your flight information, we will email you an airport pickup time.  Or, give instructions on how to take a taxi with an estimate of how much it will cost in local currency<br>
+<br>
+If you haven't done so already, please enter your information on the <a href="https://wycliffe-services.net/event/$userName/?email=\$email">registration website</a> so we can reserve your hotel room.<br>
+<br>
+Regards,<br>
+$name<br>
+<b>->Body:</b> # everything between <b>Body</b> will be counted as the body of your email
+<h4>Filling out the rest of the form is optional.</h4>
+<b>Simulate:</b> 0 # 0 to actually send the email, or 1 to run through all the checks but not actually send the email. simulate = 2 will output the email(s) to http://www.wycliffe-services.net/email/dryRun.html instead of emailing them out. This allows you to check the mass mailing before sending it out (recommended).
+<h4>Other receipients</h4>
+<b>Cc:</b> # A comma separated list of emails<br>
+<b>Bcc:</b> # A comma separated list of emails<br>
+<b>Reply-to:</b> # An email address where you want replies to your email to go to.  Otherwise, they will go to $fromEmail
+<h4>Mailing list filter settings</h4>
+<b>Tags:</b> # Tags will be compared to \$tags in the mailing list.  If there is a match, the email will be sent. If tags is not set, then all rows will be sent.<br>
+<b>Starting row:</b> 1 # Email processing will start on the Starting row you specify here.  Useful for long mailing scripts that may have timed out in the middle of processing, so you can start mailing again from Starting row.  Rows start from 1, so specifying 1 here will mean processing the whole mailing list file.<br>
+<b>Maximum number of rows to process:</b> 0 # Email processing will process a maximum number of rows to process. 0 means that there is no limit to the number of rows that will be processed, and the mailing will only quit if there is an error or the script times out.
+<h4>Mailing account settings (do not change this)</h4>
+userName: $userName<br>
+password: $password
+BODY;
+			$files = array();
+			$files['mailing_list.csv'] = $path;
+			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
+				"Logistics email template for " . $eventName, $body, '', '', '', array(), $row['simulate']);
+			if ($msg == '') { $msg = 'ok'; }
+			break;
 		}
 		
 		return true;

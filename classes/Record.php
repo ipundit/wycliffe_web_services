@@ -193,14 +193,18 @@ class Record
 		return '';
 	}
 
-	protected function columns() {
+	protected function columns($excludes = array()) {
+		$columns = $this->columns;
+		foreach ($excludes as $value) {
+			unset($columns[$value]);
+		}
+		
 		$retValue = array();
-		foreach ($this->columns as $key => $value) {
+		foreach ($columns as $key => $value) {
 			$retValue[] = $key;
 		}
 		return $retValue;
 	}
-	
 
 /*
 	Keep database connection open across a request

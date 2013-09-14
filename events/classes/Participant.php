@@ -15,15 +15,18 @@ class Participant extends Record
 			"phone"=>"text",
 			"organization"=>"text",
 			"title"=>"text",
-			"isComing"=>"boolean",
+			"isComing"=>"integer",
 			"room"=>"text",
 			"needVisa"=>"boolean",
-			"country"=>"text",
+			"passportName"=>"text",
+			"passportCountry"=>"text",
 			"passportNumber"=>"text",
 			"passportExpiryDate"=>"date",
-			"arrivalTime"=>"timestamp",
+			"arrivalDate"=>"date",
+			"arrivalTime"=>"time",
 			"arrivalFlightNumber"=>"text",
-			"departureTime"=>"timestamp",
+			"departureDate"=>"date",
+			"departureTime"=>"time",
 			"departureFlightNumber"=>"text",
 			"notes"=>"text",
 		);
@@ -40,6 +43,8 @@ class Participant extends Record
 		$retValue = array($columns);
 		
         while (($row = $res->fetchRow())) {
+			util::removeAfter($row['arrivaltime'], ":", false);
+			util::removeAfter($row['departuretime'], ":", false);
 			$retValue[] = $row;
         }
 		$retValue = util::generateCSV($retValue);
@@ -114,13 +119,17 @@ class Participant extends Record
 	}
 			
 	public function getEventRegistration($id, &$msg) {
-		$res = Record::select('*', 'id=?', $id);
-
+		$res = Record::select($this->columns(array('tags','room')), 'id=?', $id);
+		
 		if ($res->numRows() != 1) {
 			$msg = 'id not found';
 			return false;
 		}
-		return $res->fetchRow();
+		$retValue = $res->fetchRow();
+
+		util::removeAfter($retValue['arrivaltime'], ":", false);
+		util::removeAfter($retValue['departuretime'], ":", false);
+		return $retValue;
 	}
 	private static function validateInput($data, &$msg) {
 		if (!isset($data['simulate'])) { $data['simulate'] = 0; }

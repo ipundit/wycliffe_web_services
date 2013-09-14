@@ -43,6 +43,6 @@ URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
 userName	TestEvent
 password	V9BpiJYe
-EXPECTS	{"id":"123","tags":"manager,t\"em\"p","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"0","room":null,"needvisa":"0","country":null,"passportnumber":null,"passportexpirydate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuretime":null,"departureflightnumber":null,"notes":null,"error":"ok"}
+EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"2","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"error":"ok"}
 
 # Update participant testing

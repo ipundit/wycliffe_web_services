@@ -157,7 +157,7 @@ This mail merge program will send a personalized invitation to each person in yo
 <b>Body->:</b><br>
 Dear \$honorific \$firstName,<br>
 <br>
-I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=y">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=n">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id">registration website</a> so that we can reserve the hotel room for you.<br>
+I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=1">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=0">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id">registration website</a> so that we can reserve the hotel room for you.<br>
 <br>
 Regards,<br>
 $name<br>
@@ -197,7 +197,7 @@ BODY;
 			$body = <<<BODY
 Dear $name,<br>
 <br>
-This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person with isComing = Y in mailing_list.csv.<br>
+This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person with isComing = 1 in mailing_list.csv.<br>
 <br>
 <b>Your name:</b> $name<br>
 <b>Subject:</b> Logistics information for $eventName<br>

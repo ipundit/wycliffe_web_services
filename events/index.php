@@ -72,6 +72,15 @@ button {
     margin: 4px 0 0 7px;
     width: 16px;
 }
+
+.error {
+	color: red;
+}
+label.error {
+	display: block;
+	text-align: left;
+	font-weight: bold;
+}
 </style>
 
 <script language='JavaScript' type='text/javascript' src='../../jquery-1.10.2.min.js'></script>
@@ -88,31 +97,25 @@ button {
 <?php
 	$row = readFromDatabase();
 	if ($row === false) { return; }
-	// $row['eventName']
-	// $row['userName']
-	// $row['password'] - how do I get this securely?  From userName, read password from classes/events_constants.php u+rx.  shell script can append to this file
-	// $row['id']
-	// $row['email']
-	// $row['phone'], etc.
 ?>
 
 <h1>Registration for <?php echo($row->eventName) ?></h1>
 <form id="theForm" action="#" method="post">
 <div id="errorAnchor" class="error"></div>
 <fieldset>
-<legend>Arrival / departure information</legend>
+<legend>Arrival / Departure Information</legend>
 <div class="row" id="comingRow">
 <div class="column rowLabel">
 	<label>Coming?</label>
 </div>
 <div class="column">
-	<input type="radio" id="comingYes" value="1" /> <label for="comingYes">Yes</label>
+	<input type="radio" id="comingYes" name="isComing" value="1" <?php if ($row->iscoming == 1) { echo("checked"); } ?> /> <label for="comingYes">Yes</label>
 </div>
 <div class="column">
-	<input type="radio" id="comingNo" value="0" /> <label for="comingNo">No</label>
+	<input type="radio" id="comingNo" name="isComing" value="0" <?php if ($row->iscoming == 0) { echo("checked"); } ?> /> <label for="comingNo">No</label>
 </div>
 <div class="column">
-	<input type="radio" id="comingUnsure" value="2" /> <label for="comingUnsure">Unsure</label>
+	<input type="radio" id="comingUnsure" name="isComing" value="2" <?php if ($row->iscoming == 2) { echo("checked"); } ?> /> <label for="comingUnsure">Unsure</label>
 </div>
 </div>
 <div class="row">
@@ -120,15 +123,15 @@ button {
 	<label>Arrival</label>
 </div>
 <div class="column">
-	<input type="text" id="arrivalFlightNumber" class="flightTextField" value="<?php echo($row->arrivalflightnumber) ?>" />
+	<input type="text" id="arrivalFlightNumber" name="arrivalFlightNumber" class="flightTextField" value="<?php echo($row->arrivalflightnumber) ?>" />
 	<label class="verticalLabel">Flight number</label>
 </div>
 <div class="column">
-	<input type="text" id="arrivalDate" class="flightTextField" value="<?php echo($row->arrivaldate) ?>" />
-	<label class="verticalLabel">Date mm/dd</label>
+	<input type="text" id="arrivalDate" name="arrivalDate" class="flightTextField" value="<?php echo($row->arrivaldate) ?>" />
+	<label class="verticalLabel">Date yyyy-mm-dd</label>
 </div>
 <div class="column">
-	<input type="text" id="arrivalTime" class="flightTextField" value="<?php echo($row->arrivaltime) ?>" />
+	<input type="text" id="arrivalTime" name="arrivalTime" class="flightTextField" value="<?php echo($row->arrivaltime) ?>" />
 	<label class="verticalLabel">24 hour time hh:mm</label>
 </div>
 </div>
@@ -137,35 +140,35 @@ button {
 	<label>Departure</label>
 </div>
 <div class="column">
-	<input type="text" id="departureFlightNumber" class="flightTextField" value="<?php echo($row->departureflightnumber) ?>" />
+	<input type="text" id="departureFlightNumber" name="departureFlightNumber" class="flightTextField" value="<?php echo($row->departureflightnumber) ?>" />
 	<label class="verticalLabel">Flight number</label>
 </div>
 <div class="column">
-	<input type="text" id="arrivalDate" class="flightTextField" value="<?php echo($row->departuredate) ?>" />
-	<label class="verticalLabel">Date mm/dd</label>
+	<input type="text" id="departureDate" name="departureDate" class="flightTextField" value="<?php echo($row->departuredate) ?>" />
+	<label class="verticalLabel">Date yyyy-mm-dd</label>
 </div>
 <div class="column">
-	<input type="text" id="departureTime" class="flightTextField" value="<?php echo($row->departuretime) ?>" />
+	<input type="text" id="departureTime" name="departureTime" class="flightTextField" value="<?php echo($row->departuretime) ?>" />
 	<label class="verticalLabel">24 hour time hh:mm</label>
 </div>
 </div>
 </fieldset>
 <fieldset>
-<legend>Name tag and Contact Information</legend>
+<legend>Name Tag and Contact Information</legend>
 <div class="row">
 <div class="column rowLabel">
 	<label>Name</label>
 </div>
 <div class="column">
-	<input type="text" id="honorific" value="<?php echo($row->honorific) ?>" />
+	<input type="text" id="honorific" name="honorific" value="<?php echo($row->honorific) ?>" />
 	<label class="verticalLabel">eg) Dr. Rev. Pdt.</label>
 </div>
 <div class="column">
-	<input type="text" id="firstName" class="nameTextField" value="<?php echo($row->firstname) ?>" />
+	<input type="text" id="firstName" name="firstName" class="nameTextField" value="<?php echo($row->firstname) ?>" />
 	<label class="verticalLabel">First name</label>
 </div>
 <div class="column">
-	<input type="text" id="lastName" class="nameTextField" value="<?php echo($row->lastname) ?>" />
+	<input type="text" id="lastName" name="lastName" class="nameTextField" value="<?php echo($row->lastname) ?>" />
 	<label class="verticalLabel">Last name</label>
 </div>
 </div>
@@ -174,11 +177,11 @@ button {
 	<label>Work</label>
 </div>
 <div class="column">
-	<input type="text" id="organization" class="contactTextField" value="<?php echo($row->organization) ?>" />
+	<input type="text" id="organization" name="organization" class="contactTextField" value="<?php echo($row->organization) ?>" />
 	<label class="verticalLabel">Organization</label>
 </div>
 <div class="column">
-	<input type="text" id="title" class="contactTextField" value="<?php echo($row->title) ?>" />
+	<input type="text" id="title" name="title" class="contactTextField" value="<?php echo($row->title) ?>" />
 	<label class="verticalLabel">Title</label>
 </div>
 </div>
@@ -187,31 +190,33 @@ button {
 	<label>Contact</label>
 </div>
 <div class="column">
-	<input type="text" id="email" class="contactTextField" value="<?php echo($row->email) ?>" />
+	<input type="text" id="email" name="email" class="contactTextField" value="<?php echo($row->email) ?>" />
 	<label class="verticalLabel">Email</label>
 </div>
 <div class="column">
-	<input type="text" id="phone" class="contactTextField" value="<?php echo($row->phone) ?>" />
+	<input type="text" id="phone" name="phone" class="contactTextField" value="<?php echo($row->phone) ?>" />
 	<label class="verticalLabel">Cell phone number</label>
 </div>
 </div>
 </fieldset>
+<?php
+$str = <<<STR
 <fieldset>
-<legend>Passport Information for visa invitation letter</legend>
+<legend>Passport Information for Visa Invitation Letter</legend>
 <div class="row">
 <div class="column rowLabel">
 	<label>Passport</label>
 </div>
 <div class="column">
-	<input type="text" id="passportNumber" class="flightTextField" value="<?php echo($row->passportnumber) ?>" />
+	<input type="text" id="passportNumber" name="passportNumber" class="flightTextField" value="$row->passportnumber" />
 	<label class="verticalLabel">Number</label>
 </div>
 <div class="column">
-	<input type="text" id="passportExpiryDate" class="flightTextField" value="<?php echo($row->passportexpirydate) ?>" />
-	<label class="verticalLabel">Expiry date yyyy/mm/dd</label>
+	<input type="text" id="passportExpiryDate" name="passportExpiryDate" class="flightTextField" value="$row->passportexpirydate" />
+	<label class="verticalLabel">Expiry date yyyy-mm-dd</label>
 </div>
 <div class="column">
-	<input type="text" id="country" class="flightTextField" value="<?php echo($row->country) ?>" />
+	<input type="text" id="passportCountry" name="passportCountry" class="flightTextField" value="$row->passportcountry" />
 	<label class="verticalLabel">Issuing country</label>
 </div>
 </div>
@@ -220,21 +225,22 @@ button {
 	<label>Name</label>
 </div>
 <div class="column">
-	<input type="text" id="passportName" value="<?php echo($row->passportname) ?>" />
+	<input type="text" id="passportName" name="passportName" value="$row->passportname" />
 	<label class="verticalLabel">Your name as it appears in your passport</label>
 </div>
 </div>
 </fieldset>
+STR;
+if ($row->needvisa) { echo $str; }
+?>
 <fieldset>
-<legend>Notes and special instructions</legend>
-<textarea id="notes"><?php echo($row->notes) ?></textarea>
+<legend>Notes and Special Instructions</legend>
+<textarea id="notes" id="name"><?php echo($row->notes) ?></textarea>
 </fieldset>
 
-<input type="hidden" id="id" value="<?php echo($row->id) ?>" />
+<input type="hidden" id="id" name="id" value="<?php echo($row->id) ?>" />
 <button type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </form>
-<?php	util::dump($row); ?>
-
 </body>
 </html>
 
@@ -249,6 +255,7 @@ function readFromDatabase() {
 			'userName' => EVENT_USERNAME,
 			'password' => EVENT_PASSWORD,
 		);
+		if (isset($_GET['isComing'])) { $params['isComing'] = $_GET['isComing']; }
 		$ch = util::curl_init("https://wycliffe-services.net/events/webservice_participant.php", $params);
 		$result = curl_exec($ch);
 	} else {
@@ -256,11 +263,6 @@ function readFromDatabase() {
 	}
 	$result = json_decode($result);
 	$result->eventName = EVENT_USERNAME;
-	$result->passportname = 'fixme';
-	$result->arrivaldate = 'fixme';
-	$result->arrivaltime = 'fixme';
-	$result->departuredate = 'fixme';
-	$result->departuretime = 'fixme';
 	foreach ($result as &$value) {
 		$value = str_replace('"', "&quot;", $value);
 	}

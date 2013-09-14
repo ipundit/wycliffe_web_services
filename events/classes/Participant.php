@@ -111,14 +111,25 @@ class Participant extends Record
 		$participant = new Participant($params['userName'], $params['password'], $msg);
 		if ($msg != '') { return false; }
 		
+		if (false === $participant->update($params, $msg)) { return false; }
+		
 		$row = $participant->getEventRegistration($params['id'], $msg);
 		if ($row === false) { return false;}
 		
 		$msg = $row;
 		return true;
 	}
-			
-	public function getEventRegistration($id, &$msg) {
+	
+	private function update($params, &$msg) {
+		$simulate = $params['simulate'];
+		if ($simulate == 1) { return true; }
+		
+		Record::initialize($params, false);
+		$msg = Record::serialize();
+		return $msg == '';
+	}
+	
+	private function getEventRegistration($id, &$msg) {
 		$res = Record::select($this->columns(array('tags','room')), 'id=?', $id);
 		
 		if ($res->numRows() != 1) {
@@ -138,6 +149,7 @@ class Participant extends Record
 		  "id"=>FILTER_VALIDATE_INT,
 		  "userName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "password"=>FILTER_UNSAFE_RAW,
+		  "isComing"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
 		$row = filter_var_array($data, $filters);
@@ -146,7 +158,7 @@ class Participant extends Record
 			if (isset($row[$key])) {
 				$row[$key] = trim($row[$key]);
 				if ($row[$key] != '') { continue; }
-			}
+			} else if ($key == "isComing") { continue; }
 			$msg = 'invalid ' . $key;
 		}
 		return $row;

@@ -99,65 +99,65 @@ label.error {
 	if ($row === false) { return; }
 ?>
 
-<h1>Registration for <?php echo($row->eventName) ?></h1>
+<h1><?php echo(t("Registration for") . ' ' . $row->eventName); ?></h1>
 <form id="theForm" action="#" method="post">
 <div id="errorAnchor" class="error"></div>
 <fieldset>
-<legend>Arrival / Departure Information</legend>
+<legend><?php echo(t("Arrival / Departure Information")); ?></legend>
 <div class="row" id="comingRow">
 <div class="column rowLabel">
-	<label>Coming?</label>
+	<label><?php echo(t("Coming?")); ?></label>
 </div>
 <div class="column">
-	<input type="radio" id="comingYes" name="isComing" value="1" <?php if ($row->iscoming == 1) { echo("checked"); } ?> /> <label for="comingYes">Yes</label>
+	<input type="radio" id="comingYes" name="isComing" value="1" <?php if ($row->iscoming == 1) { echo("checked"); } ?> /> <label for="comingYes"><?php echo(t("Yes")); ?></label>
 </div>
 <div class="column">
-	<input type="radio" id="comingNo" name="isComing" value="0" <?php if ($row->iscoming == 0) { echo("checked"); } ?> /> <label for="comingNo">No</label>
+	<input type="radio" id="comingNo" name="isComing" value="0" <?php if ($row->iscoming == 0) { echo("checked"); } ?> /> <label for="comingNo"><?php echo(t("No")); ?></label>
 </div>
 <div class="column">
-	<input type="radio" id="comingUnsure" name="isComing" value="2" <?php if ($row->iscoming == 2) { echo("checked"); } ?> /> <label for="comingUnsure">Unsure</label>
+	<input type="radio" id="comingUnsure" name="isComing" value="2" <?php if ($row->iscoming == 2) { echo("checked"); } ?> /> <label for="comingUnsure"><?php echo(t("Unsure")); ?></label>
 </div>
 </div>
 <div class="row">
 <div class="column rowLabel">
-	<label>Arrival</label>
+	<label><?php echo(t("Arrival")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="arrivalFlightNumber" name="arrivalFlightNumber" class="flightTextField" value="<?php echo($row->arrivalflightnumber) ?>" />
-	<label class="verticalLabel">Flight number</label>
+	<label class="verticalLabel"><?php echo(t("Flight number")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="arrivalDate" name="arrivalDate" class="flightTextField" value="<?php echo($row->arrivaldate) ?>" />
-	<label class="verticalLabel">Date yyyy-mm-dd</label>
+	<label class="verticalLabel"><?php echo(t("Date")); ?> yyyy-mm-dd</label>
 </div>
 <div class="column">
 	<input type="text" id="arrivalTime" name="arrivalTime" class="flightTextField" value="<?php echo($row->arrivaltime) ?>" />
-	<label class="verticalLabel">24 hour time hh:mm</label>
+	<label class="verticalLabel"><?php echo(t("Time")); ?> hh:mm</label>
 </div>
 </div>
 <div class="row">
 <div class="column rowLabel">
-	<label>Departure</label>
+	<label><?php echo(t("Departure")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="departureFlightNumber" name="departureFlightNumber" class="flightTextField" value="<?php echo($row->departureflightnumber) ?>" />
-	<label class="verticalLabel">Flight number</label>
+	<label class="verticalLabel"><?php echo(t("Flight number")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="departureDate" name="departureDate" class="flightTextField" value="<?php echo($row->departuredate) ?>" />
-	<label class="verticalLabel">Date yyyy-mm-dd</label>
+	<label class="verticalLabel"><?php echo(t("Date")); ?> yyyy-mm-dd</label>
 </div>
 <div class="column">
 	<input type="text" id="departureTime" name="departureTime" class="flightTextField" value="<?php echo($row->departuretime) ?>" />
-	<label class="verticalLabel">24 hour time hh:mm</label>
+	<label class="verticalLabel"><?php echo(t("Time")); ?> hh:mm</label>
 </div>
 </div>
 </fieldset>
 <fieldset>
-<legend>Name Tag and Contact Information</legend>
+<legend><?php echo(t("Name Tag and Contact Information")); ?></legend>
 <div class="row">
 <div class="column rowLabel">
-	<label>Name</label>
+	<label><?php echo(t("Name")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="honorific" name="honorific" value="<?php echo($row->honorific) ?>" />
@@ -165,68 +165,76 @@ label.error {
 </div>
 <div class="column">
 	<input type="text" id="firstName" name="firstName" class="nameTextField" value="<?php echo($row->firstname) ?>" />
-	<label class="verticalLabel">First name</label>
+	<label class="verticalLabel"><?php echo(t("First name")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="lastName" name="lastName" class="nameTextField" value="<?php echo($row->lastname) ?>" />
-	<label class="verticalLabel">Last name</label>
+	<label class="verticalLabel"><?php echo(t("Last name")); ?></label>
 </div>
 </div>
 <div class="row">
 <div class="column rowLabel">
-	<label>Work</label>
+	<label><?php echo(t("Work")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="organization" name="organization" class="contactTextField" value="<?php echo($row->organization) ?>" />
-	<label class="verticalLabel">Organization</label>
+	<label class="verticalLabel"><?php echo(t("Organization")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="title" name="title" class="contactTextField" value="<?php echo($row->title) ?>" />
-	<label class="verticalLabel">Title</label>
+	<label class="verticalLabel"><?php echo(t("Title")); ?></label>
 </div>
 </div>
 <div class="row">
 <div class="column rowLabel">
-	<label>Contact</label>
+	<label><?php echo(t("Contact")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="email" name="email" class="contactTextField" value="<?php echo($row->email) ?>" />
-	<label class="verticalLabel">Email</label>
+	<label class="verticalLabel"><?php echo(t("Email")); ?></label>
 </div>
 <div class="column">
 	<input type="text" id="phone" name="phone" class="contactTextField" value="<?php echo($row->phone) ?>" />
-	<label class="verticalLabel">Cell phone number</label>
+	<label class="verticalLabel"><?php echo(t("Cell phone number")); ?></label>
 </div>
 </div>
 </fieldset>
 <?php
+$passportHeader = t("Passport Information for Visa Invitation Letter");
+$passport = t("Passport");
+$number = t("Number");
+$expiryDate = t("Expiry date");
+$country = t("Issuing country");
+$name = t("Name");
+$passportName = t("Your name as it appears in your passport");
+
 $str = <<<STR
 <fieldset>
-<legend>Passport Information for Visa Invitation Letter</legend>
+<legend>$passportHeader</legend>
 <div class="row">
 <div class="column rowLabel">
-	<label>Passport</label>
+	<label>$passport</label>
 </div>
 <div class="column">
 	<input type="text" id="passportNumber" name="passportNumber" class="flightTextField" value="$row->passportnumber" />
-	<label class="verticalLabel">Number</label>
+	<label class="verticalLabel">$number</label>
 </div>
 <div class="column">
 	<input type="text" id="passportExpiryDate" name="passportExpiryDate" class="flightTextField" value="$row->passportexpirydate" />
-	<label class="verticalLabel">Expiry date yyyy-mm-dd</label>
+	<label class="verticalLabel">$expiryDate yyyy-mm-dd</label>
 </div>
 <div class="column">
 	<input type="text" id="passportCountry" name="passportCountry" class="flightTextField" value="$row->passportcountry" />
-	<label class="verticalLabel">Issuing country</label>
+	<label class="verticalLabel">$country</label>
 </div>
 </div>
 <div class="row">
 <div class="column rowLabel">
-	<label>Name</label>
+	<label>$name</label>
 </div>
 <div class="column">
 	<input type="text" id="passportName" name="passportName" value="$row->passportname" />
-	<label class="verticalLabel">Your name as it appears in your passport</label>
+	<label class="verticalLabel">$passportName</label>
 </div>
 </div>
 </fieldset>
@@ -234,7 +242,7 @@ STR;
 if ($row->needvisa) { echo $str; }
 ?>
 <fieldset>
-<legend>Notes and Special Instructions</legend>
+<legend><?php echo(t("Notes and Special Instructions")); ?></legend>
 <textarea id="notes" id="name"><?php echo($row->notes) ?></textarea>
 </fieldset>
 

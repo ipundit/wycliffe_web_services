@@ -157,7 +157,7 @@ This mail merge program will send a personalized invitation to each person in yo
 <b>Body->:</b><br>
 Dear \$honorific \$firstName,<br>
 <br>
-I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?email=\$email&isComing=y">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?email=\$email&isComing=n">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?email=\$email">registration website</a> so that we can reserve the hotel room for you.<br>
+I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=y">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=n">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id">registration website</a> so that we can reserve the hotel room for you.<br>
 <br>
 Regards,<br>
 $name<br>
@@ -214,7 +214,7 @@ You are invited to the <b>$eventName</b>.  Here's the logistics information for 
 <b>Schedule:</b> [Enter link to Teamwork page, or attach a schedule to this email]<br>
 <b>Transportation:</b> Once we have your flight information, we will email you an airport pickup time.  Or, give instructions on how to take a taxi with an estimate of how much it will cost in local currency<br>
 <br>
-If you haven't done so already, please enter your information on the <a href="https://wycliffe-services.net/event/$userName/?email=\$email">registration website</a> so we can reserve your hotel room.<br>
+If you haven't done so already, please enter your information on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id">registration website</a> so we can reserve your hotel room.<br>
 <br>
 Regards,<br>
 $name<br>

@@ -1,38 +1,48 @@
 # Read participant testing
 URL	http://wycliffe-services.net/events/webservice_participant.php
-EXPECTS	invalid id
+EXPECTS	{"error":"invalid password"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+password	ignore
+EXPECTS	{"error":"invalid userName"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+userName	ignore
+password	ignore
+EXPECTS	{"error":"invalid id"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	a
-EXPECTS	invalid id
+userName	ignore
+password	ignore
+EXPECTS	{"error":"invalid id"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
-EXPECTS	regression test must use simulate = 1
+userName	ignore
+password	ignore
+EXPECTS	{"error":"Invalid username\/password"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
-simulate	0
-EXPECTS	regression test must use simulate = 1
+userName	TestEvent
+password	V9BpiJYe
+EXPECTS	{"error":"id not found"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
 simulate	a
-EXPECTS	invalid simulate
+EXPECTS	{"error":"invalid simulate"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
-simulate	1
-EXPECTS	invalid simulate
-
-URL	http://wycliffe-services.net/events/webservice_participant.php
-id	42
-simulate	1
-EXPECTS	id not found
+simulate	2
+EXPECTS	{"error":"invalid simulate"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
-simulate	1
-EXPECTS	{"id":"123","tags":"manager,t\"em\"p","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"0","room":null,"needvisa":"0","country":null,"passportnumber":null,"passportexpirydate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuretime":null,"departureflightnumber":null,"notes":null}
+userName	TestEvent
+password	V9BpiJYe
+EXPECTS	{"id":"123","tags":"manager,t\"em\"p","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"0","room":null,"needvisa":"0","country":null,"passportnumber":null,"passportexpirydate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuretime":null,"departureflightnumber":null,"notes":null,"error":"ok"}
 
 # Update participant testing

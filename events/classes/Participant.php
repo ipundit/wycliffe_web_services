@@ -89,40 +89,36 @@ class Participant extends Record
 	public static function main(&$msg) {
 		$tempDir = util::saveAllFiles();
 		try {
-			Participant::mainImpl($tempDir, $msg);
+			if (Participant::mainImpl($tempDir, $msg)) {
+				$msg['error'] = 'ok';
+				$retValue = $msg;
+			} else {
+				$retValue['error'] = $msg;
+			}
+			$msg = json_encode($retValue);
 		} catch (Exception $e) {}
 		util::deltree($tempDir);
 	}
 	private static function mainImpl($tempDir, &$msg) {
 		$params = Participant::validateInput(empty($_POST) ? $_GET : $_POST, $msg);
-		if ($msg != '') { return; }
+		if ($msg != '') { return false; }
 
-		if (file_exists('classes/DatabaseConstants.php')) {
-			require_once 'classes/DatabaseConstants.php';
-		} else if ($params['simulate'] == 1) {
-			require_once '/var/www/event/TestEvent/classes/DatabaseConstants.php';
-		} else {
-			$msg = 'regression test must use simulate = 1';
-			return;
-		}
-	
-		$participant = new Participant(EVENT_USERNAME, EVENT_PASSWORD, $msg);
-		if ($msg != '') {
-			echo $msg;
-			return;
-		}
+		$participant = new Participant($params['userName'], $params['password'], $msg);
+		if ($msg != '') { return false; }
 		
 		$row = $participant->getEventRegistration($params['id'], $msg);
-		if ($row === false) { return;}
+		if ($row === false) { return false;}
 		
-		$msg = json_encode($row);
+		$msg = $row;
+		return true;
 	}
 			
 	public function getEventRegistration($id, &$msg) {
 		$res = Record::select('*', 'id=?', $id);
+
 		if ($res->numRows() != 1) {
 			$msg = 'id not found';
-			return;
+			return false;
 		}
 		return $res->fetchRow();
 	}
@@ -131,6 +127,8 @@ class Participant extends Record
 
 		$filters = array(
 		  "id"=>FILTER_VALIDATE_INT,
+		  "userName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "password"=>FILTER_UNSAFE_RAW,
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
 		$row = filter_var_array($data, $filters);

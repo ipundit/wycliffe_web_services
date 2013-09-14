@@ -1,7 +1,7 @@
 <?php 
 require_once 'MDB2.php';
 require_once 'util.php';
-require_once '../DatabaseConstants.php';
+require_once 'DatabaseConstants.php';
 
 class Record
 {

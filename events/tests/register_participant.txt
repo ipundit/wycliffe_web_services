@@ -1,0 +1,38 @@
+# Read participant testing
+URL	http://wycliffe-services.net/events/webservice_participant.php
+EXPECTS	invalid id
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	a
+EXPECTS	invalid id
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+EXPECTS	regression test must use simulate = 1
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+simulate	0
+EXPECTS	regression test must use simulate = 1
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+simulate	a
+EXPECTS	invalid simulate
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+simulate	1
+EXPECTS	invalid simulate
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+simulate	1
+EXPECTS	id not found
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+simulate	1
+EXPECTS	{"id":"123","tags":"manager,t\"em\"p","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"0","room":null,"needvisa":"0","country":null,"passportnumber":null,"passportexpirydate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuretime":null,"departureflightnumber":null,"notes":null}
+
+# Update participant testing

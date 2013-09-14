@@ -29,7 +29,7 @@ class Participant extends Record
 		);
 		Record::__construct($userName, $columns, "id", 'events', $userName, $password, $msg);
 	}
-		
+	
 	public function reportCSV($dir, &$msg) {
 		$columns = $this->columns();
 		$res = $this->selectAll($columns);
@@ -83,6 +83,66 @@ class Participant extends Record
 			return false;
 		}
 		return true;
+	}
+	
+	// The rest of these functions are used by index.php
+	public static function main(&$msg) {
+		$tempDir = util::saveAllFiles();
+		try {
+			Participant::mainImpl($tempDir, $msg);
+		} catch (Exception $e) {}
+		util::deltree($tempDir);
+	}
+	private static function mainImpl($tempDir, &$msg) {
+		$params = Participant::validateInput(empty($_POST) ? $_GET : $_POST, $msg);
+		if ($msg != '') { return; }
+
+		if (file_exists('classes/DatabaseConstants.php')) {
+			require_once 'classes/DatabaseConstants.php';
+		} else if ($params['simulate'] == 1) {
+			require_once '/var/www/event/TestEvent/classes/DatabaseConstants.php';
+		} else {
+			$msg = 'regression test must use simulate = 1';
+			return;
+		}
+	
+		$participant = new Participant(EVENT_USERNAME, EVENT_PASSWORD, $msg);
+		if ($msg != '') {
+			echo $msg;
+			return;
+		}
+		
+		$row = $participant->getEventRegistration($params['id'], $msg);
+		if ($row === false) { return;}
+		
+		$msg = json_encode($row);
+	}
+			
+	public function getEventRegistration($id, &$msg) {
+		$res = Record::select('*', 'id=?', $id);
+		if ($res->numRows() != 1) {
+			$msg = 'id not found';
+			return;
+		}
+		return $res->fetchRow();
+	}
+	private static function validateInput($data, &$msg) {
+		if (!isset($data['simulate'])) { $data['simulate'] = 0; }
+
+		$filters = array(
+		  "id"=>FILTER_VALIDATE_INT,
+		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
+		);
+		$row = filter_var_array($data, $filters);
+
+		foreach ($filters as $key => $value) {
+			if (isset($row[$key])) {
+				$row[$key] = trim($row[$key]);
+				if ($row[$key] != '') { continue; }
+			}
+			$msg = 'invalid ' . $key;
+		}
+		return $row;
 	}
 }
 ?>

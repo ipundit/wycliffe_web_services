@@ -53,16 +53,27 @@ password	V9BpiJYe
 isComing	3
 EXPECTS	{"error":"invalid isComing"}
 
+# Update participant testing
+URL	http://wycliffe-services.net/events/webservice.php
+report	upload
+eventName	Test Event
+userName	TestEvent
+password	V9BpiJYe
+file	_file3
+EXPECTS	ok
+RESULT	$wait_till_finished
+
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
 userName	TestEvent
 password	V9BpiJYe
 EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"2","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"error":"ok"}
+RESULT	$wait_till_finished
 
-# Update participant testing
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
 userName	TestEvent
 password	V9BpiJYe
 isComing	1
 EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"1","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"error":"ok"}
+RESULT	$wait_till_finished

@@ -110,6 +110,11 @@ class Participant extends Record
 
 		$participant = new Participant($params['userName'], $params['password'], $msg);
 		if ($msg != '') { return false; }
+
+		if (!$participant->hasId($params['id'])) {
+			$msg = 'id not found';
+			return false;
+		}
 		
 		if (false === $participant->update($params, $msg)) { return false; }
 		
@@ -118,6 +123,10 @@ class Participant extends Record
 		
 		$msg = $row;
 		return true;
+	}
+	
+	public function hasId($id) {
+		return $this->inDatabase('id', $id);
 	}
 	
 	private function update($params, &$msg) {
@@ -151,6 +160,8 @@ class Participant extends Record
 		  "password"=>FILTER_UNSAFE_RAW,
 		  "isComing"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
+		  
+		  // fixme: support uploading of client side data
 		);
 		$row = filter_var_array($data, $filters);
 

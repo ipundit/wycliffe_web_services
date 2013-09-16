@@ -121,7 +121,7 @@ class Record
 		return $retValue;
 	}
 	
-	private function inDatabase($key, $value) {
+	protected function inDatabase($key, $value) {
 		return $this->select($key, $key . "=?", $value)->numRows() >= 1;
 	}
 	

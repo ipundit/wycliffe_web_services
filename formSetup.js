@@ -202,6 +202,16 @@ function setupStringPrototypes() {
 		};
 	}
 
+	if (typeof String.prototype.ltrim != 'function') {
+		String.prototype.ltrim = function (needle) {
+			return this.replace(/^\s+/,"");
+		};
+	}
+	if (typeof String.prototype.rtrim != 'function') {
+		String.prototype.rtrim = function (needle) {
+			return this.replace(/\s+$/,"");
+		};
+	}
 	if (typeof String.prototype.removeBefore != 'function') {
 		String.prototype.removeBefore = function (needle) {
 			var index = this.indexOf(needle);
@@ -209,6 +219,14 @@ function setupStringPrototypes() {
 			return this.substring(index + needle.length).ltrim();
 		};
 	}
+	if (typeof String.prototype.removeAfter != 'function') {
+		String.prototype.removeAfter = function (needle) {
+			var index = this.indexOf(needle);
+			if (index == -1) { return this; }
+			return this.substring(0, index).rtrim();
+		};
+	}
+
 	if (typeof String.prototype.capitalizeFirstLetter != 'function') {
 		String.prototype.capitalizeFirstLetter = function (str) {
 			return this.charAt(0).toUpperCase() + this.slice(1);

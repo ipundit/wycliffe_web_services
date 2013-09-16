@@ -98,15 +98,28 @@ function fieldsToUpload() {
 
 	var arr = ['eventName','passkey','id','arrivalFlightNumber','arrivalDate','arrivalTime','departureFlightNumber','departureDate',
 			   'departureTime','honorific','firstName','lastName','organization','title','email','phone','passportNumber',
-			   'passportExpiryDate','passportCountry','passportName']
+			   'passportExpiryDate','passportCountry','passportName','notes'];
+			   
 	for (var i = 0; i < arr.length; i++) {
-		retValue[arr[i]] = $('#' + arr[i]).val();
+		var val = $('#' + arr[i]).val();
+		if (undefined !== val) { retValue[arr[i]] = val; }
 	}
-
+	
+	retValue['arrivalDate'] = convertToDate(retValue['arrivalDate']);
+	retValue['departureDate'] = convertToDate(retValue['departureDate']);
+	if (undefined !== retValue['passportExpiryDate']) { retValue['passportExpiryDate'] = convertToDate(retValue['passportExpiryDate']); }
 	return retValue;
 }
+function convertToDate(theDate) {
+	if (theDate == '') { return ''; }
+	return new Date(theDate).toISOString().removeAfter('T');
+}
+
 function onSuccess(retValue) {
-	$('#errorAnchor').html('<span>' + retValue + '</span>');
+	retValue = $.parseJSON(retValue);
+	if (retValue.error == 'ok') { retValue.error = g_translations['Your registration information has been updated. Come back to this website any time to make a change.'] }
+	
+	$('#errorAnchor').html('<span>' + retValue.error + '</span>');
 }
 
 function eventHandlers() {

@@ -185,6 +185,7 @@ class Participant extends Record
 		  "passportExpiryDate"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "passportCountry"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "passportName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "notes"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
 		$row = filter_var_array($data, $filters);
@@ -203,7 +204,7 @@ class Participant extends Record
 		foreach ($filters as $key => $value) {
 			if (isset($row[$key])) {
 				$row[$key] = trim($row[$key]);
-				if ($row[$key] == '' && isset($data[$key])) {
+				if ($row[$key] == '' && isset($data[$key]) && $data[$key] != '') {
 					$msg = 'invalid ' . $key;
 					return false;
 				}
@@ -211,7 +212,6 @@ class Participant extends Record
 				unset($row[$key]);
 			}
 		}
-
 		return $row;
 	}
 	

@@ -66,6 +66,181 @@ passkey	6695992ba9c4aa905ddeab51cb67b745
 isComing	3
 EXPECTS	{"error":"invalid isComing"}
 
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+email	asdf
+EXPECTS	{"error":"invalid email"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	02/02/2013
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	2013/02/02
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	2013-02-30
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	2013-25-02
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	02/02/2013
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	2013/02/02
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	2013-02-30
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalDate	2013-25-02
+EXPECTS	{"error":"invalid arrivalDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalTime	a
+EXPECTS	{"error":"invalid arrivalTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalTime	01:01:01
+EXPECTS	{"error":"invalid arrivalTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalTime	24:00
+EXPECTS	{"error":"invalid arrivalTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+arrivalTime	4:60
+EXPECTS	{"error":"invalid arrivalTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureDate	02/02/2013
+EXPECTS	{"error":"invalid departureDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureDate	2013/02/02
+EXPECTS	{"error":"invalid departureDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureDate	2013-02-30
+EXPECTS	{"error":"invalid departureDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureDate	2013-25-02
+EXPECTS	{"error":"invalid departureDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureTime	a
+EXPECTS	{"error":"invalid departureTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureTime	01:01:01
+EXPECTS	{"error":"invalid departureTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureTime	24:00
+EXPECTS	{"error":"invalid departureTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+departureTime	4:60
+EXPECTS	{"error":"invalid departureTime"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+passportExpiryDate	02/02/2013
+EXPECTS	{"error":"invalid passportExpiryDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+passportExpiryDate	2013/02/02
+EXPECTS	{"error":"invalid passportExpiryDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+passportExpiryDate	2013-02-30
+EXPECTS	{"error":"invalid passportExpiryDate"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	123
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+passportExpiryDate	2013-25-02
+EXPECTS	{"error":"invalid passportExpiryDate"}
+
 # Update participant testing
 URL	http://wycliffe-services.net/events/webservice.php
 report	upload
@@ -88,5 +263,23 @@ id	123
 eventName	TestEvent
 passkey	6695992ba9c4aa905ddeab51cb67b745
 isComing	1
-EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"1","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"passkey":"6695992ba9c4aa905ddeab51cb67b745","error":"ok"}
-RESULT	$wait_till_finished
+email	
+arrivalDate	2013-02-25
+arrivalTime	01:25
+arrivalFlightNumber	a1
+departureDate	2013-2-26
+departureTime	1:24
+departureFlightNumber	d1
+honorific	Dr.
+firstName	First name
+LastName	Last name
+organization	Org
+title	title
+phone	+60 (2) 123345
+passportNumber	A123
+passportExpiryDate	2013-2-1
+passportCountry	Canada
+passportName	First Middle Last
+notes	More notes
+EXPECTS	{"id":"123","honorific":"Dr.","firstname":"First name","lastname":"Last","email":null,"phone":"+60 (2) 123345","organization":"Org","title":"title","iscoming":"1","needvisa":"0","passportname":"First Middle Last","passportcountry":"Canada","passportnumber":"A123","passportexpirydate":"2013-02-01","arrivaldate":"2013-02-25","arrivaltime":"01:25","arrivalflightnumber":"a1","departuredate":"2013-02-26","departuretime":"01:24","departureflightnumber":"d1","notes":"More notes","passkey":"6695992ba9c4aa905ddeab51cb67b745","error":"ok"}
+

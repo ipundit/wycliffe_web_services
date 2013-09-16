@@ -212,7 +212,34 @@ class Participant extends Record
 				unset($row[$key]);
 			}
 		}
+		
+		foreach (array('arrivalDate', 'departureDate', 'passportExpiryDate') as $theDate) {
+			if (!isset($row[$theDate])) { continue; }
+			if (preg_match('/^20\d\d\-\d?\d\-\d?\d$/', $row[$theDate])) {
+				$arr = explode('-', $row[$theDate]);
+				if (checkdate($arr[1], $arr[2], $arr[0])) { continue; }
+			}
+			$msg = 'invalid ' . $theDate;
+			return false;
+		}
+		
+		foreach (array('arrivalTime', 'departureTime') as $theTime) {
+			if (!isset($row[$theTime])) { continue; }
+			if (preg_match('/^\d?\d:\d\d$/', $row[$theTime])) {
+				$arr = explode(':', $row[$theTime]);
+				if (Participant::checktime($arr[0], $arr[1])) { continue; }
+			}
+			$msg = 'invalid ' . $theTime;
+			return false;
+		}
+
 		return $row;
+	}
+	
+	private static function checktime($hour, $minute) {
+		$hour = ltrim($hour, '0');
+		$minute = ltrim($minute, '0');
+		return ($hour > -1 && $hour < 24 && $minute > -1 && $minute < 60);
 	}
 	
 	private static function encryptPasskey(&$msg, $eventShortName, $salt, $encrypt = true, $passkey = '') {

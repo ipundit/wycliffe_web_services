@@ -99,7 +99,7 @@ label.error {
 	if ($row === false) { return; }
 ?>
 
-<h1><?php echo(t("Registration for") . ' ' . $row->eventName); ?></h1>
+<h1><?php echo(t("Registration for") . ' ' . $row->eventNameWithSpaces); ?></h1>
 <form id="theForm" action="#" method="post">
 <div id="errorAnchor" class="error"></div>
 <fieldset>
@@ -247,6 +247,8 @@ if ($row->needvisa) { echo $str; }
 </fieldset>
 
 <input type="hidden" id="id" name="id" value="<?php echo($row->id) ?>" />
+<input type="hidden" id="eventName" name="eventName" value="<?php echo($row->eventName) ?>" />
+<input type="hidden" id="passkey" name="passkey" value="<?php echo($row->passkey) ?>" />
 <button type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </form>
 </body>
@@ -254,22 +256,27 @@ if ($row->needvisa) { echo $str; }
 
 <?php
 function readFromDatabase() {
+	require_once 'classes/DatabaseConstants.php';
 	require_once 'util.php';
 	
 	if (isset($_GET['id'])) {
-		require_once 'classes/DatabaseConstants.php';
-		$params = array(
-			'id' => $_GET['id'],
-			'userName' => EVENT_USERNAME,
-			'password' => EVENT_PASSWORD,
-		);
-		if (isset($_GET['isComing'])) { $params['isComing'] = $_GET['isComing']; }
-		$ch = util::curl_init("https://wycliffe-services.net/events/webservice_participant.php", $params);
-		$result = curl_exec($ch);
+		if (isset($_GET['passkey'])) {
+			$params = array(
+				'id' => $_GET['id'],
+				'eventName' => EVENT_USERNAME,
+				'passkey' => $_GET['passkey'],
+			);
+			if (isset($_GET['isComing'])) { $params['isComing'] = $_GET['isComing']; }
+			$ch = util::curl_init("https://wycliffe-services.net/events/webservice_participant.php", $params);
+			$result = curl_exec($ch);
+		} else {
+			$result = '{"error":"invalid passkey"}';
+		}
 	} else {
 		$result = '{"error":"invalid id"}';
 	}
 	$result = json_decode($result);
+	$result->eventNameWithSpaces = EVENT_NAME;
 	$result->eventName = EVENT_USERNAME;
 	foreach ($result as &$value) {
 		$value = str_replace('"', "&quot;", $value);

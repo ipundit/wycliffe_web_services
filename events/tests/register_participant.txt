@@ -1,32 +1,45 @@
 # Read participant testing
 URL	http://wycliffe-services.net/events/webservice_participant.php
-EXPECTS	{"error":"invalid password"}
-
-URL	http://wycliffe-services.net/events/webservice_participant.php
-password	ignore
-EXPECTS	{"error":"invalid userName"}
-
-URL	http://wycliffe-services.net/events/webservice_participant.php
-userName	ignore
-password	ignore
 EXPECTS	{"error":"invalid id"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	a
-userName	ignore
-password	ignore
 EXPECTS	{"error":"invalid id"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
-userName	ignore
-password	ignore
-EXPECTS	{"error":"Invalid username\/password"}
+EXPECTS	{"error":"invalid eventName"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
-userName	TestEvent
-password	V9BpiJYe
+eventName	
+EXPECTS	{"error":"invalid eventName"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+eventName	eventDoesNotExist
+EXPECTS	{"error":"invalid eventName"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+eventName	..
+EXPECTS	{"error":"invalid eventName"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+eventName	TestEvent
+EXPECTS	{"error":"invalid passkey"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+eventName	TestEvent
+passkey	ignore
+EXPECTS	{"error":"Invalid passkey"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+eventName	TestEvent
+passkey	fb2792b3d552a8e6ed10fc203c9a63f2
 EXPECTS	{"error":"id not found"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
@@ -41,15 +54,15 @@ EXPECTS	{"error":"invalid simulate"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
-userName	TestEvent
-password	V9BpiJYe
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
 isComing	a
 EXPECTS	{"error":"invalid isComing"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
-userName	TestEvent
-password	V9BpiJYe
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
 isComing	3
 EXPECTS	{"error":"invalid isComing"}
 
@@ -65,15 +78,15 @@ RESULT	$wait_till_finished
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
-userName	TestEvent
-password	V9BpiJYe
-EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"2","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"error":"ok"}
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
+EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"2","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"passkey":"6695992ba9c4aa905ddeab51cb67b745","error":"ok"}
 RESULT	$wait_till_finished
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	123
-userName	TestEvent
-password	V9BpiJYe
+eventName	TestEvent
+passkey	6695992ba9c4aa905ddeab51cb67b745
 isComing	1
-EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"1","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"error":"ok"}
+EXPECTS	{"id":"123","honorific":null,"firstname":"\"First in quotes\"","lastname":"Last","email":"developer_support@wycliffe-services.net","phone":null,"organization":null,"title":null,"iscoming":"1","needvisa":"0","passportname":null,"passportcountry":null,"passportnumber":null,"passportexpirydate":"2013-09-02","arrivaldate":null,"arrivaltime":null,"arrivalflightnumber":null,"departuredate":"2013-09-04","departuretime":"14:25","departureflightnumber":null,"notes":null,"passkey":"6695992ba9c4aa905ddeab51cb67b745","error":"ok"}
 RESULT	$wait_till_finished

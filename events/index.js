@@ -96,7 +96,7 @@ function fieldsToUpload() {
 	var retValue = [];
 	retValue['isComing'] = $('input[name=isComing]:radio:checked').val();
 
-	var arr = ['id','arrivalFlightNumber','arrivalDate','arrivalTime','departureFlightNumber','departureDate',
+	var arr = ['eventName','passkey','id','arrivalFlightNumber','arrivalDate','arrivalTime','departureFlightNumber','departureDate',
 			   'departureTime','honorific','firstName','lastName','organization','title','email','phone','passportNumber',
 			   'passportExpiryDate','passportCountry','passportName']
 	for (var i = 0; i < arr.length; i++) {

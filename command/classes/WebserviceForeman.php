@@ -1,5 +1,7 @@
 <?php 
 require_once 'classes/WebserviceWorker.php';
+define("IGNORE", "__IGNORE__");
+define('MAX_NUM_WORKERS', 1000);
 
 class WebserviceForeman {
 	private $workers;
@@ -15,7 +17,7 @@ class WebserviceForeman {
 		$this->mh = curl_multi_init();
 	}
     
-	public function schedule($url, $params, $expects, $result, $lineCount) {
+	public function run($url, $params, $expects, $result, $lineCount, $runAllProcesses, &$msg) {
 		foreach ($this->variables as $key => $value) {
 			foreach ($params as &$paramValue) {
 				$paramValue = str_replace($key, $value, $paramValue);
@@ -30,11 +32,22 @@ class WebserviceForeman {
 		
 		if (!$this->simulate) {
 			$running = 0;
-			curl_multi_exec($this->mh, $running);
+			if (count($this->workers) >= MAX_NUM_WORKERS) {
+				if (!$this->runImpl(false, $msg)) { return false; }
+			} else {
+				curl_multi_exec($this->mh, $running);
+			}
 		}
+		
+		if ($runAllProcesses) {	return $this->runImpl(true, $msg); }
+		return $this->isBlockingCall($result) ? $this->runImpl(false, $msg) : true;
 	}
 
-	public function run($onlyNeedBlockingTaskToFinish, &$msg) {
+	private function isBlockingCall($result) {
+		return $result != IGNORE;
+	}
+	
+	private function runImpl($runAllProcesses, &$msg) {
 		if ($this->simulate) { 
 			$msg = 'regression tests passed';
 			return true;
@@ -53,14 +66,13 @@ class WebserviceForeman {
 					
 					if ($worker->result() != IGNORE) {
 						$this->variables[$worker->result()] = $str;
-						if ($onlyNeedBlockingTaskToFinish) { $still_running = false; }
+						if (!$runAllProcesses) { $still_running = false; }
 					}
 
 					$ok = $worker->processReturn($str, $temp);
 					if (!$ok || $id == $this->lastId) { $msg = $temp; }
-
-					unset($this->workers[$id]);
 				}
+				unset($this->workers[$id]);
 				curl_multi_remove_handle($this->mh, $id);
 			}
 		} while ($still_running);

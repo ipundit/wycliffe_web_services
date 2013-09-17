@@ -214,7 +214,7 @@ class Participant extends Record
 		}
 		
 		foreach (array('arrivalDate', 'departureDate', 'passportExpiryDate') as $theDate) {
-			if (!isset($row[$theDate])) { continue; }
+			if (!isset($row[$theDate]) || $row[$theDate] == '') { continue; }
 			if (preg_match('/^20\d\d\-\d?\d\-\d?\d$/', $row[$theDate])) {
 				$arr = explode('-', $row[$theDate]);
 				if (checkdate($arr[1], $arr[2], $arr[0])) { continue; }
@@ -224,7 +224,7 @@ class Participant extends Record
 		}
 		
 		foreach (array('arrivalTime', 'departureTime') as $theTime) {
-			if (!isset($row[$theTime])) { continue; }
+			if (!isset($row[$theTime]) || $row[$theTime] == '') { continue; }
 			if (preg_match('/^\d?\d:\d\d$/', $row[$theTime])) {
 				$arr = explode(':', $row[$theTime]);
 				if (Participant::checktime($arr[0], $arr[1])) { continue; }

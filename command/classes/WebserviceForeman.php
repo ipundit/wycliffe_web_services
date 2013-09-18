@@ -1,7 +1,7 @@
 <?php 
 require_once 'classes/WebserviceWorker.php';
 define("IGNORE", "__IGNORE__");
-define('MAX_NUM_WORKERS', 1000);
+define('MIN_FREE_MEMORY', 20000);
 
 class WebserviceForeman {
 	private $workers;
@@ -32,7 +32,7 @@ class WebserviceForeman {
 		
 		if (!$this->simulate) {
 			$running = 0;
-			if (count($this->workers) >= MAX_NUM_WORKERS) {
+			if ($this->get_server_memory_usage() < MIN_FREE_MEMORY) {
 				if (!$this->runImpl(false, $msg)) { return false; }
 			} else {
 				curl_multi_exec($this->mh, $running);
@@ -47,6 +47,17 @@ class WebserviceForeman {
 		return $result != IGNORE;
 	}
 	
+	private function get_server_memory_usage(){
+		$free = shell_exec('/usr/bin/free');
+		$free = (string)trim($free);
+		$free_arr = explode("\n", $free);
+		
+		$mem = explode(" ", $free_arr[1]);
+		$mem = array_filter($mem);
+		$mem = array_merge($mem);
+		return $mem[2];
+	}
+
 	private function runImpl($runAllProcesses, &$msg) {
 		if ($this->simulate) { 
 			$msg = 'regression tests passed';

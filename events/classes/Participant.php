@@ -70,12 +70,15 @@ class Participant extends Record
 		
 		$columns = Record::columns(array('passkey'));
 		foreach ($rows as $data) {
+			if (count($data) == 0 || implode('', $data) == '') { continue; }
 			$row = array();
 			
 			$index = 0;
 			foreach ($columns as $column) {
 				$row[$column] = $data[$index++];
 			}
+			
+			if ($row['id'] == '') { $row['id'] = rand(1, 65535); }
 			$row['passkey'] = Participant::encryptPasskey($msg, $eventShortName, $row['id']);
 
 			Record::initialize($row, false);

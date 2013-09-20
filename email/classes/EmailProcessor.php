@@ -116,11 +116,13 @@ class EmailProcessor
 				$body = 'We found an error in your form and could not execute your request. Please reply to this email to correct the following error: <b>' . $error . '</b>';
 			} elseif (is_numeric($error)) {
 				$body = 'Your request was processed successfully; number of emails sent: ' . $error;
+				EmailProcessor::log("sendDefaultForm", $body);
 			} else {
 				$body = 'There was an error while running your request: <b>' . $error . '</b>';
+				EmailProcessor::log("sendDefaultForm", $error);
 			}
 			$body .= '.<br><br>Regards,<br>Wycliffe Web Services<br><hr>';
-			
+
 			if ($message['body'] == '') {
 				$body = preg_replace('/^.*?<body.*?>/s', $body, $message['html']);
 				$body = preg_replace('/<\/body>.*/s', '', $body);
@@ -130,6 +132,12 @@ class EmailProcessor
 		}
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
 		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), $simulate);
+	}
+	
+	private static function log($functionName, $message) {
+		openlog("EmailProcessor::$functionName", LOG_NDELAY, LOG_MAIL);
+		syslog(LOG_NOTICE, "$message");
+		closelog();
 	}
 
 	private static function parseEmail($message, $template, &$params, &$error) {

@@ -195,7 +195,7 @@ label.error {
 </div>
 <div class="column">
 	<input type="text" id="phone" name="phone" class="contactTextField" value="<?php echo($row->phone) ?>" />
-	<label class="verticalLabel"><?php echo(t("Cell phone number")); ?></label>
+	<label class="verticalLabel"><?php echo(t("Cell phone number, eg)") . " +66 1234567"); ?></label>
 </div>
 </div>
 </fieldset>

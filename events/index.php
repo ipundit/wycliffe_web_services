@@ -62,6 +62,11 @@ button {
 		padding: 10px;
 	}
 	button { width: 571px; }
+	
+	/* Safari */
+    ::i-block-chrome, fieldset { width: 548px; }
+	::i-block-chrome, button { width: 574px; }
+	::i-block-chrome, textarea { width: 540px; }
 }
 
 #spinner {

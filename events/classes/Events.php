@@ -150,7 +150,7 @@ BODY;
 			$body = <<<BODY
 Dear $name,<br>
 <br>
-This mail merge program will send a personalized invitation to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
+This mail merge program will send a personalized invitation to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list with passkeys that is attached to this email. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
 <br>
 <b>Your name:</b> $name<br>
 <b>Subject:</b> Invitation to $eventName<br>
@@ -180,7 +180,7 @@ BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
 			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
-				"Invitation email template for " . $eventName, $body, '', '', '', array(), $row['simulate']);
+				"Invitation email template for " . $eventName, $body, '', '', '', $files, $row['simulate']);
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		case 'logistics':
@@ -198,7 +198,7 @@ BODY;
 			$body = <<<BODY
 Dear $name,<br>
 <br>
-This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person with isComing = 1 in mailing_list.csv.<br>
+This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list with passkeys that is attached to this email. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
 <br>
 <b>Your name:</b> $name<br>
 <b>Subject:</b> Logistics information for $eventName<br>
@@ -237,7 +237,7 @@ BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
 			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
-				"Logistics email template for " . $eventName, $body, '', '', '', array(), $row['simulate']);
+				"Logistics email template for " . $eventName, $body, '', '', '', $files, $row['simulate']);
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		}

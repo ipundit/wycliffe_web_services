@@ -1,9 +1,9 @@
-$tags,$firstName,$lastName,$email,$org,$phoneNumber,$tagLine,Comment
-"WMO, WMO wLP",One,Test,wycliffe.web.services.test.1@gmail.com,Organization 1,1(613)323-2323,,"Press Alt+Enter to enter a new line in Excel
+$tags,$firstName,$lastName,$email,$org,$phoneNumber,$tagLine,$cc,$bcc,Comment
+"WMO, WMO wLP",One,Test,wycliffe.web.services.test.1@gmail.com,Organization 1,1(613)323-2323,,,,"Press Alt+Enter to enter a new line in Excel
 Another line"
-"WMO, WMO wLP",Two,Test,wycliffe.web.services.test.2@gmail.com,Organization 2,,,"Press Ctrl+Enter to enter a new line in LibreOffice
+"WMO, WMO wLP",Two,Test,wycliffe.web.services.test.2@gmail.com,Organization 2,,,,,"Press Ctrl+Enter to enter a new line in LibreOffice
 Another line"
-WMO,John,Doe,wycliffe.web.services.test.1@gmail.com,Organization 2,,Tag line,"Any column header that starts with a $ is a variable useable by the template file. Comment does not start with a $, so it's ignored"
-,Joe,Doe,wycliffe.web.services.test.1@gmail.com,Organization 3,,,"Since there is no tag for Joe Doe, he will only be emailed when no tag is set"
-WPO,Jane,Doe,,Organization 2,,,"If email is blank, then there is no one to send the email to, and thus this row will be skipped"
-WPO,Three,Test,wycliffe.web.services.test.2@gmail.com,Organization 3,,,
+WMO,John,Doe,wycliffe.web.services.test.1@gmail.com,Organization 2,,Tag line,developer_support@wycliffe-services.net,,"Any column header that starts with a $ is a variable useable by the template file. Comment does not start with a $, so it's ignored"
+,Joe,Doe,wycliffe.web.services.test.1@gmail.com,Organization 3,,,,,"Since there is no tag for Joe Doe, he will only be emailed when no tag is set"
+WPO,Jane,Doe,,Organization 2,,,,,"If email is blank, then there is no one to send the email to, and thus this row will be skipped"
+WPO,Three,Test,wycliffe.web.services.test.2@gmail.com,Organization 3,,,,,

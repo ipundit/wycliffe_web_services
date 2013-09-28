@@ -1,0 +1,7 @@
+$tags,$firstName,$lastName,$email,$org,$phoneNumber,$tagLine,$cc,$bcc,Comment
+"WMO, WMO wLP",One,Test,wycliffe.web.services.test.1@gmail.com,Organization 1,1(613)323-2323,,this will fail,,$cc has to be blank or a valid email
+"WMO, WMO wLP",Two,Test,wycliffe.web.services.test.2@gmail.com,Organization 2,,,,,
+WMO,John,Doe,wycliffe.web.services.test.1@gmail.com,Organization 2,,Tag line,,,
+,Joe,Doe,wycliffe.web.services.test.1@gmail.com,Organization 3,,,,,
+WPO,Jane,Doe,,Organization 2,,,,,
+WPO,Three,Test,wycliffe.web.services.test.2@gmail.com,Organization 3,,,,,

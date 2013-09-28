@@ -38,8 +38,8 @@ class Email
 		$numSent = 1;
 		if ($row["to"] == '') {
 			$lines = Email::fillTemplateFromCSV($row, $msg);
-			if ($msg != '') { return false; }
 
+			if ($msg != '') { return false; }
 			if ($row['simulate'] == 1) {
 				$msg = trim(preg_replace('/\s+/', ' ', print_r($lines, true)));
 //$msg = '<pre>' . print_r($lines, true) . '</pre>';
@@ -50,6 +50,22 @@ class Email
 				self::$currentLineNumber = $lineNumber;
 				self::$currentLine = $line;
 			
+				if (!Email::validateEmailList($line, 'cc', false, $msg)) {
+					if ($line['simulate'] == 1) { return false;	}
+					Email::sendErrorMessage($msg);
+					return false;
+				}
+				
+				if (!Email::validateEmailList($line, 'bcc', false, $msg)) {
+					if ($line['simulate'] == 1) { return false;	}
+					Email::sendErrorMessage($msg);
+					return false;
+				}
+				if (!Email::validateEmailList($line, 'replyTo', false, $msg)) {
+					if ($line['simulate'] == 1) { return false;	}
+					Email::sendErrorMessage($msg);
+					return false;
+				}
 				if (!util::sendEmail($msg, $line['fromName'], $line['from'], $line['to'], $line['subject'], 
 									 $line['body'], $line['cc'], $line['bcc'], $line['replyTo'], $files,
 									 $line['simulate'])) {
@@ -316,10 +332,7 @@ class Email
 				$msg = "cannot have more than one source of to";
 				return false;
 			}
-			if (!Email::validateEmailList($row["to"])) {
-				$msg = "invalid to";
-				return false;
-			}
+			if (!Email::validateEmailList($row, 'to', false, $msg)) { return false; }
 			
 			unset($row['tags']);
 			unset($row['startRow']);
@@ -334,20 +347,9 @@ class Email
 			}
 		}
 
-		if (!Email::validateEmailList($row["cc"])) {
-			$msg = "invalid cc";
-			return false;
-		}
-
-		if (!Email::validateEmailList($row["bcc"])) {
-			$msg = "invalid bcc";
-			return false;
-		}
-		
-		if (!Email::validateEmailList($row["replyTo"])) {
-			$msg = "invalid replyTo";
-			return false;
-		}
+		if (!Email::validateEmailList($row, 'cc', true, $msg)) { return false; }
+		if (!Email::validateEmailList($row, 'bcc', true, $msg)) { return false; }
+		if (!Email::validateEmailList($row, 'replyTo', true, $msg)) { return false; }
 		
 		if (Email::isInjectionAttack($row["subject"])) {
 			$msg = "invalid subject";
@@ -421,8 +423,12 @@ class Email
 		return $retValue;
 	}
 	
-	private static function validateEmailList($str) {
+	private static function validateEmailList($row, $param, $acceptVariables, &$msg) {
+		$str = $row[$param];
 		if ($str == '') { return true; }
+		if ($acceptVariables && isset($_FILES["to"]) && strpos($str, '$') !== false) { return true; }
+		
+		$msg = "invalid $param";
 		if (Email::isInjectionAttack($str)) { return false; }
 		
 		foreach (explode(",", $str) as $email) {
@@ -432,6 +438,8 @@ class Email
 			}
 			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { return false; }
 		}
+
+		$msg = '';
 		return true;
 	}
 	static private function isInjectionAttack($str) {

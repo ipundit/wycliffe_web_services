@@ -1,13 +1,13 @@
-$tags,$firstName,$lastName,$email,$org,$phoneNumber,$tagLine,Comment
+$tags,$firstName,$lastName,$email,$org,$phoneNumber,$tagLine,$cc,$bcc,Comment
 "personal, work",One,Test,wycliffe.web.services.test.1@gmail.com,Organization 1,1(613)323-2323,"
-Another line","Press Alt+Enter to enter a new line in Excel
+Another line","email_to_cc@email.com,second_email@email.com",,"Press Alt+Enter to enter a new line in Excel
 
 Any column header that starts with a $ is a variable useable by the template file. Comment does not start with a $, so it's ignored"
 "personal, family",Two,Test,wycliffe.web.services.test.2@gmail.com,Organization 2,,"
-Another line","Press Ctrl+Enter to enter a new line in LibreOffice
+Another line",,,"Press Ctrl+Enter to enter a new line in LibreOffice
 
 You can add as many $columns as you like, and then use $columns for a mail merge"
-work,John,Doe,wycliffe.web.services.test.1@gmail.com,Organization 2,,Tag line,
-,Joe,Doe,wycliffe.web.services.test.1@gmail.com,Organization 3,,,"Since there is no tag for Joe Doe, he will only be emailed when no tag is set"
-family,Jane,Doe,,Organization 2,,,"If  email is blank, then there is no one to send the email to, and thus this row will be skipped"
-family,Three,Test,wycliffe.web.services.test.2@gmail.com,Organization 3,,,
+work,John,Doe,wycliffe.web.services.test.1@gmail.com,Organization 2,,Tag line,,,
+,Joe,Doe,wycliffe.web.services.test.1@gmail.com,Organization 3,,,,,"Since there is no tag for Joe Doe, he will only be emailed when no tag is set"
+family,Jane,Doe,,Organization 2,,,,,"If  email is blank, then there is no one to send the email to, and thus this row will be skipped"
+family,Three,Test,wycliffe.web.services.test.2@gmail.com,Organization 3,,,,,

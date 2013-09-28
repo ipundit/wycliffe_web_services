@@ -9,8 +9,8 @@
 <meta name="from" content="Your email" command="trim_all_tags" />
 <meta name="subject" content="Subject" />
 <meta name="replyTo" content="Reply-to" command="trim_all_tags" />
-<meta name="cc" content="Cc" />
-<meta name="bcc" content="Bcc" />
+<meta name="cc" content="Cc" command="trim_all_tags" />
+<meta name="bcc" content="Bcc" command="trim_all_tags" />
 <meta name="tags" content="Tags" />
 <meta name="startRow" content="Starting row" />
 <meta name="maxRow" content="Maximum number of rows to process" />
@@ -45,8 +45,8 @@ $fromName<br>
 <h4>Filling out the rest of the form is optional.</h4>
 <b>Simulate:</b> 0 # 0 to actually send the email, or 1 to run through all the checks but not actually send the email. simulate = 2 will output the email(s) to http://www.wycliffe-services.net/email/dryRun.html instead of emailing them out. This allows you to check the mass mailing before sending it out (recommended).
 <h4>Other receipients</h4>
-<b>Cc:</b> # A comma separated list of emails<br>
-<b>Bcc:</b> # A comma separated list of emails<br>
+<b>Cc:</b> $cc # A comma separated list of emails. Defaults to the $cc list specified in mailing_list.csv<br>
+<b>Bcc:</b> $bcc # A comma separated list of emails. Defaults to the $cc list specified in mailing_list.csv<br>
 <b>Reply-to:</b> # An email address where you want replies to your email to go to.  Otherwise, they will go to $fromEmail
 <h4>Mailing list filter settings</h4>
 <b>Tags:</b> # Tags will be compared to $tags in the mailing list.  If there is a match, the email will be sent. If tags is not set, then all rows will be sent.<br>

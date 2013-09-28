@@ -143,7 +143,7 @@ class EmailProcessor
 	private static function parseEmail($message, $template, &$params, &$error) {
 		$body = $message['body'] == '' ? $message['html'] : $message['body'];
 		$params = $template['params'];
-		
+
 		return EmailProcessor::extractParams($body, $message, $params, $error);
 	}
 	
@@ -161,8 +161,8 @@ class EmailProcessor
 	private static function extractParams($body, $message, &$params, &$error) {
 		$retValue = true;
 		$bodyVars = EmailProcessor::parseBody($body, $error);
-		if ($bodyVars === false) { return false; }
 		
+		if ($bodyVars === false) { return false; }
 		$attachments = $message['attachments'];
 		
 		foreach ($params as $key => &$value) {
@@ -274,6 +274,12 @@ class EmailProcessor
 	private static function parseBody($body, &$error) {
 		$body = str_replace("\r\n", "\n", $body);
 		$body = preg_replace('/(<\/?blockquote.*?>\n?)+/s', '', $body);
+		$body = preg_replace('/(\n +)/s', ' ', $body);
+		$body = str_replace("\n", "", $body);
+
+		$body = preg_replace('/<h4>/s', '<br><h4>', $body);
+		$body = preg_replace('/<\/h4>/s', '</h4><br>', $body);
+		$body = str_replace("<br>", "<br>\n", $body);
 		
 		$retValue = array();
 		

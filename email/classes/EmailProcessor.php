@@ -274,8 +274,7 @@ class EmailProcessor
 	private static function parseBody($body, &$error) {
 		$body = str_replace("\r\n", "\n", $body);
 		$body = preg_replace('/(<\/?blockquote.*?>\n?)+/s', '', $body);
-		$body = preg_replace('/(\n +)/s', ' ', $body);
-		$body = str_replace("\n", "", $body);
+		$body = preg_replace('/(\n+ +)/s', ' ', $body);
 
 		$body = preg_replace('/<h4>/s', '<br><h4>', $body);
 		$body = preg_replace('/<\/h4>/s', '</h4><br>', $body);

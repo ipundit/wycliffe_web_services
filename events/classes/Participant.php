@@ -28,6 +28,7 @@ class Participant extends Record
 			"departureDate"=>"date",
 			"departureTime"=>"time",
 			"departureFlightNumber"=>"text",
+			"cc"=>"text",
 			"notes"=>"text",
 			"passkey"=>"text",
 		);
@@ -151,7 +152,7 @@ class Participant extends Record
 	}
 	
 	private function getEventRegistration($id, &$msg) {
-		$res = Record::select($this->columns(array('tags','room')), 'id=?', $id);
+		$res = Record::select($this->columns(array('tags','room','cc')), 'id=?', $id);
 		
 		if ($res->numRows() != 1) {
 			$msg = 'id not found';

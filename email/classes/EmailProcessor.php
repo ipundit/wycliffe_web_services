@@ -30,8 +30,7 @@ class EmailProcessor
 			return false;
 		}
 
-		if (!EmailProcessor::initAttachments($mail, $struct, $buffer, $message, $error)) { return false; }
-		return true;
+		return EmailProcessor::initAttachments($mail, $struct, $buffer, $message, $error);
 	}
 
 	public static function processMessage($to, $message, &$error, $deleteAttachments = false) {
@@ -131,7 +130,7 @@ class EmailProcessor
 			}
 		}
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
-		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), $simulate);
+		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), array(), $simulate);
 	}
 	
 	private static function log($functionName, $message) {

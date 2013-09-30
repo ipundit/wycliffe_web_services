@@ -67,7 +67,7 @@ class Email
 					return false;
 				}
 				if (!util::sendEmail($msg, $line['fromName'], $line['from'], $line['to'], $line['subject'], 
-									 $line['body'], $line['cc'], $line['bcc'], $line['replyTo'], $files,
+									 $line['body'], $line['cc'], $line['bcc'], $line['replyTo'], $files, array(),
 									 $line['simulate'])) {
 					if ($line['simulate'] == 1) { return false;	}
 					
@@ -86,7 +86,7 @@ class Email
 			$numSent = count($lines);
 		} else {
 			if (!util::sendEmail($msg, $row["fromName"], $row["from"], $row["to"], $row['subject'], 
-										$row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, $row['simulate'])) {
+								 $row['body'], $row['cc'], $row['bcc'], $row['replyTo'], $files, array(), $row['simulate'])) {
 				return false;
 			}
 			if ($row['simulate'] == 2) {

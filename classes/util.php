@@ -229,7 +229,7 @@ class util {
 		return (substr($haystack, -$length) === $needle);
 	}
 	
-	static public function sendEmail(&$msg, $fromName, $from, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attachments = array(), $simulate = 0) {
+	static public function sendEmail(&$msg, $fromName, $from, $to, $subject, $body, $cc = '', $bcc = '', $replyTo = '', $attachments = array(), $inlineAttachments = array(), $simulate = 0) {
 		if (util::isJaarsEmail($from)) {
 			$sender = 'wycliffe-services-smtp@wycliffe.net';
 			if ($replyTo != '') {
@@ -275,6 +275,12 @@ class util {
 				
         $mime = new Mail_mime('');
 //        $mime->setTXTBody($body); // only support sending html emails
+
+		foreach ($inlineAttachments as $file) {
+			$mime->addAttachment($file);
+			//$mime->addHTMLImage($file);
+		}
+
         $mime->setHTMLBody('<html><body>'.$body.'</body></html>');
 
 		foreach ($attachments as $file) {

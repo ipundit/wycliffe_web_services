@@ -114,7 +114,7 @@ Password: $password<br>
 report: upload<br>
 BODY;
 			util::sendEmail($msg, '', "events@wycliffe-services.net", $row["fromEmail"], "Re: Get the latest participant list for $eventName", 
-							$body, '', '', '', $files, $row['simulate']);
+							$body, '', '', '', $files, array(), $row['simulate']);
 			break;
 		case 'upload':
 			if ($participant->overwriteDatabase($userName, $str, $row['simulate'], $msg)) {
@@ -131,7 +131,7 @@ Dear {$row['name']},<br>
 Your mailing list upload for <b>$eventName</b> completed with this message: <b>$msg</b>
 BODY;
 					util::sendEmail($msg, "", "no-reply@wycliffe-services.net", $row['fromEmail'], 
-						"Mailing list upload completed for " . $eventName, $body, '', '', '', array(), $row['simulate']);				
+						"Mailing list upload completed for " . $eventName, $body, '', '', '', array(), array(), $row['simulate']);				
 				}
 			}
 			break;
@@ -180,7 +180,7 @@ BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
 			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
-				"Invitation email template for " . $eventName, $body, '', '', '', $files, $row['simulate']);
+				"Invitation email template for " . $eventName, $body, '', '', '', $files, array(), $row['simulate']);
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		case 'logistics':
@@ -237,7 +237,7 @@ BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
 			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
-				"Logistics email template for " . $eventName, $body, '', '', '', $files, $row['simulate']);
+				"Logistics email template for " . $eventName, $body, '', '', '', $files, array(), $row['simulate']);
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		}
@@ -318,10 +318,10 @@ Your Wycliffe Web Services events account for the <b>$eventName</b> has been cre
 4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
 BODY;
 		util::sendEmail($err1, "", "events@wycliffe-services.net", $row['clientEmail'], 
-			"Logistics menu for " . $row['eventName'], $body, '', '', '', array(), $row['simulate']);
+			"Logistics menu for " . $row['eventName'], $body, '', '', '', array(), array(), $row['simulate']);
 		
 		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", 'developer_support@wycliffe-services.net', 
-			"Logistics menu email sent for " . $row['eventName'], 'Email sent to user successfully', '', '', '', array(), $row['simulate']);
+			"Logistics menu email sent for " . $row['eventName'], 'Email sent to user successfully', '', '', '', array(), array(), $row['simulate']);
 
 		$msg = $err1 . $err2;
 		if ($msg == '') { $msg = 'ok'; }
@@ -362,7 +362,7 @@ We received an events account creation request.<br>
 2. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Client name: $clientName%0D%0AClient email: $clientEmail%0D%0AEvent name: $eventName%0D%0AUser name: $shortName%0D%0APassword: ">configuration email</a> to user
 BODY;
 		util::sendEmail($err1, "", "no-reply@wycliffe-services.net", "developer_support@wycliffe-services.net", 
-			"Events account creation request", $body, '', '', '', array(), $row['simulate']);
+			"Events account creation request", $body, '', '', '', array(), array(), $row['simulate']);
 
 		$body = <<<BODY
 Dear $clientName,<br>
@@ -370,7 +370,7 @@ Dear $clientName,<br>
 Your request to create an events account for <b>$eventName</b> has been received and will be processed shortly.
 BODY;
 		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", $clientEmail, 
-			"Received events account creation request", $body, '', '', '', array(), $row['simulate']);
+			"Received events account creation request", $body, '', '', '', array(), array(), $row['simulate']);
 		
 		$msg = $err1 . $err2;
 		if ($msg == '') { $msg = 'ok'; }

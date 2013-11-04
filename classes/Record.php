@@ -121,7 +121,7 @@ class Record
 		return $retValue;
 	}
 	
-	private function inDatabase($key, $value) {
+	protected function inDatabase($key, $value) {
 		return $this->select($key, $key . "=?", $value)->numRows() >= 1;
 	}
 	
@@ -168,6 +168,7 @@ class Record
 					}
 				}
 			}
+			if (!isset($setClauses)) { return ''; }
 			
 			$statement = $this->db->prepare('UPDATE ' . $this->databaseName . '.' . $this->tableName . ' SET ' . implode(", ", $setClauses) . ' WHERE ' . $key . " = " . 
 				$this->db->quote($this->row[$key], $keyFieldType), $types, MDB2_PREPARE_RESULT);

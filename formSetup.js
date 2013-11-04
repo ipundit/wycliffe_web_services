@@ -22,27 +22,27 @@ function setupValidators(rules, messages, fieldsToUploadCallback, onSuccessCallb
 
 	$.validator.addMethod("radioChecked", function(value, element, param) { 
 		return (param != null && !$(param).prop('checked'));
-	}, "{0} radio must be checked");
+	}, "{0} radio must be checked.");
 
 	
 	$.validator.addMethod("noAngleBrackets", function(value, element, params) { 
 		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
 		return value.indexOf("<") == -1 && value.indexOf(">") == -1;
-	}, "{0} cannot contain the < or > characters");
+	}, "{0} cannot contain the < or > characters.");
 
 	$.validator.addMethod("isCSV", function(value, element, params) {
 		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
 		value = value.trim();
 		if (value.length == 0) { return false; }
 		return value.endsWith('.csv');
-	}, "Please choose a .csv file");
+	}, "Please choose a .csv file.");
 
 	$.validator.addMethod("isTXT", function(value, element, params) {
 		if ($.validator.methods.radioChecked.call(this, value, element, params[1])) { return true; }
 		value = value.trim();
 		if (value.length == 0) { return false; }
 		return value.endsWith('.txt');
-	}, "Please choose a .txt file");
+	}, "Please choose a .txt file.");
 
 	var validator = $("#theForm").validate({
 		errorPlacement: function(error, element) {
@@ -168,10 +168,11 @@ function submitHandler(fieldsToUploadCallback, onSuccessCallback, spinnerName) {
 	for (var key in fields) {
 		data.append(key, fields[key]);
 	}
-	
+
+	var theURL = (typeof webserviceURL == 'function') ? webserviceURL() : 'webservice.php';
 	$.ajax({
 		type: 'POST',
-		url: 'webservice.php',
+		url: theURL,
 		data: data,
 		success: function(retValue, textStatus) {
 			$('#' + spinnerName).hide();
@@ -201,6 +202,16 @@ function setupStringPrototypes() {
 		};
 	}
 
+	if (typeof String.prototype.ltrim != 'function') {
+		String.prototype.ltrim = function (needle) {
+			return this.replace(/^\s+/,"");
+		};
+	}
+	if (typeof String.prototype.rtrim != 'function') {
+		String.prototype.rtrim = function (needle) {
+			return this.replace(/\s+$/,"");
+		};
+	}
 	if (typeof String.prototype.removeBefore != 'function') {
 		String.prototype.removeBefore = function (needle) {
 			var index = this.indexOf(needle);
@@ -208,6 +219,14 @@ function setupStringPrototypes() {
 			return this.substring(index + needle.length).ltrim();
 		};
 	}
+	if (typeof String.prototype.removeAfter != 'function') {
+		String.prototype.removeAfter = function (needle) {
+			var index = this.indexOf(needle);
+			if (index == -1) { return this; }
+			return this.substring(0, index).rtrim();
+		};
+	}
+
 	if (typeof String.prototype.capitalizeFirstLetter != 'function') {
 		String.prototype.capitalizeFirstLetter = function (str) {
 			return this.charAt(0).toUpperCase() + this.slice(1);

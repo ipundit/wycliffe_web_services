@@ -89,7 +89,8 @@ class Events
 		$participant = new Participant($row['userName'], $row['password'], $msg);
 		if ($msg != '') { return true; }
 		
-		$path = $participant->reportCSV($tempDir, $msg);
+		$includePasskey = $report == 'invitation' || $report == 'logistics';
+		$path = $participant->reportCSV($tempDir, $includePasskey, $msg);
 		if ($path === false) { return true;	}
 
 		switch ($report) {
@@ -113,10 +114,10 @@ Password: $password<br>
 report: upload<br>
 BODY;
 			util::sendEmail($msg, '', "events@wycliffe-services.net", $row["fromEmail"], "Re: Get the latest participant list for $eventName", 
-							$body, '', '', '', $files, $row['simulate']);
+							$body, '', '', '', $files, array(), $row['simulate']);
 			break;
 		case 'upload':
-			if ($participant->overwriteDatabase($str, $row['simulate'], $msg)) {
+			if ($participant->overwriteDatabase($userName, $str, $row['simulate'], $msg)) {
 				if ($row['simulate'] == 1) {
 					Events::processDownload($path, $row['simulate'], $msg);
 				} else {
@@ -130,7 +131,7 @@ Dear {$row['name']},<br>
 Your mailing list upload for <b>$eventName</b> completed with this message: <b>$msg</b>
 BODY;
 					util::sendEmail($msg, "", "no-reply@wycliffe-services.net", $row['fromEmail'], 
-						"Mailing list upload completed for " . $eventName, $body, '', '', '', array(), $row['simulate']);				
+						"Mailing list upload completed for " . $eventName, $body, '', '', '', array(), array(), $row['simulate']);				
 				}
 			}
 			break;
@@ -149,7 +150,7 @@ BODY;
 			$body = <<<BODY
 Dear $name,<br>
 <br>
-This mail merge program will send a personalized invitation to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
+This mail merge program will send a personalized invitation to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list with passkeys that is attached to this email. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
 <br>
 <b>Your name:</b> $name<br>
 <b>Subject:</b> Invitation to $eventName<br>
@@ -157,7 +158,7 @@ This mail merge program will send a personalized invitation to each person in yo
 <b>Body->:</b><br>
 Dear \$honorific \$firstName,<br>
 <br>
-I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=y">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?id=\$id&isComing=n">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id">registration website</a> so that we can reserve the hotel room for you.<br>
+I would like to personally invite you to the <b>$eventName</b>.  It will be in [city] from [start date] to [end date].  If you can come to the event, please <a href="https://wycliffe-services.net/event/$userName/?id=\$id&passkey=\$passkey&isComing=1">confirm your attendance</a>, or <a href="https://wycliffe-services.net/event/$userName/?id=\$id&passkey=\$passkey&isComing=0">send your regrets</a> that you cannot make it.  When you have booked your tickets, please enter your arrival and departure dates on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id&passkey=\$passkey">registration website</a> so that we can reserve the hotel room for you.<br>
 <br>
 Regards,<br>
 $name<br>
@@ -179,7 +180,7 @@ BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
 			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
-				"Invitation email template for " . $eventName, $body, '', '', '', array(), $row['simulate']);
+				"Invitation email template for " . $eventName, $body, '', '', '', $files, array(), $row['simulate']);
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		case 'logistics':
@@ -197,7 +198,7 @@ BODY;
 			$body = <<<BODY
 Dear $name,<br>
 <br>
-This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list you created earlier. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person with isComing = Y in mailing_list.csv.<br>
+This mail merge program will send a personalized logistics email to each person in your mailing list.  Reply to this email and attach the <b>mailing_list.csv</b> participant list with passkeys that is attached to this email. Then fill out the below template and click send. Text that starts with a $ will be replaced by the corresponding value for each person in mailing_list.csv.<br>
 <br>
 <b>Your name:</b> $name<br>
 <b>Subject:</b> Logistics information for $eventName<br>
@@ -214,7 +215,7 @@ You are invited to the <b>$eventName</b>.  Here's the logistics information for 
 <b>Schedule:</b> [Enter link to Teamwork page, or attach a schedule to this email]<br>
 <b>Transportation:</b> Once we have your flight information, we will email you an airport pickup time.  Or, give instructions on how to take a taxi with an estimate of how much it will cost in local currency<br>
 <br>
-If you haven't done so already, please enter your information on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id">registration website</a> so we can reserve your hotel room.<br>
+If you haven't done so already, please enter your information on the <a href="https://wycliffe-services.net/event/$userName/?id=\$id&passkey=\$passkey">registration website</a> so we can reserve your hotel room.<br>
 <br>
 Regards,<br>
 $name<br>
@@ -236,7 +237,7 @@ BODY;
 			$files = array();
 			$files['mailing_list.csv'] = $path;
 			util::sendEmail($msg, "", "email@wycliffe-services.net", $fromEmail, 
-				"Logistics email template for " . $eventName, $body, '', '', '', array(), $row['simulate']);
+				"Logistics email template for " . $eventName, $body, '', '', '', $files, array(), $row['simulate']);
 			if ($msg == '') { $msg = 'ok'; }
 			break;
 		}
@@ -277,7 +278,6 @@ BODY;
 			$msg = "Invalid file path";
 			return false;
 		}	
-		
 		return file_get_contents($file['tmp_name']);
 	}
 	
@@ -318,10 +318,10 @@ Your Wycliffe Web Services events account for the <b>$eventName</b> has been cre
 4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
 BODY;
 		util::sendEmail($err1, "", "events@wycliffe-services.net", $row['clientEmail'], 
-			"Logistics menu for " . $row['eventName'], $body, '', '', '', array(), $row['simulate']);
+			"Logistics menu for " . $row['eventName'], $body, '', '', '', array(), array(), $row['simulate']);
 		
 		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", 'developer_support@wycliffe-services.net', 
-			"Logistics menu email sent for " . $row['eventName'], 'Email sent to user successfully', '', '', '', array(), $row['simulate']);
+			"Logistics menu email sent for " . $row['eventName'], 'Email sent to user successfully', '', '', '', array(), array(), $row['simulate']);
 
 		$msg = $err1 . $err2;
 		if ($msg == '') { $msg = 'ok'; }
@@ -337,6 +337,7 @@ BODY;
 			$msg = 'invalid name';
 			return false;
 		}
+	
 		if ($row['fromEmail'] == '') {
 			$msg = 'invalid fromEmail';
 			return false;
@@ -357,11 +358,11 @@ We received an events account creation request.<br>
 <b>Client email:</b> $clientEmail<br>
 <b>Event name:</b> $eventName<br>
 <br>
-1. Run /home/sysadmin/add_events_account.sh $shortName $clientName $clientEmail<br>
+1. Run /home/sysadmin/add_events_account.sh $shortName $clientName $clientEmail '$eventName'<br>
 2. Send <a href="mailto:events@wycliffe-services.net?subject=Created Wycliffe Web Services events account&body=Client name: $clientName%0D%0AClient email: $clientEmail%0D%0AEvent name: $eventName%0D%0AUser name: $shortName%0D%0APassword: ">configuration email</a> to user
 BODY;
 		util::sendEmail($err1, "", "no-reply@wycliffe-services.net", "developer_support@wycliffe-services.net", 
-			"Events account creation request", $body, '', '', '', array(), $row['simulate']);
+			"Events account creation request", $body, '', '', '', array(), array(), $row['simulate']);
 
 		$body = <<<BODY
 Dear $clientName,<br>
@@ -369,7 +370,7 @@ Dear $clientName,<br>
 Your request to create an events account for <b>$eventName</b> has been received and will be processed shortly.
 BODY;
 		util::sendEmail($err2, "", "no-reply@wycliffe-services.net", $clientEmail, 
-			"Received events account creation request", $body, '', '', '', array(), $row['simulate']);
+			"Received events account creation request", $body, '', '', '', array(), array(), $row['simulate']);
 		
 		$msg = $err1 . $err2;
 		if ($msg == '') { $msg = 'ok'; }

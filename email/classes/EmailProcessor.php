@@ -30,8 +30,7 @@ class EmailProcessor
 			return false;
 		}
 
-		if (!EmailProcessor::initAttachments($mail, $struct, $buffer, $message, $error)) { return false; }
-		return true;
+		return EmailProcessor::initAttachments($mail, $struct, $buffer, $message, $error);
 	}
 
 	public static function processMessage($to, $message, &$error, $deleteAttachments = false) {
@@ -116,11 +115,13 @@ class EmailProcessor
 				$body = 'We found an error in your form and could not execute your request. Please reply to this email to correct the following error: <b>' . $error . '</b>';
 			} elseif (is_numeric($error)) {
 				$body = 'Your request was processed successfully; number of emails sent: ' . $error;
+				EmailProcessor::log("sendDefaultForm", $body);
 			} else {
 				$body = 'There was an error while running your request: <b>' . $error . '</b>';
+				EmailProcessor::log("sendDefaultForm", $error);
 			}
 			$body .= '.<br><br>Regards,<br>Wycliffe Web Services<br><hr>';
-			
+
 			if ($message['body'] == '') {
 				$body = preg_replace('/^.*?<body.*?>/s', $body, $message['html']);
 				$body = preg_replace('/<\/body>.*/s', '', $body);
@@ -129,13 +130,19 @@ class EmailProcessor
 			}
 		}
 		$recipient = $message['reply-to'] == '' ? $message['from'] : $message['reply-to'];
-		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), $simulate);
+		return util::sendEmail($error, $templateName, $templateName . '@wycliffe-services.net', $recipient, $subject, $body, '', '', '', array(), array(), $simulate);
+	}
+	
+	private static function log($functionName, $message) {
+		openlog("EmailProcessor::$functionName", LOG_NDELAY, LOG_MAIL);
+		syslog(LOG_NOTICE, "$message");
+		closelog();
 	}
 
 	private static function parseEmail($message, $template, &$params, &$error) {
 		$body = $message['body'] == '' ? $message['html'] : $message['body'];
 		$params = $template['params'];
-		
+
 		return EmailProcessor::extractParams($body, $message, $params, $error);
 	}
 	
@@ -153,8 +160,8 @@ class EmailProcessor
 	private static function extractParams($body, $message, &$params, &$error) {
 		$retValue = true;
 		$bodyVars = EmailProcessor::parseBody($body, $error);
-		if ($bodyVars === false) { return false; }
 		
+		if ($bodyVars === false) { return false; }
 		$attachments = $message['attachments'];
 		
 		foreach ($params as $key => &$value) {
@@ -266,6 +273,11 @@ class EmailProcessor
 	private static function parseBody($body, &$error) {
 		$body = str_replace("\r\n", "\n", $body);
 		$body = preg_replace('/(<\/?blockquote.*?>\n?)+/s', '', $body);
+		$body = preg_replace('/(\n+ +)/s', ' ', $body);
+
+		$body = preg_replace('/<h4>/s', '<br><h4>', $body);
+		$body = preg_replace('/<\/h4>/s', '</h4><br>', $body);
+		$body = str_replace("<br>", "<br>\n", $body);
 		
 		$retValue = array();
 		

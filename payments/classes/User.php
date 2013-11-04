@@ -113,7 +113,7 @@ class User extends Record
 		
 		$retValue = '';
 		$temp = util::sendEmail($retValue, '', "no-reply@wycliffe-services.net", $to, $subject, $body, '', 
-								$org->notify_emails(), '', array(), $simulate);
+								$org->notify_emails(), '', array(), array(), $simulate);
 		if ($simulate == 1) { 
 			$msg = $retValue; // Even if sending the email fails in production, let the user know that credit card charge passed
 			return false;

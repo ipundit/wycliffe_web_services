@@ -6,7 +6,6 @@ define("START", 0);
 define("PARAMS", 1);
 define("EXPECTS", 2);
 define("RESULT", 3);
-define("IGNORE", "__IGNORE__");
 define("ASCII_TAB", 9);
 
 class CommandProcessor {
@@ -138,10 +137,7 @@ class CommandProcessor {
 				return false;
 			}
 			if ($paramName == 'URL') {
-				if ($state != START) { 
-					$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
-					if ($result != IGNORE && !$foreman->run(true, $msg)) { return false; }
-				}
+				if ($state != START && !$foreman->run($url, $params, $expects, $result, $expectsLineCount, false, $msg)) { return false; }
 
 				$url = $line[1];
 				
@@ -215,8 +211,7 @@ class CommandProcessor {
 			$params[$paramName] = $paramValue;
 		}
 		
-		$foreman->schedule($url, $params, $expects, $result, $expectsLineCount);
-		return $foreman->run(false, $msg);
+		return $foreman->run($url, $params, $expects, $result, $expectsLineCount, true, $msg);
 	}
 
 	static private function escapeDoubleQuotes($str) {

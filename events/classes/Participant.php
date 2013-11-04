@@ -28,13 +28,16 @@ class Participant extends Record
 			"departureDate"=>"date",
 			"departureTime"=>"time",
 			"departureFlightNumber"=>"text",
+			"cc"=>"text",
 			"notes"=>"text",
+			"passkey"=>"text",
 		);
 		Record::__construct($userName, $columns, "id", 'events', $userName, $password, $msg);
 	}
 	
-	public function reportCSV($dir, &$msg) {
-		$columns = $this->columns();
+	public function reportCSV($dir, $includePasskey, &$msg) {
+		$exception = $includePasskey ? array() : array('passkey');
+		$columns = $this->columns($exception);
 		$res = $this->selectAll($columns);
 
 		foreach ($columns as &$column) {
@@ -57,7 +60,7 @@ class Participant extends Record
 		return $path;
 	}
 	
-	public function overwriteDatabase($str, $simulate, &$msg) {
+	public function overwriteDatabase($eventShortName, $str, $simulate, &$msg) {
 		$rows = util::parseCSV($str);
 		$header = array_shift($rows);
 		if (!$this->validateHeader($header, $msg)) { return false; }
@@ -66,14 +69,19 @@ class Participant extends Record
 
 		$this->delete('*');
 		
-		$columns = Record::columns();
+		$columns = Record::columns(array('passkey'));
 		foreach ($rows as $data) {
+			if (count($data) == 0 || implode('', $data) == '') { continue; }
 			$row = array();
 			
 			$index = 0;
 			foreach ($columns as $column) {
 				$row[$column] = $data[$index++];
 			}
+			
+			if ($row['id'] == '') { $row['id'] = rand(1, 65535); }
+			$row['passkey'] = Participant::encryptPasskey($msg, $eventShortName, $row['id']);
+
 			Record::initialize($row, false);
 			Record::serialize();
 		}		
@@ -83,7 +91,9 @@ class Participant extends Record
 	
 	private function validateHeader($header, &$msg) {
 		$expectedHeader = '$' . implode(",$", Record::columns());
-		if (implode(",", $header) != $expectedHeader) {
+		$header = implode(",", $header);
+		if ($header != $expectedHeader) { $header.= ',$passkey'; }
+		if ($header != $expectedHeader) {
 			$msg = 'invalid file';
 			return false;
 		}
@@ -108,8 +118,15 @@ class Participant extends Record
 		$params = Participant::validateInput(empty($_POST) ? $_GET : $_POST, $msg);
 		if ($msg != '') { return false; }
 
-		$participant = new Participant($params['userName'], $params['password'], $msg);
+		$participant = new Participant($params['eventName'], $params['password'], $msg);
 		if ($msg != '') { return false; }
+
+		if (!$participant->hasId($params['id'])) {
+			$msg = 'id not found';
+			return false;
+		}
+		
+		if (false === $participant->update($params, $msg)) { return false; }
 		
 		$row = $participant->getEventRegistration($params['id'], $msg);
 		if ($row === false) { return false;}
@@ -117,9 +134,25 @@ class Participant extends Record
 		$msg = $row;
 		return true;
 	}
-			
-	public function getEventRegistration($id, &$msg) {
-		$res = Record::select($this->columns(array('tags','room')), 'id=?', $id);
+	
+	public function hasId($id) {
+		return $this->inDatabase('id', $id);
+	}
+	
+	private function update($params, &$msg) {
+		$simulate = $params['simulate'];
+		if ($simulate == 1) { return true; }
+
+		if (isset($params['arrivaltime']) && $params['arrivaltime'] != '') { $params['arrivaltime'] .= ":00"; }
+		if (isset($params['departuretime']) && $params['departuretime'] != '') { $params['departuretime'] .= ":00"; }
+		
+		Record::initialize($params, false);
+		$msg = Record::serialize();
+		return $msg == '';
+	}
+	
+	private function getEventRegistration($id, &$msg) {
+		$res = Record::select($this->columns(array('tags','room','cc')), 'id=?', $id);
 		
 		if ($res->numRows() != 1) {
 			$msg = 'id not found';
@@ -136,20 +169,104 @@ class Participant extends Record
 
 		$filters = array(
 		  "id"=>FILTER_VALIDATE_INT,
-		  "userName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
-		  "password"=>FILTER_UNSAFE_RAW,
+		  "eventName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "passkey"=>FILTER_UNSAFE_RAW,
+		  "isComing"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>2)),
+		  "arrivalFlightNumber"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "arrivalDate"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "arrivalTime"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "departureFlightNumber"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "departureDate"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "departureTime"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "honorific"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "firstName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "lastName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "organization"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "title"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "email"=>FILTER_VALIDATE_EMAIL,
+		  "phone"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "passportNumber"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "passportExpiryDate"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "passportCountry"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "passportName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "notes"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
 		$row = filter_var_array($data, $filters);
-
+	
+		if ($row['id'] == '') {
+			$msg = 'invalid id';
+			return false;
+		}
+		if ($row['simulate'] == '' && $row['simulate'] !== 0) {
+			$msg = 'invalid simulate';
+			return false;
+		}
+		$row['password'] = Participant::encryptPasskey($msg, $row['eventName'], $row['id'], false, $row['passkey']);
+		if (false === $row['password']) { return false; }
+		
 		foreach ($filters as $key => $value) {
 			if (isset($row[$key])) {
 				$row[$key] = trim($row[$key]);
-				if ($row[$key] != '') { continue; }
+				if ($row[$key] == '' && isset($data[$key]) && $data[$key] != '') {
+					$msg = 'invalid ' . $key;
+					return false;
+				}
+			} else {
+				unset($row[$key]);
 			}
-			$msg = 'invalid ' . $key;
 		}
+		
+		foreach (array('arrivalDate', 'departureDate', 'passportExpiryDate') as $theDate) {
+			if (!isset($row[$theDate]) || $row[$theDate] == '') { continue; }
+			if (preg_match('/^20\d\d\-\d?\d\-\d?\d$/', $row[$theDate])) {
+				$arr = explode('-', $row[$theDate]);
+				if (checkdate($arr[1], $arr[2], $arr[0])) { continue; }
+			}
+			$msg = 'invalid ' . $theDate;
+			return false;
+		}
+		
+		foreach (array('arrivalTime', 'departureTime') as $theTime) {
+			if (!isset($row[$theTime]) || $row[$theTime] == '') { continue; }
+			if (preg_match('/^\d?\d:\d\d$/', $row[$theTime])) {
+				$arr = explode(':', $row[$theTime]);
+				if (Participant::checktime($arr[0], $arr[1])) { continue; }
+			}
+			$msg = 'invalid ' . $theTime;
+			return false;
+		}
+
 		return $row;
+	}
+	
+	private static function checktime($hour, $minute) {
+		$hour = ltrim($hour, '0');
+		$minute = ltrim($minute, '0');
+		return ($hour > -1 && $hour < 24 && $minute > -1 && $minute < 60);
+	}
+	
+	private static function encryptPasskey(&$msg, $eventShortName, $salt, $encrypt = true, $passkey = '') {
+		if ($eventShortName == '' || strpos($eventShortName, '..') !== false) {
+			$msg = 'invalid eventName';
+			return false;
+		}
+		$constantsPath = "/var/www/event/$eventShortName/classes/DatabaseConstants.php";
+		if (!file_exists($constantsPath)) {
+			$msg = 'invalid eventName';
+			return false;
+		}
+
+		require_once $constantsPath;
+		$temp = md5(EVENT_PASSWORD . $salt);
+
+		if ($encrypt) { return $temp; }
+		
+		if ($passkey != $temp) {
+			$msg = 'invalid passkey';
+			return false;
+		}
+		return EVENT_PASSWORD;
 	}
 }
 ?>

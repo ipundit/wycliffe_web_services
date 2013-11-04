@@ -155,5 +155,9 @@ class Donation extends Record
 		}
 		return util::generateCSV($retValue);
 	}
+
+	public function id() {
+		return $this->row['id'];
+	}
 }
 ?>

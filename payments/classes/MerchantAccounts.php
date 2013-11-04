@@ -3,7 +3,7 @@ require_once 'classes/User.php';
 
 class MerchantAccounts
 {
-	public function makePurchase($org, $user, $purchase, $simulate, &$msg) {
+	public function makePurchase($org, $user, $purchase, $donationId, $simulate, &$msg) {
 		if ($simulate) { $msg = 1234; return true; }
 
 		require_once 'classes/Organization.php';

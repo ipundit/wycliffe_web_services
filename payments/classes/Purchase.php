@@ -123,7 +123,7 @@ class Purchase extends Record
  		}
 		
 		$simulate = false; // fixme: Remove this when we no longer need to test integration with the payment processor
-		return $paymentProcessor->makePurchase($org, $user, $this, $simulate, $msg);
+		return $paymentProcessor->makePurchase($org, $user, $this, 'dummyDonationId', $simulate, $msg);
 	}
 
 	private function isValidCreditCard(&$cc) {

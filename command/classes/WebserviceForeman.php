@@ -48,6 +48,7 @@ class WebserviceForeman {
 	}
 	
 	private function get_server_memory_usage(){
+//return MIN_FREE_MEMORY; // fixme: remove this after we get swap space back
 		$free = shell_exec('/usr/bin/free');
 		$free = (string)trim($free);
 		$free_arr = explode("\n", $free);

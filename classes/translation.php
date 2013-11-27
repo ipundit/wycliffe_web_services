@@ -3,6 +3,7 @@ $bundle = '';
 function configureForLang($startIndex = -1, $endIndex = -1) {
 	require_once 'StringBundle.php';
 	$lang = isset($_GET["lang"]) ? filter_var($_GET["lang"], FILTER_SANITIZE_STRING) : "en";
+	if ($lang == "") { $lang = "en"; }
 	
 	global $bundle;
 	$bundle = new StringBundle($lang, $startIndex, $endIndex);

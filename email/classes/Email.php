@@ -436,7 +436,7 @@ class Email
 			if (util::removeBefore($email, "<")) {
 				if (!util::removeAfter($email, ">")) { return false; }
 			}
-			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { return false; }
+			if ($email != '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) { return false; }
 		}
 
 		$msg = '';

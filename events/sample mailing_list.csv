@@ -1,3 +1,3 @@
-$id,$tags,$honorific,$firstName,$lastName,$email,$phone,$organization,$title,$isComing,$room,$needVisa,$passportName,$passportCountry,$passportNumber,$passportExpiryDate,$arrivalDate,$arrivalTime,$arrivalFlightNumber,$departureDate,$departureTime,$departureFlightNumber,$notes
-1,WAP,,First,Last,first_last@email.com,651234567,Wycliffe Asia-Pacific ,Director,1,,0,,Korea,,,,,,,,,
-2,partner,Dr. Pdt.,Partner,Name,partner_name@partner.org,,Partner Organization,Pacific Islands Affairs Director,1,,1,Partner Middle Name,PNG,AB12345,2016-10-06,2013-08-02,14:45,AK1234,2013-08-07,1:00,AK5678,
+$id,$tags,$honorific,$firstName,$lastName,$email,$phone,$organization,$title,$isComing,$room,$needVisa,$passportName,$passportCountry,$passportNumber,$passportExpiryDate,$arrivalDate,$arrivalTime,$arrivalFlightNumber,$departureDate,$departureTime,$departureFlightNumber,$lang,$notes
+1,WAP,,First,Last,first_last@email.com,651234567,Wycliffe Asia-Pacific ,Director,1,,0,,Korea,,,,,,,,,,
+2,partner,Dr. Pdt.,Partner,Name,partner_name@partner.org,,Partner Organization,Pacific Islands Affairs Director,1,,1,Partner Middle Name,PNG,AB12345,2016-10-06,2013-08-02,14:45,AK1234,2013-08-07,1:00,AK5678,,

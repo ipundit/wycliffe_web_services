@@ -44,6 +44,17 @@ EXPECTS	{"error":"id not found"}
 
 URL	http://wycliffe-services.net/events/webservice_participant.php
 id	42
+lang	a
+EXPECTS	{"error":"invalid lang"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+lang	EN
+EXPECTS	{"error":"invalid lang"}
+
+URL	http://wycliffe-services.net/events/webservice_participant.php
+id	42
+lang	en
 simulate	a
 EXPECTS	{"error":"invalid simulate"}
 

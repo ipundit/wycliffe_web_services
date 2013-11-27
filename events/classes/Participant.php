@@ -16,7 +16,8 @@ class Participant extends Record
 			"organization"=>"text",
 			"title"=>"text",
 			"isComing"=>"integer",
-			"room"=>"text",
+			"oneBedRoom"=>"text",
+			"twoBedRoom"=>"text",
 			"needVisa"=>"boolean",
 			"passportName"=>"text",
 			"passportCountry"=>"text",
@@ -28,6 +29,7 @@ class Participant extends Record
 			"departureDate"=>"date",
 			"departureTime"=>"time",
 			"departureFlightNumber"=>"text",
+			"lang"=>"text",
 			"cc"=>"text",
 			"notes"=>"text",
 			"passkey"=>"text",
@@ -152,7 +154,7 @@ class Participant extends Record
 	}
 	
 	private function getEventRegistration($id, &$msg) {
-		$res = Record::select($this->columns(array('tags','room','cc')), 'id=?', $id);
+		$res = Record::select($this->columns(array('tags','oneBedRoom','twoBedRoom','cc')), 'id=?', $id);
 		
 		if ($res->numRows() != 1) {
 			$msg = 'id not found';
@@ -165,6 +167,7 @@ class Participant extends Record
 		return $retValue;
 	}
 	private static function validateInput($data, &$msg) {
+		if (!isset($data['lang'])) { $data['lang'] = "en"; }
 		if (!isset($data['simulate'])) { $data['simulate'] = 0; }
 
 		$filters = array(
@@ -189,6 +192,7 @@ class Participant extends Record
 		  "passportExpiryDate"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "passportCountry"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "passportName"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "lang"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "notes"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
 		);
@@ -196,6 +200,14 @@ class Participant extends Record
 	
 		if ($row['id'] == '') {
 			$msg = 'invalid id';
+			return false;
+		}
+		if (strlen($row['lang']) != 2) {
+			$msg = 'invalid lang';
+			return false;
+		}
+		if (strtolower($row['lang']) != $row['lang']) {
+			$msg = 'invalid lang';
 			return false;
 		}
 		if ($row['simulate'] == '' && $row['simulate'] !== 0) {

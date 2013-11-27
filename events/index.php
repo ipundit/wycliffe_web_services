@@ -5,7 +5,7 @@
 <title>Event name event registration</title>
 <style type="text/css">
 fieldset { 
-	width: 550px;
+	width: 601px;
 	padding: 10px 4px 10px 10px;
 }
 legend {
@@ -17,7 +17,7 @@ legend {
 #comingRow { height: 30px; } 
 .column { float: left; }
 .rowLabel {
-	width: 64px;
+	width: 105px;
 	text-align: right;
 	margin-right: 10px;
 }
@@ -29,15 +29,16 @@ legend {
 	text-align: center;
 }
 
-.flightTextField { width: 152px; }
-#honorific { width: 80px; }
+.radio { margin: 0 6px 0 -2px; }
+.flightTextField { width: 156px; }
+#honorific { width: 92px; }
 .nameTextField { width: 188px; }
-.contactTextField { width: 230px; }
-#passportName { width: 464px; }
+.contactTextField { width: 236px; }
+#passportName { width: 476px; }
 
 textarea {
 	height: 70px;
-	width: 536px;
+	width: 589px;
 }
 
 button {
@@ -46,27 +47,33 @@ button {
 	border-width: 2px;
 	font-weight: bold;
 	font-size: 23px;
-	width: 570px;
+	width: 621px;
 }
 
 @-moz-document url-prefix() {
 	fieldset { padding: 10px; }
-	#passportName { width: 468px; }
-	.contactTextField { width: 231px; }
-	textarea { width: 542px; }
-	button { width: 575px; }
+	#passportName { width: 480px; }
+	.contactTextField { width: 237px; }
+	textarea { width: 595px; }
+	button { width: 626px; }
 }
-@media screen and (-webkit-min-device-pixel-ratio:0) { /* Chrome */
+@media screen and (-webkit-min-device-pixel-ratio:0) { /* Chrome and Safari */
 	fieldset { 
-		width: 545px;
+		width: 601px;
 		padding: 10px;
 	}
-	button { width: 571px; }
-	
-	/* Safari */
-    ::i-block-chrome, fieldset { width: 548px; }
-	::i-block-chrome, button { width: 574px; }
-	::i-block-chrome, textarea { width: 540px; }
+	button { width: 627px; }
+	textarea { width: 589px; }
+
+	/* Safari. First row is ignored */
+	[.contactTextField { width: 0; }
+	 .contactTextField { width: 237px; }]
+	[#passportName { width: 0; }
+	 #passportName { width: 480px; }]
+	[button { width: 0; }
+	 button { width: 626px; }]
+	[textarea { width: 0; }
+	 textarea { width: 595px; }] 	
 }
 
 #spinner {
@@ -114,13 +121,13 @@ label.error {
 	<label><?php echo(t("Coming?")); ?></label>
 </div>
 <div class="column">
-	<input type="radio" id="comingYes" name="isComing" value="1" <?php if ($row->iscoming == 1) { echo("checked"); } ?> /> <label for="comingYes"><?php echo(t("Yes")); ?></label>
+	<input type="radio" id="comingYes" name="isComing" value="1" <?php if ($row->iscoming == 1) { echo("checked"); } ?> /> <label class="radio" for="comingYes"><?php echo(t("Yes")); ?></label>
 </div>
 <div class="column">
-	<input type="radio" id="comingNo" name="isComing" value="0" <?php if ($row->iscoming == 0) { echo("checked"); } ?> /> <label for="comingNo"><?php echo(t("No")); ?></label>
+	<input type="radio" id="comingNo" name="isComing" value="0" <?php if ($row->iscoming == 0) { echo("checked"); } ?> /> <label class="radio" for="comingNo"><?php echo(t("No")); ?></label>
 </div>
 <div class="column">
-	<input type="radio" id="comingUnsure" name="isComing" value="2" <?php if ($row->iscoming == 2) { echo("checked"); } ?> /> <label for="comingUnsure"><?php echo(t("Unsure")); ?></label>
+	<input type="radio" id="comingUnsure" name="isComing" value="2" <?php if ($row->iscoming == 2) { echo("checked"); } ?> /> <label class="radio" for="comingUnsure"><?php echo(t("Unsure")); ?></label>
 </div>
 </div>
 <div class="row">

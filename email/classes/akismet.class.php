@@ -131,7 +131,6 @@ class AkismetHttpClient extends AkismetObject {
 		$this->apiKey = $apiKey;
 	}
 	
-	
 	// Use the connection active in $con to get a response from the server and return that response
 	function getResponse($request, $path, $type = "post", $responseLength = 1160) {
 		$this->_connect();
@@ -155,7 +154,7 @@ class AkismetHttpClient extends AkismetObject {
 			}
 
 			$response = explode("\r\n\r\n", $response, 2);
-			return $response[1];
+			return (count($response) == 2) ? $response[1] : $response;
 		} else {
 			$this->setError(AKISMET_RESPONSE_FAILED, "The response could not be retrieved.");
 		}

@@ -25,12 +25,33 @@ class EmailProcessor
 
 		EmailProcessor::initBody($mail, $struct, $buffer, $message);
 		$body = $message['html'] == '' ? $message['body'] : $message['html'];
-		if (Email::isSpam($message['from'], $message['from'], $body, $simulateSpamCheck)) {
+		
+		
+		$email = '';
+		$name = EmailProcessor::splitNameEmail($message['from'], $email);
+		if (Email::isSpam($name, $email, $body, $simulateSpamCheck)) {
 			$error = "spam email discarded";
 			return false;
 		}
 
 		return EmailProcessor::initAttachments($mail, $struct, $buffer, $message, $error);
+	}
+	
+	private static function splitNameEmail($name, &$email) {
+		$startIndex = strpos($name, '<');
+		if ($startIndex === false) {
+			$email = $name;
+			return $name;
+		}
+
+		$endIndex = strpos($name, '>', $startIndex);
+		if ($endIndex === false) { 
+			$email = $name;
+			return $name;
+		}
+		
+		$email = substr($name, $startIndex + 1, $endIndex - $startIndex - 1);
+		return rtrim(substr($name, 0, $startIndex - 1));
 	}
 
 	public static function processMessage($to, $message, &$error, $deleteAttachments = false) {
@@ -96,7 +117,7 @@ class EmailProcessor
 		EmailProcessor::serialize($template, $templateName, $message, $str);
 		if (!filter_var($templateName, FILTER_SANITIZE_STRING, array('flags'=>FILTER_FLAG_NO_ENCODE_QUOTES))) {
 			$error = "Invalid templateName";
-			return flase;
+			return false;
 		}
 		return EmailProcessor::sendDefaultForm($template, $templateName, $message, $error, false, 0);
 	}

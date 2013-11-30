@@ -102,6 +102,25 @@ class Participant extends Record
 		return true;
 	}
 	
+	// These functions are used by management.php
+	public static function getParticipants($eventName, $password) {
+		$msg = '';
+		$participant = new Participant($eventName, $password, $msg);
+		if ($msg != '') { return false; }
+	
+		$retValue = array();
+		$retValue[0] = '<new>';
+	
+		$res = $participant->selectAll('id,firstName,lastName');
+		if ($res->numRows() >= 1) {
+			while (($row = $res->fetchRow())) {
+				$retValue[$row['id']] = $row['firstname'] . ' ' . $row['lastname'];
+			}
+		}
+		asort($retValue);
+		return $retValue;
+	}
+	
 	// The rest of these functions are used by index.php
 	public static function main(&$msg) {
 		$tempDir = util::saveAllFiles();

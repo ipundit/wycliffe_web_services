@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
 <head>
 <title>Wycliffe Web Services event event registration</title>
+<link rel="stylesheet" href="/jquery-ui/jquery-ui.css" />
 <style type="text/css">
 .radio {
 	margin: 3px 3px 3px 0;
@@ -38,18 +39,36 @@ button {
 
 <script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
+<script language='JavaScript' type='text/javascript' src='../jquery-ui/jquery-ui.min.js'></script>
+
 <script language='JavaScript' type='text/javascript' src='management.js'></script>
 <script language='JavaScript' type='text/javascript'>
 <?php
 	require_once 'translation.php';
-	echo 'index_js_init({' . configureForLang(300) . '})';
+	echo 'index_js_init({' . configureForLang(300) . '});';
 	$eventName = isset($_GET['eventName']) ? $_GET['eventName'] : '';
 	$userName = isset($_GET['userName']) ? $_GET['userName'] : '';
 	$password = isset($_GET['password']) ? $_GET['password'] : '';
 	$queryString = "eventName=".urlencode($eventName)."&amp;userName=".urlencode($userName).'&amp;password='.$password;
 	$fromEmail = isset($_GET['fromEmail']) ? $_GET['fromEmail'] : '';
 	$name = isset($_GET['name']) ? $_GET['name'] : '';
+	echo 'var participants = ' . readFromDatabase($userName, $password) . ';';
 ?>
+
+$(function() {
+	$("#participants").autocomplete({
+		source: participants,
+		focus: function( event, ui ) {
+            $("#participants").val(ui.item.label);
+            return false;  
+        },
+		select: function( event, ui ) {
+			event.preventDefault();
+			alert(ui.item.value);
+		}
+	});
+});
+
 </script>
 </head>
 <body>
@@ -63,6 +82,7 @@ You can:
   <li>Upload your updated list to the server to replace its contents<input type="file" name="file" id="file" /><button type="submit" id="upload"><?php echo t("Upload"); ?><div id="spinner"></div></button></li>
   <li><a href="javascript:void(0)" id="invitation">Send out the invitation email</a> to the participants in that list<div id="spinnerInvitation"></div></li>
   <li><a href="javascript:void(0)" id="logistics">Send out the logistics email</a> to the participants in that list<div id="spinnerLogistics"></div></li>
+  <li><label for="participants">Update a participant: </label><input id="participants"></li>
 </ol>
 <input type="hidden" id="eventName" value="<?php echo $eventName; ?>" />
 <input type="hidden" id="userName" value="<?php echo $userName ?>" />
@@ -71,18 +91,22 @@ You can:
 <input type="hidden" id="fromEmail" value="<?php echo $fromEmail ?>" />
 <input type="hidden" id="name" value="<?php echo $name ?>" />
 </form>
+<body>
 </body>
 </html>
 
 <?php
-function readFromDatabase() {
+function readFromDatabase($userName, $password) {
 	require_once('util.php');
-	require_once('classes/Events.php');
-	$arr = array();
+	require_once('classes/Participant.php');
 	
-	foreach ($arr as &$value) {
-		util::removeAfter($value, '@');
+	$participants = Participant::getParticipants($userName, $password);
+	if ($participants === false) { return ''; }
+	
+	$arr = array();
+	foreach ($participants as $key => $value) {
+		$arr[] = $value . '", value: "' . $key;
 	}
-	return $arr;
+	return '[{label: "' . implode('"},{label: "', $arr) . '"}]';
 }
 ?>

@@ -5,8 +5,8 @@
 <title>Event name event registration</title>
 <style type="text/css">
 fieldset { 
-	width: 601px;
-	padding: 10px 4px 10px 10px;
+	width: 625px;
+	padding: 10px;
 }
 legend {
 	font-weight: bold;
@@ -30,15 +30,15 @@ legend {
 }
 
 .radio { margin: 0 6px 0 -2px; }
-.flightTextField { width: 156px; }
-#honorific { width: 92px; }
+.flightTextField { width: 163px; }
+#honorific { width: 113px; }
 .nameTextField { width: 188px; }
-.contactTextField { width: 236px; }
-#passportName { width: 476px; }
+.contactTextField { width: 246.5px; }
+#passportName { width: 497px; }
 
 textarea {
 	height: 70px;
-	width: 589px;
+	width: 610px;
 }
 
 button {
@@ -47,33 +47,25 @@ button {
 	border-width: 2px;
 	font-weight: bold;
 	font-size: 23px;
-	width: 621px;
+	width: 651px;
 }
 
 @-moz-document url-prefix() {
-	fieldset { padding: 10px; }
-	#passportName { width: 480px; }
-	.contactTextField { width: 237px; }
-	textarea { width: 595px; }
-	button { width: 626px; }
+	#passportName { width: 501px; }
+	.contactTextField { width: 247.5px; }
+	textarea { width: 616px; }
+	button { width: 650px; }
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) { /* Chrome and Safari */
-	fieldset { 
-		width: 601px;
-		padding: 10px;
-	}
-	button { width: 627px; }
-	textarea { width: 589px; }
-
 	/* Safari. First row is ignored */
 	[.contactTextField { width: 0; }
-	 .contactTextField { width: 237px; }]
+	 .contactTextField { width: 247.5px; }]
 	[#passportName { width: 0; }
-	 #passportName { width: 480px; }]
+	 #passportName { width: 501px; }]
 	[button { width: 0; }
-	 button { width: 626px; }]
+	 button { width: 656px; }]
 	[textarea { width: 0; }
-	 textarea { width: 595px; }] 	
+	 textarea { width: 616px; }] 	
 }
 
 #spinner {
@@ -173,7 +165,7 @@ label.error {
 </div>
 <div class="column">
 	<input type="text" id="honorific" name="honorific" value="<?php echo($row->honorific) ?>" />
-	<label class="verticalLabel">eg) Dr. Rev. Pdt.</label>
+	<label class="verticalLabel"><?php echo(t("eg)")); ?> Dr. Rev. Pdt.</label>
 </div>
 <div class="column">
 	<input type="text" id="firstName" name="firstName" class="nameTextField" value="<?php echo($row->firstname) ?>" />
@@ -207,7 +199,7 @@ label.error {
 </div>
 <div class="column">
 	<input type="text" id="phone" name="phone" class="contactTextField" value="<?php echo($row->phone) ?>" />
-	<label class="verticalLabel"><?php echo(t("Cell phone number, eg)") . " +66 1234567"); ?></label>
+	<label class="verticalLabel"><?php echo(t("Cell phone number")); ?>, <?php echo(t("eg)")); ?> +66 1234567</label>
 </div>
 </div>
 </fieldset>
@@ -255,7 +247,7 @@ if ($row->needvisa) { echo $str; }
 ?>
 <fieldset>
 <legend><?php echo(t("Notes and Special Instructions")); ?></legend>
-<textarea id="notes" id="name"><?php echo($row->notes) ?></textarea>
+<textarea id="notes" name="notes"><?php echo($row->notes) ?></textarea>
 </fieldset>
 
 <input type="hidden" id="id" name="id" value="<?php echo($row->id) ?>" />
@@ -294,7 +286,9 @@ function readFromDatabase() {
 		$value = str_replace('"', "&quot;", $value);
 	}
 
-	if ($result->error == 'ok') { return $result; }
+	if ($result->error == 'ok') {
+		return $result;
+	}
 	if ($result->error == "invalid id" || $result->error == 'id not found') {
 		echo t("Sorry, we cannot find your event registration. Please contact your event coordinator to get a new invitation email.");
 	} else {

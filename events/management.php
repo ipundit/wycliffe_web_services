@@ -23,10 +23,12 @@ label.error {
 }
 
 #file { margin-left: 10px; }
-
-button {
+#upload {
 	margin-left: 10px;
 }
+
+#participant { margin-left: 5px; }
+
 #spinner, #spinnerInvitation, #spinnerLogistics {
     background-image: url("../spinner.gif");
     background-repeat: no-repeat;
@@ -52,23 +54,10 @@ button {
 	$queryString = "eventName=".urlencode($eventName)."&amp;userName=".urlencode($userName).'&amp;password='.$password;
 	$fromEmail = isset($_GET['fromEmail']) ? $_GET['fromEmail'] : '';
 	$name = isset($_GET['name']) ? $_GET['name'] : '';
-	echo 'var participants = ' . readFromDatabase($userName, $password) . ';';
+	echo 'var participant = ' . readFromDatabase($userName, $password) . ';';
+	echo 'var URL = "https://wycliffe-services.net/event/' . $userName . '/?id=";';
+	echo 'var URLwithPassword = "https://wycliffe-services.net/event/' . $userName . '/?password=' . $password. '&id=";';
 ?>
-
-$(function() {
-	$("#participants").autocomplete({
-		source: participants,
-		focus: function( event, ui ) {
-            $("#participants").val(ui.item.label);
-            return false;  
-        },
-		select: function( event, ui ) {
-			event.preventDefault();
-			alert(ui.item.value);
-		}
-	});
-});
-
 </script>
 </head>
 <body>
@@ -80,9 +69,9 @@ You can:
   <li><a href="<?php echo "webservice.php?report=download&amp;" . $queryString ?>">Download the current participant list</a> to get a real time report of who has confirmed their attendance for your event</li>
   <li>Update <a href="<?php echo "webservice.php?report=download&amp;" . $queryString ?>">that list</a> in any spreadsheet program that can open .csv files, like Excel or LibreOffice Calc</li>
   <li>Upload your updated list to the server to replace its contents<input type="file" name="file" id="file" /><button type="submit" id="upload"><?php echo t("Upload"); ?><div id="spinner"></div></button></li>
-  <li><a href="javascript:void(0)" id="invitation">Send out the invitation email</a> to the participants in that list<div id="spinnerInvitation"></div></li>
-  <li><a href="javascript:void(0)" id="logistics">Send out the logistics email</a> to the participants in that list<div id="spinnerLogistics"></div></li>
-  <li><label for="participants">Update a participant: </label><input id="participants"></li>
+  <li><a href="javascript:void(0)" id="invitation">Send out the invitation email</a> to the participant in that list<div id="spinnerInvitation"></div></li>
+  <li><a href="javascript:void(0)" id="logistics">Send out the logistics email</a> to the participant in that list<div id="spinnerLogistics"></div></li>
+  <li><label for="participant">Update a participant's registration:</label><input id="participant"> or <button type="button" id="addParticipant">Add a new participant</button></li>
 </ol>
 <input type="hidden" id="eventName" value="<?php echo $eventName; ?>" />
 <input type="hidden" id="userName" value="<?php echo $userName ?>" />
@@ -100,11 +89,11 @@ function readFromDatabase($userName, $password) {
 	require_once('util.php');
 	require_once('classes/Participant.php');
 	
-	$participants = Participant::getParticipants($userName, $password);
-	if ($participants === false) { return ''; }
+	$participant = Participant::getParticipants($userName, $password);
+	if ($participant === false) { return ''; }
 	
 	$arr = array();
-	foreach ($participants as $key => $value) {
+	foreach ($participant as $key => $value) {
 		$arr[] = $value . '", value: "' . $key;
 	}
 	return '[{label: "' . implode('"},{label: "', $arr) . '"}]';

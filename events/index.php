@@ -253,6 +253,7 @@ if ($row->needvisa) { echo $str; }
 <input type="hidden" id="id" name="id" value="<?php echo($row->id) ?>" />
 <input type="hidden" id="eventName" name="eventName" value="<?php echo($row->eventName) ?>" />
 <input type="hidden" id="passkey" name="passkey" value="<?php echo($row->passkey) ?>" />
+<input type="hidden" id="password" name="password" value="<?php echo($row->password) ?>" />
 <button type="submit"><?php echo t("Submit"); ?><div id="spinner"></div></button>
 </form>
 </body>
@@ -269,8 +270,13 @@ function readFromDatabase() {
 				'id' => $_GET['id'],
 				'eventName' => EVENT_USERNAME,
 				'passkey' => $_GET['passkey'],
+				'doUpdate' => 0,
 			);
-			if (isset($_GET['isComing'])) { $params['isComing'] = $_GET['isComing']; }
+			if (isset($_GET['password'])) { $params['password'] = $_GET['password']; }
+			if (isset($_GET['isComing'])) {
+				$params['isComing'] = $_GET['isComing'];
+				$params['doUpdate'] = 1;
+			}
 			$ch = util::curl_init("https://wycliffe-services.net/events/webservice_participant.php", $params);
 			$result = curl_exec($ch);
 		} else {
@@ -287,6 +293,7 @@ function readFromDatabase() {
 	}
 
 	if ($result->error == 'ok') {
+		if (!isset($result->password)) { $result->password = ''; }
 		return $result;
 	}
 	if ($result->error == "invalid id" || $result->error == 'id not found') {

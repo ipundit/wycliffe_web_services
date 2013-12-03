@@ -100,15 +100,17 @@ function fieldsToUpload() {
 	var retValue = [];
 	retValue['isComing'] = $('input[name=isComing]:radio:checked').val();
 
-	var arr = ['eventName','passkey','id','arrivalFlightNumber','arrivalDate','arrivalTime','departureFlightNumber','departureDate',
-			   'departureTime','honorific','firstName','lastName','organization','title','email','phone','passportNumber',
-			   'passportExpiryDate','passportCountry','passportName','notes'];
-			   
+	var arr = ['eventName','passkey','id','arrivalFlightNumber','arrivalDate','arrivalTime',
+			   'departureFlightNumber','departureDate','departureTime','honorific','firstName','lastName',
+			   'organization','title','email','phone','passportNumber',
+			   'passportExpiryDate','passportCountry','passportName','notes','password'];
+
 	for (var i = 0; i < arr.length; i++) {
 		var val = $('#' + arr[i]).val();
 		if (undefined !== val) { retValue[arr[i]] = val; }
 	}
 	
+	retValue['doUpdate'] = 1;
 	retValue['arrivalDate'] = convertToDate(retValue['arrivalDate']);
 	retValue['departureDate'] = convertToDate(retValue['departureDate']);
 	if (undefined !== retValue['passportExpiryDate']) { retValue['passportExpiryDate'] = convertToDate(retValue['passportExpiryDate']); }
@@ -121,8 +123,12 @@ function convertToDate(theDate) {
 
 function onSuccess(retValue) {
 	retValue = $.parseJSON(retValue);
-	if (retValue.error == 'ok') { retValue.error = g_translations['Your registration information has been updated. Come back to this website any time to make a change.'] }
-	
+	if (retValue.error == 'ok') {
+		$('#id').val(retValue.id);
+		$('#passkey').val(retValue.passkey);
+		$('#password').val('');
+		retValue.error = g_translations['Your registration information has been updated. Come back to this website any time to make a change.'];
+	}
 	$('#errorAnchor').html('<span>' + retValue.error + '</span>');
 }
 
@@ -135,6 +141,8 @@ function formDefaultValues() {
 		$('#errorAnchor').html(g_translations["We're sorry that you can't make it. You can click the email link again if you change your mind."]);
 	} else if (urlParam('isComing') == 1) {
 		$('#errorAnchor').html(g_translations["We have confirmed your attendance. Please fill out the rest of the form to book your hotel room."]);
+	} else if (urlParam('id') == 0) {
+		$('#errorAnchor').html(g_translations["Enter the information for the new participant."]);
 	}
 
 	var retValue = {};

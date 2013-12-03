@@ -53,13 +53,34 @@ function onSuccess(retValue) {
 	$('#report').val('upload');
 }
 
+function openParticipantEditor(id, passkey) {
+	var prefix = (id == 0) ? URLwithPassword : URL;
+	window.open(prefix + id + '&passkey=' + passkey, '_blank');
+}
+
 function eventHandlers() {
+	$("#participant").autocomplete({
+		source: participant,
+		focus: function( event, ui ) {
+			$("#participant").val(ui.item.label);
+			return false;  
+		},
+		select: function( event, ui ) {
+			event.preventDefault();
+			var payload = ui.item.value.split('_', 2);
+			openParticipantEditor(payload[0], payload[1]);
+		}
+	});
+
 	return {
 		'invitation': function() {
 			clickLink('Invitation');
 		},
 		'logistics': function() {
 			clickLink('Logistics');
+		},
+		'addParticipant': function() {
+			openParticipantEditor(0, '');
 		},
 	};
 }

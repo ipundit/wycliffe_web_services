@@ -83,7 +83,8 @@ class Participant extends Record
 			
 			if ($row['id'] == '') { $row['id'] = rand(1, 65535); }
 			$row['passkey'] = Participant::encryptPasskey($msg, $eventShortName, $row['id']);
-
+			if ($msg != '') { return false; }
+			
 			Record::initialize($row, false);
 			Record::serialize();
 		}		
@@ -109,12 +110,10 @@ class Participant extends Record
 		if ($msg != '') { return false; }
 	
 		$retValue = array();
-		$retValue[0] = '<new>';
-	
-		$res = $participant->selectAll('id,firstName,lastName');
+		$res = $participant->selectAll('id,firstName,lastName,passkey');
 		if ($res->numRows() >= 1) {
 			while (($row = $res->fetchRow())) {
-				$retValue[$row['id']] = $row['firstname'] . ' ' . $row['lastname'];
+				$retValue[$row['id'] . '_' . $row['passkey']] = $row['firstname'] . ' ' . $row['lastname'];
 			}
 		}
 		asort($retValue);
@@ -142,15 +141,32 @@ class Participant extends Record
 		$participant = new Participant($params['eventName'], $params['password'], $msg);
 		if ($msg != '') { return false; }
 
-		if (!$participant->hasId($params['id'])) {
+		if ($params['id'] == '0' && $params['passkey'] == '') {
+			if ($params['doUpdate'] != 1) {
+				foreach ($params as $key => $value) {
+					if ($key != strtolower($key)) {
+						$params[strtolower($key)] = $value;
+						unset($params[$key]);
+					}
+				}
+				$params['iscoming'] = 2;
+				$params['needvisa'] = 0;
+				$msg = $params;
+				return true;
+			}
+			
+			$params['id'] = $participant->nextId();
+			$params['passkey'] = Participant::encryptPasskey($msg, $params['eventName'], $params['id']);
+			if ($msg != '') { return false; }
+		} else if (!$participant->hasId($params['id'])) {
 			$msg = 'id not found';
 			return false;
 		}
-		
-		if (false === $participant->update($params, $msg)) { return false; }
+
+		if ($params['doUpdate'] == 1 && false === $participant->update($params, $msg)) { return false; }
 		
 		$row = $participant->getEventRegistration($params['id'], $msg);
-		if ($row === false) { return false;}
+		if ($row === false) { return false; }
 		
 		$msg = $row;
 		return true;
@@ -172,9 +188,17 @@ class Participant extends Record
 		return $msg == '';
 	}
 	
+	private function getUserTemplate() {
+		$res = $this->getParticipant(-1);
+		return $res->fetchRow();
+	}
+	
+	private function getParticipant($id) {
+		return Record::select($this->columns(array('tags','oneBedRoom','twoBedRoom','cc')), 'id=?', $id);
+	}
+	
 	private function getEventRegistration($id, &$msg) {
-		$res = Record::select($this->columns(array('tags','oneBedRoom','twoBedRoom','cc')), 'id=?', $id);
-		
+		$res = $this->getParticipant($id);
 		if ($res->numRows() != 1) {
 			$msg = 'id not found';
 			return false;
@@ -214,9 +238,14 @@ class Participant extends Record
 		  "lang"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "notes"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		  "simulate"=>array('filter'=>FILTER_VALIDATE_INT, 'options'=>array("min_range"=>0, "max_range"=>1)),
+		  "password"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
+		  "doUpdate"=>array('filter'=>FILTER_SANITIZE_STRING, 'flags'=>FILTER_FLAG_NO_ENCODE_QUOTES),
 		);
 		$row = filter_var_array($data, $filters);
-	
+
+		if ($row['doUpdate'] != '1') { $row['doUpdate'] = 0; }
+
+		if ($row['id'] == '0' && $row['passkey'] == '' && $row['password'] !== '') { return $row; }
 		if ($row['id'] == '') {
 			$msg = 'invalid id';
 			return false;
@@ -233,7 +262,8 @@ class Participant extends Record
 			$msg = 'invalid simulate';
 			return false;
 		}
-		$row['password'] = Participant::encryptPasskey($msg, $row['eventName'], $row['id'], false, $row['passkey']);
+		
+		if ($row['password'] == '') { $row['password'] = Participant::encryptPasskey($msg, $row['eventName'], $row['id'], false, $row['passkey']); }
 		if (false === $row['password']) { return false; }
 		
 		foreach ($filters as $key => $value) {

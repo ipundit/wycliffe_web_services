@@ -89,7 +89,7 @@ class Events
 		$participant = new Participant($row['userName'], $row['password'], $msg);
 		if ($msg != '') { return true; }
 		
-		$includePasskey = $report == 'invitation' || $report == 'logistics';
+		$includePasskey = $report == 'download' || $report == 'invitation' || $report == 'logistics';
 		$path = $participant->reportCSV($tempDir, $includePasskey, $msg);
 		if ($path === false) { return true;	}
 
@@ -316,6 +316,7 @@ Your Wycliffe Web Services events account for the <b>$eventName</b> has been cre
 2. Update the participant tracking list, and then <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password&name=$clientName&fromEmail=$clientEmail">upload it to the server</a> or <a href="mailto:events@wycliffe-services.net?subject=Update participant list for $eventName&body=Attach mailing_list.csv to this email and click send. Warning: Your existing participant list database on the server will be overwritten with the contents of mailing_list.csv, so make sure that it is based on the latest server version.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: upload%0D%0A">email</a> it.<br>
 3. <a href="mailto:events@wycliffe-services.net?subject=Get the invitation email template&body=Just click send to get the invitation email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: invitation">Send</a> out the invitation email.<br>
 4. <a href="mailto:events@wycliffe-services.net?subject=Get the logistics email template&body=Just click send to get the logistics email template.%0D%0A%0D%0AYour name: $clientName%0D%0AEvent name: $eventName%0D%0AUser name: $userName%0D%0APassword: $password%0D%0Areport: logistics">Send</a> out the logistics email.
+5. <a href="http://wycliffe-services.net/events/management.php?eventName=$eventName&userName=$userName&password=$password&name=$clientName&fromEmail=$clientEmail">Update a participant's registration</a> or <a href="https://wycliffe-services.net/event/$userName/?password=$password&id=0&passkey=">add a new participant</a>
 BODY;
 		util::sendEmail($err1, "", "events@wycliffe-services.net", $row['clientEmail'], 
 			"Logistics menu for " . $row['eventName'], $body, '', '', '', array(), array(), $row['simulate']);

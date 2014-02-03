@@ -80,7 +80,7 @@ label.error {
 	font-weight: bold;
 }
 </style>
-<script language='JavaScript' type='text/javascript' src='../jquery-1.10.2.min.js'></script>
+<script language='JavaScript' type='text/javascript' src='../jquery.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../jquery.validate.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
 <script language='JavaScript' type='text/javascript'>

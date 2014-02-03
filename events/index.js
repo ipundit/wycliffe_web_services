@@ -118,7 +118,7 @@ function fieldsToUpload() {
 }
 function convertToDate(theDate) {
 	if (theDate == '') { return ''; }
-	return new Date(theDate).toISOString().removeAfter('T');
+	return theDate.replace(/\//g, '-');
 }
 
 function onSuccess(retValue) {

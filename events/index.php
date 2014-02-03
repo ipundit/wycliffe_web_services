@@ -87,7 +87,7 @@ label.error {
 }
 </style>
 
-<script language='JavaScript' type='text/javascript' src='../../jquery-1.10.2.min.js'></script>
+<script language='JavaScript' type='text/javascript' src='../../jquery.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='../../jquery.validate.min.js'></script>
 <script language='JavaScript' type='text/javascript' src='index.js'></script>
 <script language='JavaScript' type='text/javascript'>
@@ -132,7 +132,7 @@ label.error {
 </div>
 <div class="column">
 	<input type="text" id="arrivalDate" name="arrivalDate" class="flightTextField" value="<?php echo($row->arrivaldate) ?>" />
-	<label class="verticalLabel"><?php echo(t("Date")); ?> yyyy-mm-dd</label>
+	<label class="verticalLabel"><?php echo(t("Date")); ?> yyyy/mm/dd</label>
 </div>
 <div class="column">
 	<input type="text" id="arrivalTime" name="arrivalTime" class="flightTextField" value="<?php echo($row->arrivaltime) ?>" />
@@ -149,7 +149,7 @@ label.error {
 </div>
 <div class="column">
 	<input type="text" id="departureDate" name="departureDate" class="flightTextField" value="<?php echo($row->departuredate) ?>" />
-	<label class="verticalLabel"><?php echo(t("Date")); ?> yyyy-mm-dd</label>
+	<label class="verticalLabel"><?php echo(t("Date")); ?> yyyy/mm/dd</label>
 </div>
 <div class="column">
 	<input type="text" id="departureTime" name="departureTime" class="flightTextField" value="<?php echo($row->departuretime) ?>" />
@@ -285,7 +285,10 @@ function readFromDatabase() {
 	} else {
 		$result = '{"error":"invalid id"}';
 	}
+	
+	$tmp = $result;
 	$result = json_decode($result);
+	if ($result == '') { $result->error = $tmp; }
 	$result->eventNameWithSpaces = EVENT_NAME;
 	$result->eventName = EVENT_USERNAME;
 	foreach ($result as &$value) {
@@ -294,6 +297,9 @@ function readFromDatabase() {
 
 	if ($result->error == 'ok') {
 		if (!isset($result->password)) { $result->password = ''; }
+		$result->arrivaldate = str_replace('-', '/', $result->arrivaldate);
+		$result->departuredate = str_replace('-', '/', $result->departuredate);
+		$result->passportexpirydate = str_replace('-', '/', $result->passportexpirydate);
 		return $result;
 	}
 	if ($result->error == "invalid id" || $result->error == 'id not found') {
